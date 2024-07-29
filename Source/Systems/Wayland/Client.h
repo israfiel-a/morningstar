@@ -11,9 +11,6 @@
 #ifndef _MSENG_WAYLAND_CLIENT_SYSTEM_
 #define _MSENG_WAYLAND_CLIENT_SYSTEM_
 
-// Error reporting functionality.
-#include <Error.h>
-
 /**
  * @brief Set up the Wayland protocol and ready the program to create a
  * window.

@@ -1,5 +1,5 @@
 #include "SharedMemory.h"
-#include <Error.h>
+#include <Output/Error.h>
 #include <fcntl.h>
 #include <sys/mman.h>
 #include <time.h>
@@ -27,18 +27,18 @@ int OpenSHM(size_t size)
         if (fd >= 0)
         {
             shm_unlink(name);
-            if (fd < 0) ReportError(shm_open_failure);
+            if (fd < 0) ReportError(shm_open_failure, false);
 
             int ret;
             do {
                 ret = ftruncate(fd, size);
             } while (ret < 0 && errno == EINTR);
-            if (ret < 0) ReportError(shm_open_failure);
+            if (ret < 0) ReportError(shm_open_failure, false);
 
             return fd;
         }
     } while (retries > 0 && errno == EEXIST);
-    ReportError(shm_open_failure);
+    ReportError(shm_open_failure, false);
 }
 
 int32_t simple_round(double x)

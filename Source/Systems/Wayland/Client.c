@@ -3,7 +3,8 @@
 #include "Monitor.h"
 #include "Window.h"
 #include <Globals.h>
-#include <Input/Input.h>
+#include <Input/Hardware.h>
+#include <Output/Error.h>
 #include <linux/input-event-codes.h>
 
 static struct wl_display* display = NULL;
@@ -46,17 +47,17 @@ void SetupWayland(void)
 {
     // Connect to the default Wayland compositor (Wayland-0).
     display = wl_display_connect(NULL);
-    if (display == NULL) ReportError(wayland_display_fail);
+    if (display == NULL) ReportError(wayland_display_fail, false);
 
     registry = wl_display_get_registry(display);
     wl_registry_add_listener(registry, &registry_listener, NULL);
     // Wait for the server to catch up, and if it can't, fail the
     // program.
     if (wl_display_roundtrip(display) == -1)
-        ReportError(wayland_server_processing_fail);
+        ReportError(wayland_server_processing_fail, false);
 
     if (compositor == NULL || wm_data.xsh_base == NULL)
-        ReportError(wayland_missing_features);
+        ReportError(wayland_missing_features, false);
 
     wm_data.wl_window = wl_compositor_create_surface(compositor);
     wm_data.xsh_surface =

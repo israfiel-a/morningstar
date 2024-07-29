@@ -1,5 +1,5 @@
 #include "Keyboard.h"
-#include "Input.h"
+#include "Hardware.h"
 #include <linux/input-event-codes.h>
 
 extern input_callback_group_t input_callbacks;

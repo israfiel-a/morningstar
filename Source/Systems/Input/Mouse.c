@@ -1,5 +1,5 @@
 #include "Mouse.h"
-#include "Input.h"
+#include "Hardware.h"
 #include <Globals.h>
 #include <linux/input-event-codes.h>
 

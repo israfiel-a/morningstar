@@ -1,7 +1,7 @@
 #include "Window.h"
 #include "Manager.h"
 #include "Monitor.h"
-#include <Error.h>
+#include <Output/Error.h>
 #include <Utilities/SharedMemory.h>
 
 static void HandleBufferDeletion(void* data, pixel_buffer_t* buffer)
@@ -32,7 +32,7 @@ pixel_buffer_t* PaintWindowBackground(uint32_t background_color)
 
     uint32_t* frame_data =
         mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
-    if (frame_data == MAP_FAILED) ReportError(memory_map_failure);
+    if (frame_data == MAP_FAILED) ReportError(memory_map_failure, false);
 
     shared_memory_pool_t* pool =
         wl_shm_create_pool(wm_data.wl_sharedmemory, fd, (int32_t)size);
@@ -43,7 +43,8 @@ pixel_buffer_t* PaintWindowBackground(uint32_t background_color)
     close(fd);
 
     (void)memset(frame_data, background_color, size);
-    if (munmap(frame_data, size) == -1) ReportError(memory_unmap_failure);
+    if (munmap(frame_data, size) == -1)
+        ReportError(memory_unmap_failure, false);
 
     wl_buffer_add_listener(buffer, &wl_buffer_listener, NULL);
     return buffer;

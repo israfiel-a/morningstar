@@ -14,6 +14,7 @@
 
 #include <assert.h>   // IWYU pragma: keep
 #include <errno.h>    // IWYU pragma: keep
+#include <stdarg.h>   // IWYU pragma: keep
 #include <stdbool.h>  // IWYU pragma: keep
 #include <stdint.h>   // IWYU pragma: keep
 #include <stdio.h>    // IWYU pragma: keep

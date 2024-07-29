@@ -1,5 +1,5 @@
 /**
- * @file Input.h
+ * @file Hardware.h
  * @author Israfiel (https://github.com/israfiel-a)
  * @brief Provides functionality for both keyboard and mouse input in-game.
  * @date 2024-07-27

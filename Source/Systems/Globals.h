@@ -1,5 +1,5 @@
 /**
- * @file Application.h
+ * @file Globals.h
  * @author Israfiel (https://github.com/israfiel-a)
  * @brief A struct of global values to be kept throughout the
  * program--specifically ones that should be available throughout many
@@ -20,6 +20,8 @@ typedef struct
 {
     bool application_running;
     bool monitor_already_polled;
+    bool stdout_available;
+    bool libnotify_available;
     enum
     {
         dark,
