@@ -9,13 +9,13 @@
  * @copyright (c) 2024 - Israfiel
  */
 
-#ifndef _MSENG_MONITOR_SYSTEM_
-#define _MSENG_MONITOR_SYSTEM_
+#ifndef _MSENG_MONITOR_DIAGNOSTIC_SYSTEM_
+#define _MSENG_MONITOR_DIAGNOSTIC_SYSTEM_
 
 // The project's master system include file.
 #include <Master.h>
 // Wayland interface type definitions.
-#include "Types.h"
+#include <Wayland/Types.h>
 
 /**
  * @brief The information associated with a specific hardware monitor,
@@ -75,6 +75,19 @@ typedef struct
 } monitor_t;
 
 /**
+ * @brief Bind a monitor to the registry if Wayland reports one exists.
+ * This monitor object is destroyed quickly after being bound, as we just
+ * grab some info from it and call it a day.
+ * @param registry The registry to bind to.
+ * @param name The numeric name of the monitor.
+ * @param version The version of Wayland's monitor interface.
+ * @return true We bound the monitor.
+ * @return false The monitor wasn't bound since one had been already.
+ */
+bool BindMonitor(registry_t* registry, const uint32_t name,
+                 const uint32_t version);
+
+/**
  * @brief Returns a pointer to the monitor which the game renders on; the
  * first monitor the Wayland compositor registers.
  * @return A pointer to the monitor.
@@ -99,15 +112,4 @@ const int32_t GetMonitorHeight(void);
  */
 const int32_t GetMonitorShortSide(void);
 
-/**
- * @brief Bind a monitor to the registry if Wayland reports one exists.
- * @param registry The registry to bind to.
- * @param name The numeric name of the monitor.
- * @param version The version of Wayland's monitor interface.
- * @return true We bound the monitor.
- * @return false The monitor wasn't bound since one had been already.
- */
-bool BindMonitor(registry_t* registry, const uint32_t name,
-                 const uint32_t version);
-
-#endif // _MSENG_MONITOR_SYSTEM_
+#endif // _MSENG_MONITOR_DIAGNOSTIC_SYSTEM_

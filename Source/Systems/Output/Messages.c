@@ -34,3 +34,8 @@ void LogNotification(const char* title, const char* body, ...)
 
     (void)SystemCall(error_system_call);
 }
+
+void ReportMessage_(const char* file, const char* function,
+                    const char* body)
+{
+}

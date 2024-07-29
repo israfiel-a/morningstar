@@ -1,7 +1,7 @@
 #include "Client.h"
 #include "Manager.h"
-#include "Monitor.h"
 #include "Window.h"
+#include <Diagnostic/Monitor.h>
 #include <Globals.h>
 #include <Input/Hardware.h>
 #include <Output/Error.h>

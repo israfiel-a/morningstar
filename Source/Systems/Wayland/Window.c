@@ -1,6 +1,6 @@
 #include "Window.h"
 #include "Manager.h"
-#include "Monitor.h"
+#include <Diagnostic/Monitor.h>
 #include <Output/Error.h>
 #include <Utilities/SharedMemory.h>
 

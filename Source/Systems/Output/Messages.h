@@ -33,4 +33,9 @@ bool CheckForNotificationPackage(void);
  */
 void LogNotification(const char* title, const char* body, ...);
 
+void ReportMessage_(const char* file, const char* function,
+                    const char* body);
+
+#define ReportMessage(body) ReportMessage_(FILENAME, __func__, body)
+
 #endif // _MSENG_MESSAGE_OUTPUT_SYSTEM_
