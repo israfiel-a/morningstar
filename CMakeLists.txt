@@ -51,11 +51,13 @@ execute_process(COMMAND bash "-c"
 file(GLOB PROJECT_FILES 
     ${CMAKE_SOURCE_DIR}/Source/Systems/*.c 
     ${CMAKE_SOURCE_DIR}/Source/Systems/Wayland/*.c 
+    ${CMAKE_SOURCE_DIR}/Source/Systems/Input/*.c 
     ${CMAKE_SOURCE_DIR}/Source/Utilities/Utilities.c 
     ${CMAKE_SOURCE_DIR}/Dependencies/XDG_SH/xdg-shell.c)
 file(GLOB PROJECT_HEADERS ${CMAKE_SOURCE_DIR}/Source/*.h 
     ${CMAKE_SOURCE_DIR}/Source/Systems/*.h
     ${CMAKE_SOURCE_DIR}/Source/Systems/Wayland/*.h
+    ${CMAKE_SOURCE_DIR}/Source/Systems/Input/*.h
     ${CMAKE_SOURCE_DIR}/Source/Utilities/*.h)
 
 foreach(file ${PROJECT_FILES} ${PROJECT_HEADERS} ${CMAKE_SOURCE_DIR}/Source/Main.c)

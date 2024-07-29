@@ -1,19 +1,20 @@
 /**
- * @file Input.h
+ * @file Mouse.h
  * @author Israfiel (https://github.com/israfiel-a)
- * @brief Provides functionality for both keyboard and mouse input in-game.
- * @date 2024-07-27
+ * @brief Provides functionality for the mouse and cursor objects within
+ * the game window.
+ * @date 2024-07-29
  *
  * @copyright (c) 2024 - Israfiel
  */
 
-#ifndef _MSENG_INPUT_SYSTEM_
-#define _MSENG_INPUT_SYSTEM_
+#ifndef _MSENG_MOUSE_INPUT_SYSTEM_
+#define _MSENG_MOUSE_INPUT_SYSTEM_
 
 // The master include file of the project.
 #include <Master.h>
 // Wayland/XDG type definitions.
-#include "Types.h"
+#include <Wayland/Types.h>
 
 /**
  * @brief An enumerator describing the various events that can pass in a
@@ -72,11 +73,7 @@ typedef struct
      */
     uint32_t events;
     /**
-     * @brief The serial code of the last event triggered.
-     */
-    uint32_t serial;
-    /**
-     * @brief The timestamp of the last triggered event.
+     * @brief The timestamp of the event triggered down to the millisecond.
      */
     uint32_t time;
     /**
@@ -128,16 +125,6 @@ typedef struct
 } mouse_event_t;
 
 /**
- * @brief Bind a new input group to the registry. The game is only built to
- * have one of these, but adding multiple is @b theoretically possible.
- * @param registry The Wayland registry of the application.
- * @param name The name of the group.
- * @param version The version of the interface.
- */
-void BindInputGroup(registry_t* registry, const uint32_t name,
-                    const uint32_t version);
-
-/**
  * @brief Set the cursor image displayed when the mouse hovers over the
  * window.
  * @param buffer The image to attach to it.
@@ -145,18 +132,4 @@ void BindInputGroup(registry_t* registry, const uint32_t name,
  */
 void SetCursorImage(pixel_buffer_t* buffer);
 
-/**
- * @brief Check if the application has a mouse connected to it.
- * @return true There is a mouse connected.
- * @return false There is not a mouse connected.
- */
-const bool GetMouseCapability(void);
-
-/**
- * @brief Check if the application has a keyboard connected to it.
- * @return true There is a keyboard connected.
- * @return false There is no keyboard connected.
- */
-const bool GetKeyboardCapability(void);
-
-#endif // _MSENG_INPUT_SYSTEM_
+#endif // _MSENG_MOUSE_INPUT_SYSTEM_

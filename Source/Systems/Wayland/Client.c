@@ -1,9 +1,9 @@
 #include "Client.h"
-#include "Input.h"
 #include "Manager.h"
 #include "Monitor.h"
 #include "Window.h"
 #include <Globals.h>
+#include <Input/Input.h>
 
 static struct wl_display* display = NULL;
 static struct wl_registry* registry = NULL;
