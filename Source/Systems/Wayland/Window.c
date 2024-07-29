@@ -12,9 +12,10 @@ static void HandleBufferDeletion(void* data, pixel_buffer_t* buffer)
 static const pixel_buffer_monitor_t wl_buffer_listener = {
     HandleBufferDeletion};
 
-void SetWindowTitle(const char* title)
+void SetWindowTitle(const char* id, const char* title)
 {
     assert(title != NULL);
+    xdg_toplevel_set_app_id(wm_data.xsh_toplevel, id);
     xdg_toplevel_set_title(wm_data.xsh_toplevel, title);
 }
 

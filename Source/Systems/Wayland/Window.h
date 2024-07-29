@@ -15,7 +15,7 @@
 #include <Master.h>
 #include <Utilities/Colors.h>
 
-void SetWindowTitle(const char* title);
+void SetWindowTitle(const char* id, const char* title);
 
 pixel_buffer_t* PaintWindowBackground(uint32_t background_color);
 

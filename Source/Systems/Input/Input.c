@@ -91,63 +91,63 @@ void BindInputGroup(registry_t* registry, const uint32_t name,
     wl_seat_add_listener(seat, &input_group_listener, NULL);
 }
 
-void AddMouseEnterCallback(void (*func)(wl_fixed_t, wl_fixed_t))
+void SetMouseEnterCallback(void (*func)(wl_fixed_t, wl_fixed_t))
 {
     input_callbacks.mouse_enter = func;
 }
-void AddMouseLeaveCallback(void (*func)(void))
+void SetMouseLeaveCallback(void (*func)(void))
 {
     input_callbacks.mouse_leave = func;
 }
-void AddMouseMoveCallback(void (*func)(uint32_t, wl_fixed_t, wl_fixed_t))
+void SetMouseMoveCallback(void (*func)(uint32_t, wl_fixed_t, wl_fixed_t))
 {
     input_callbacks.mouse_move = func;
 }
-void AddMouseButtonDownCallback(void (*func)(uint32_t, uint32_t))
+void SetMouseButtonDownCallback(void (*func)(uint32_t, uint32_t))
 {
     input_callbacks.mouse_button_down = func;
 }
-void AddMouseButtonUpCallback(void (*func)(uint32_t, uint32_t))
+void SetMouseButtonUpCallback(void (*func)(uint32_t, uint32_t))
 {
     input_callbacks.mouse_button_release = func;
 }
-void AddMouseScrollCallback(void (*func)(mouse_axis_type_t,
+void SetMouseScrollCallback(void (*func)(mouse_axis_type_t,
                                          mouse_axis_direction_t,
                                          wl_fixed_t, int32_t, uint32_t))
 {
     input_callbacks.mouse_scroll = func;
 }
-void AddMouseRockCallback(void (*func)(mouse_axis_type_t,
+void SetMouseRockCallback(void (*func)(mouse_axis_type_t,
                                        mouse_axis_direction_t, wl_fixed_t,
                                        int32_t, uint32_t))
 {
     input_callbacks.mouse_rock = func;
 }
-void AddKeyboardEnterCallback(void (*func)(void))
+void SetKeyboardEnterCallback(void (*func)(void))
 {
     input_callbacks.keyboard_enter = func;
 }
-void AddKeyboardLeaveCallback(void (*func)(void))
+void SetKeyboardLeaveCallback(void (*func)(void))
 {
     input_callbacks.keyboard_leave = func;
 }
-void AddKeyboardKeymapCallback(void (*func)(char*))
+void SetKeyboardKeymapCallback(void (*func)(char*))
 {
     input_callbacks.keyboard_keymap = func;
 }
-void AddKeyboardKeydownCallback(void (*func)(uint32_t))
+void SetKeyboardKeydownCallback(void (*func)(uint32_t))
 {
     input_callbacks.keyboard_keydown = func;
 }
-void AddKeyboardKeyupCallback(void (*func)(uint32_t))
+void SetKeyboardKeyupCallback(void (*func)(uint32_t))
 {
     input_callbacks.keyboard_keyup = func;
 }
-void AddKeyboardRepeatCallback(void (*func)(uint32_t))
+void SetKeyboardRepeatCallback(void (*func)(uint32_t))
 {
     input_callbacks.keyboard_repeat = func;
 }
-void AddKeyboardModifierCallback(void (*func)(uint32_t, uint32_t,
+void SetKeyboardModifierCallback(void (*func)(uint32_t, uint32_t,
                                               uint32_t))
 {
     input_callbacks.keyboard_modifier = func;

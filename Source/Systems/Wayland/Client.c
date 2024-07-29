@@ -4,6 +4,7 @@
 #include "Window.h"
 #include <Globals.h>
 #include <Input/Input.h>
+#include <linux/input-event-codes.h>
 
 static struct wl_display* display = NULL;
 static struct wl_registry* registry = NULL;
@@ -36,6 +37,11 @@ static void HandleInterfaceAddition(void* data,
 static const interface_monitor_t registry_listener = {
     HandleInterfaceAddition};
 
+void temp_callback(uint32_t button, uint32_t time)
+{
+    if (button == BTN_RIGHT) global_flags.application_running = false;
+}
+
 void SetupWayland(void)
 {
     // Connect to the default Wayland compositor (Wayland-0).
@@ -62,10 +68,10 @@ void SetupWayland(void)
     xdg_toplevel_add_listener(wm_data.xsh_toplevel,
                               &wm_monitors.xsh_toplevel_monitor, NULL);
 
-    SetWindowTitle(TITLE);
+    SetWindowTitle(ID, TITLE);
+    SetMouseButtonDownCallback(temp_callback);
 
     xdg_toplevel_set_fullscreen(wm_data.xsh_toplevel, NULL);
-
     wl_surface_commit(wm_data.wl_window);
 
     //! TEMPORARY LOCATION
