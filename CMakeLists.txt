@@ -4,6 +4,8 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/Dependencies/FND")
 find_package(Git REQUIRED)
 find_package(Wayland REQUIRED)
 
+# Template names for the compilation of the engine, change these to match
+# your project!
 project("Morningstar" LANGUAGES C)
 set(PROJECT_NAME_FULL "Morningstar Framework")
 
@@ -39,6 +41,12 @@ endif()
 set(CMAKE_C_STANDARD 11)
 add_compile_options(-Wall -Werror -Wpedantic)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME})
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME})
+
+execute_process(COMMAND bash "-c" 
+"wayland-scanner client-header /usr/share/wayland-protocols/stable/xdg-shell/xdg-shell.xml Dependencies/XDG_SH/xdg-shell.h")
+execute_process(COMMAND bash "-c" 
+"wayland-scanner private-code /usr/share/wayland-protocols/stable/xdg-shell/xdg-shell.xml Dependencies/XDG_SH/xdg-shell.c")
 
 file(GLOB PROJECT_FILES 
     ${CMAKE_SOURCE_DIR}/Source/Systems/*.c 
@@ -60,9 +68,12 @@ include_directories(${CMAKE_SOURCE_DIR}/Dependencies ${CMAKE_SOURCE_DIR}/Source
     ${CMAKE_SOURCE_DIR}/Source/Types ${CMAKE_SOURCE_DIR}/Source/Systems)
 
 add_executable(${PROJECT_NAME} ${CMAKE_SOURCE_DIR}/Source/Main.c)
-add_library(MorningstarFramework SHARED ${PROJECT_FILES})
+set_target_properties(${PROJECT_NAME} PROPERTIES
+        BUILD_WITH_INSTALL_RPATH FALSE
+        LINK_FLAGS "-Wl,-rpath,$ORIGIN/")
+add_library(morningstar SHARED ${PROJECT_FILES})
 
-target_link_libraries(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}Framework 
+target_link_libraries(${PROJECT_NAME} PRIVATE morningstar 
     PRIVATE wayland-client PUBLIC rt)
 
 string(TOLOWER ${CMAKE_BUILD_TYPE} OUTPUT_VARIABLE CMAKE_BUILD_LOWERCASE)
