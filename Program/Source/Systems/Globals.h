@@ -42,7 +42,6 @@ typedef struct
         nothing
     } application_mode;
 } globals_t;
-
 extern globals_t global_flags;
 
 #endif // _MSENG_APPLICATION_SYSTEM_

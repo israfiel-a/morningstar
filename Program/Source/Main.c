@@ -3,8 +3,6 @@
 #include <Input/Terminal.h>
 #include <Windowing/Client.h>
 
-extern globals_t global_flags;
-
 int main(int argc, char** argv)
 {
     (void)GetCurrentTime(); // Start the clock.

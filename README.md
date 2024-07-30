@@ -12,4 +12,56 @@ Morningstar is a fairly minimal project, and that's by design. I want it to be p
 - CMake - I use CMake as a build system, but it's fairly trivial to convert it to a Makefile or Meson system or what have you.
 
 ### Building / Installation
-Building the framework is fairly easy, and should be completely painless.
+Building the framework is fairly easy, and should be completely painless. If you run into any issues that are on my side, not yours, make sure to open an [Issue](https://github.com/israfiel-a/morningstar/issues/new)! A Bash script to build the library is below:
+
+```bash
+# Assuming you're already in the Morningstar folder that you've
+# either downloaded from Github or `git clone`d.
+cd Program
+cmake -B build . && cd build
+make
+cd Morningstar
+ls
+
+# Should output (or at least something similar):
+# . .. libmorningstar.so
+```
+
+There is also a secondary debug mode that you can compile for, in which CMake will look for a test C file. An exmaple of a test file is below:
+
+```c
+// Main.c - example test file
+#include <Diagnostic/Time.h>  // The application clock.
+#include <Windowing/Client.h> // The Wayland client file.
+#include <Input/Terminal.h>   // Commandline functionality.
+#include <Globals.h>          // Application global flags.
+
+int main(int argc, char** argv)
+{
+    (void)GetCurrentTime(); // Start the clock.
+    // Check if we're running within a terminal.
+    if (isatty(STDOUT_FILENO)) global_flags.stdout_available = true;
+    // Handle any command line arguments.
+    HandleCommandLineArgs(argc, argv);
+
+    // Setup Wayland, run the application, and then destroy it.
+    SetupWayland();
+    DestroyWayland();
+    return 0; // Return success.
+}
+```
+
+And the way to trigger the debug mode would be:
+
+```bash
+# Assuming you're already in the Morningstar folder that you've
+# either downloaded from Github or `git clone`d.
+cd Program
+cmake -B build -DCMAKE_BUILD_TYPE=Debug && cd build
+make
+cd Morningstar
+ls
+
+# Should output (or at least something similar):
+# . .. libmorningstar.so Morningstar
+```
