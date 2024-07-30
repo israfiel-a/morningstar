@@ -1,6 +1,5 @@
-/build/
-/.cache/
+/Program/build/
+/Program/.cache/
+/Program/Dependencies/xdg-shell.c
+/Program/Dependencies/xdg-shell.h
 /BuildProject.sh
-/TODO.md
-/Dependencies/xdg-shell.c
-/Dependencies/xdg-shell.h
