@@ -4,23 +4,12 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/Dependencies/FND")
 find_package(Git REQUIRED)
 find_package(Wayland REQUIRED)
 
-# Template names for the compilation of the engine, change these to match
-# your project!
 project("Morningstar" LANGUAGES C)
 set(PROJECT_NAME_FULL "Morningstar Framework")
 
 if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
     message(FATAL_ERROR 
         "${PROJECT_NAME_FULL} is not currently meant to run anywhere but Linux.")
-endif()
-
-if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-    set(CMAKE_EXPORT_COMPILE_COMMANDS YES)
-    add_compile_options(-g -fsanitize=undefined)    
-    add_link_options(-fsanitize=undefined)
-    add_compile_definitions(DEBUG)
-else()
-    add_compile_options(-Ofast)
 endif()
 
 if(EXISTS "${CMAKE_SOURCE_DIR}/.git")
@@ -73,15 +62,25 @@ endforeach()
 
 include_directories(${CMAKE_SOURCE_DIR}/Dependencies ${CMAKE_SOURCE_DIR}/Source 
     ${CMAKE_SOURCE_DIR}/Source/Types ${CMAKE_SOURCE_DIR}/Source/Systems)
-
-add_executable(${PROJECT_NAME} ${CMAKE_SOURCE_DIR}/Source/Main.c)
-set_target_properties(${PROJECT_NAME} PROPERTIES
-        BUILD_WITH_INSTALL_RPATH FALSE
-        LINK_FLAGS "-Wl,-rpath,$ORIGIN/")
 add_library(morningstar SHARED ${PROJECT_FILES})
 
-target_link_libraries(${PROJECT_NAME} PRIVATE morningstar 
-    PRIVATE wayland-client PUBLIC rt)
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    set(CMAKE_EXPORT_COMPILE_COMMANDS YES)
+    add_compile_options(-g -fsanitize=undefined)    
+    add_link_options(-fsanitize=undefined)
+    add_compile_definitions(DEBUG)
+
+    # If we're compiling in debug mode, add a test executable if the 
+    # file exists.
+    if(EXISTS "${CMAKE_SOURCE_DIR}/Source/Main.c")
+        list(APPEND CMAKE_BUILD_RPATH "$ORIGIN/")
+        add_executable(${PROJECT_NAME} ${CMAKE_SOURCE_DIR}/Source/Main.c)
+        target_link_libraries(${PROJECT_NAME} PRIVATE morningstar 
+            PRIVATE wayland-client PUBLIC rt)
+    endif()
+else()
+    add_compile_options(-Ofast)
+endif()
 
 string(TOLOWER ${CMAKE_BUILD_TYPE} OUTPUT_VARIABLE CMAKE_BUILD_LOWERCASE)
 set(PROJECT_TITLE "${PROJECT_NAME_FULL} | \

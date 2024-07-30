@@ -10,3 +10,6 @@ Morningstar is a fairly minimal project, and that's by design. I want it to be p
 - Wayland (libwayland) - I directly interface with Wayland when rendering.
     - XDG-shell (libwayland-protocols) - I use the XDG window manager protocol alongside Wayland for ease of, well, window management.
 - CMake - I use CMake as a build system, but it's fairly trivial to convert it to a Makefile or Meson system or what have you.
+
+### Building / Installation
+Building the framework is fairly easy, and should be completely painless.
