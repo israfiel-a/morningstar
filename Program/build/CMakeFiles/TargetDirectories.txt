@@ -1,0 +1,4 @@
+/mnt/Storage/Development/Current/morningstar/Program/build/CMakeFiles/Morningstar.dir
+/mnt/Storage/Development/Current/morningstar/Program/build/CMakeFiles/morningstar.dir
+/mnt/Storage/Development/Current/morningstar/Program/build/CMakeFiles/edit_cache.dir
+/mnt/Storage/Development/Current/morningstar/Program/build/CMakeFiles/rebuild_cache.dir
