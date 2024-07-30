@@ -40,6 +40,8 @@ void LogNotification(const char* title, const char* body, ...)
 
 void ReportMessage_(const char* body, ...)
 {
+    if (!global_flags.stdout_available) return;
+
     char time[512] = "\033[32m[";
     GetTimeString(time + 6, 511);
     time[18] = ']';
