@@ -1,6 +1,7 @@
 #include "Monitor.h"
 #include <Globals.h>
 #include <Utilities/Math.h>
+#include <Windowing/Manager.h>
 
 /**
  * @brief An object full of the various data we need about the user's
@@ -78,6 +79,7 @@ static void HMD(void* d, monitor_information_t* m)
     // recorded all we need.
     wl_output_release(monitor_information);
     monitor_information = NULL;
+    global_flags.monitor_already_polled = true;
 }
 
 /**
@@ -124,18 +126,12 @@ const int32_t GetMonitorWidth(void) { return primary_monitor.width; }
 const int32_t GetMonitorHeight(void) { return primary_monitor.height; }
 const int32_t GetMonitorShortSide(void) { return primary_monitor.sside; }
 
-bool BindMonitor(registry_t* registry, const uint32_t name,
+void BindMonitor(registry_t* registry, const uint32_t name,
                  const uint32_t version)
 {
-    // If we've already rendered the game onto a monitor, don't suddenly
-    // switch if a new one is connected / found.
-    if (global_flags.monitor_already_polled) return false;
-
     // Make sure we're given information about the monitor by Wayland once
     // it procures it.
     monitor_information =
         wl_registry_bind(registry, name, &wl_output_interface, version);
     wl_output_add_listener(monitor_information, &monitor_listener, NULL);
-
-    return (global_flags.monitor_already_polled = true);
 }

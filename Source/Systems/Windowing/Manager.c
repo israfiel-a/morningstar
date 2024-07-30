@@ -22,6 +22,8 @@ static void HandleWMWindowConfigure(void* data,
     wl_surface_attach(wm_data.wl_window, background, 0, 0);
     wl_surface_commit(wm_data.wl_window);
 
+    AssignSubwindowDimensions();
+    AssignSubwindowPositions();
     CreateSubwindows();
 
     pixel_buffer_t* background2 =
@@ -45,6 +47,7 @@ static void HandleWMConfigure(void* data,
                               int32_t width, int32_t height,
                               struct wl_array* states)
 {
+    xdg_toplevel_set_fullscreen(wm_data.xsh_toplevel, NULL);
     // No operation.
 }
 

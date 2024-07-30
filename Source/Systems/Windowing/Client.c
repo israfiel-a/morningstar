@@ -6,6 +6,7 @@
 #include <Input/Hardware.h>
 #include <Output/Error.h>
 #include <Output/Messages.h>
+#include <Utilities/Macros.h>
 #include <linux/input-event-codes.h>
 
 static struct wl_display* display = NULL;
@@ -75,10 +76,9 @@ void SetupWayland(void)
     SetWindowTitle(ID, TITLE);
     SetMouseButtonDownCallback(temp_callback);
 
-    xdg_toplevel_set_fullscreen(wm_data.xsh_toplevel, NULL);
     wl_surface_commit(wm_data.wl_window);
 
-    //! TEMPORARY LOCATION
+    //! TEMPORARY LOCATION UNTIL APPLICATION INTERFACE IS ADDED
     while (wl_display_dispatch(display) != -1 &&
            global_flags.application_running)
     {

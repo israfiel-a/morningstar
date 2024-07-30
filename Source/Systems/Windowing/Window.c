@@ -5,9 +5,9 @@
 #include <Utilities/Math.h>
 #include <Utilities/SharedMemory.h>
 
-static subwindow_t bust_window = {0, 0, NULL, NULL};
-static subwindow_t gameplay_window = {0, 0, NULL, NULL};
-static subwindow_t stat_window = {0, 0, NULL, NULL};
+static subwindow_t bust_window = {0, 0, 0, 0, NULL, NULL};
+static subwindow_t gameplay_window = {0, 0, 0, 0, NULL, NULL};
+static subwindow_t stat_window = {0, 0, 0, 0, NULL, NULL};
 
 static void HandleBufferDeletion(void* data, pixel_buffer_t* buffer)
 {
@@ -17,38 +17,63 @@ static void HandleBufferDeletion(void* data, pixel_buffer_t* buffer)
 static const pixel_buffer_monitor_t wl_buffer_listener = {
     HandleBufferDeletion};
 
-void CreateSubwindows(void)
+void AssignSubwindowDimensions(void)
 {
-    const uint32_t monitor_width_middle =
-        GetMiddle(GetMonitorWidth(), GetMonitorShortSide());
+    gameplay_window.height = GetMonitorShortSide();
+    gameplay_window.width = GetMonitorShortSide();
+    const uint32_t gap_size =
+        (GetMonitorWidth() - GetMonitorShortSide()) / 2;
 
     bust_window.height = GetMonitorHeight() / 1.25;
-    bust_window.width = GetMonitorWidth() / 6;
+    bust_window.width = gap_size / 1.25;
+    stat_window.height = GetMonitorHeight();
+    stat_window.width = gap_size;
+}
+
+void AssignSubwindowPositions(void)
+{
+    if (GetMonitorShortSide() == GetMonitorHeight())
+    {
+        gameplay_window.x =
+            GetMiddle(GetMonitorWidth(), GetMonitorShortSide());
+        gameplay_window.y = 0;
+    }
+    else
+    {
+        gameplay_window.x = 0;
+        gameplay_window.y =
+            GetMiddle(GetMonitorHeight(), GetMonitorShortSide());
+    }
+
+    bust_window.x = (GetMiddle(GetMonitorWidth(), GetMonitorShortSide()) -
+                     bust_window.width) /
+                    2;
+    bust_window.y = GetMiddle(GetMonitorHeight(), bust_window.height);
+
+    stat_window.x = GetMonitorWidth() - stat_window.width;
+    stat_window.y = 0;
+}
+
+void CreateSubwindows(void)
+{
     bust_window.window = wl_compositor_create_surface(wm_data.compositor);
     bust_window.subwindow = wl_subcompositor_get_subsurface(
         wm_data.subcompositor, bust_window.window, wm_data.wl_window);
-    wl_subsurface_set_position(
-        bust_window.subwindow,
-        (monitor_width_middle - bust_window.width) / 2,
-        GetMiddle(GetMonitorHeight(), bust_window.height));
+    wl_subsurface_set_position(bust_window.subwindow, bust_window.x,
+                               bust_window.y);
 
     gameplay_window.window =
         wl_compositor_create_surface(wm_data.compositor);
     gameplay_window.subwindow = wl_subcompositor_get_subsurface(
         wm_data.subcompositor, gameplay_window.window, wm_data.wl_window);
     wl_subsurface_set_position(gameplay_window.subwindow,
-                               monitor_width_middle, 0);
+                               gameplay_window.x, gameplay_window.y);
 
-    gameplay_window.height = GetMonitorShortSide();
-    gameplay_window.width = GetMonitorShortSide();
-
-    stat_window.height = GetMonitorHeight();
-    stat_window.width = (GetMonitorWidth() - gameplay_window.width) / 2;
     stat_window.window = wl_compositor_create_surface(wm_data.compositor);
     stat_window.subwindow = wl_subcompositor_get_subsurface(
         wm_data.subcompositor, stat_window.window, wm_data.wl_window);
-    wl_subsurface_set_position(stat_window.subwindow,
-                               GetMonitorWidth() - stat_window.width, 0);
+    wl_subsurface_set_position(stat_window.subwindow, stat_window.x,
+                               stat_window.y);
 }
 
 void SetWindowTitle(const char* id, const char* title)
@@ -77,12 +102,12 @@ pixel_buffer_t* GenerateWindowBackground(void)
     wl_shm_pool_destroy(pool);
     close(fd);
 
-    FillMemory32(frame_data, BLACK, size);
     if (munmap(frame_data, size) == -1)
         ReportError(memory_unmap_failure, false);
 
     wl_buffer_add_listener(buffer, &wl_buffer_listener, NULL);
     return buffer;
+    return NULL;
 }
 
 pixel_buffer_t* GenerateSubwindowBackground(const subwindow_t* window,

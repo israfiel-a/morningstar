@@ -19,10 +19,14 @@ typedef struct
 {
     uint32_t width;
     uint32_t height;
+    uint32_t x;
+    uint32_t y;
     window_raw_t* window;
     subwindow_raw_t* subwindow;
 } subwindow_t;
 
+void AssignSubwindowDimensions(void);
+void AssignSubwindowPositions(void);
 void CreateSubwindows(void);
 
 pixel_buffer_t* GenerateWindowBackground(void);

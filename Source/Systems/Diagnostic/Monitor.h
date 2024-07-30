@@ -81,10 +81,8 @@ typedef struct
  * @param registry The registry to bind to.
  * @param name The numeric name of the monitor.
  * @param version The version of Wayland's monitor interface.
- * @return true We bound the monitor.
- * @return false The monitor wasn't bound since one had been already.
  */
-bool BindMonitor(registry_t* registry, const uint32_t name,
+void BindMonitor(registry_t* registry, const uint32_t name,
                  const uint32_t version);
 
 /**
