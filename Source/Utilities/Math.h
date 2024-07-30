@@ -41,4 +41,9 @@ inline static int32_t int32_max(int32_t x, int32_t y)
 // note this only works with certain numbers
 int32_t simple_round(double x);
 
+inline static uint32_t GetMiddle(uint32_t first, uint32_t object)
+{
+    return (first - object) / 2;
+}
+
 #endif // _MSENG_MATH_UTILITIES_

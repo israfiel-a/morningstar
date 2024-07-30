@@ -28,6 +28,8 @@ typedef struct
     window_manager_window_t* xsh_surface;
     window_raw_t* wl_window;
     shared_memory_buffer_t* wl_sharedmemory;
+    compositor_t* compositor;
+    subcompositor_t* subcompositor;
 } window_manager_data_t;
 extern window_manager_data_t wm_data;
 

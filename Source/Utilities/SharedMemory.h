@@ -16,4 +16,7 @@
 void CreateRandomFileName(char* filename_buffer);
 int OpenSHM(size_t size);
 
+void FillMemory64(void* dest, uint64_t value, uintptr_t size);
+void FillMemory32(void* dest, uint32_t value, uintptr_t size);
+
 #endif // _MSENG_SHARED_MEMORY_UTILITIES_

@@ -1,7 +1,7 @@
 #include <Diagnostic/Time.h>
 #include <Globals.h>
 #include <Input/Terminal.h>
-#include <Wayland/Client.h>
+#include <Windowing/Client.h>
 
 extern globals_t global_flags;
 

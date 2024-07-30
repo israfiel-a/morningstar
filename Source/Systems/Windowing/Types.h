@@ -43,5 +43,8 @@ typedef struct wl_surface window_raw_t;
 typedef struct wl_shm_pool shared_memory_pool_t;
 typedef struct wl_shm shared_memory_buffer_t;
 typedef struct wl_registry_listener interface_monitor_t;
+typedef struct wl_subsurface subwindow_raw_t;
+typedef struct wl_compositor compositor_t;
+typedef struct wl_subcompositor subcompositor_t;
 
 #endif // _MSENG_WAYLAND_TYPES_

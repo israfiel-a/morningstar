@@ -12,8 +12,6 @@
 
 // The master include file of the project.
 #include <Master.h>
-// Wayland/XDG type definitions.
-#include <Wayland/Types.h>
 
 /**
  * @brief Get the 32-bit unsigned integer representation of the key just

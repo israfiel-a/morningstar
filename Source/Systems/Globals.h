@@ -24,6 +24,12 @@ typedef struct
     bool libnotify_available;
     enum
     {
+        unified,      // just gameplay window
+        paneled_full, // all three panels
+        paneled_half  // just stats + gameplay
+    } ui_mode;
+    enum
+    {
         dark,
         light
     } application_theme;

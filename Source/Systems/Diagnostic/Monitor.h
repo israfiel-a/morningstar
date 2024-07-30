@@ -15,7 +15,7 @@
 // The project's master system include file.
 #include <Master.h>
 // Wayland interface type definitions.
-#include <Wayland/Types.h>
+#include <Windowing/Types.h>
 
 /**
  * @brief The information associated with a specific hardware monitor,

@@ -10,7 +10,6 @@
 
 static struct wl_display* display = NULL;
 static struct wl_registry* registry = NULL;
-static struct wl_compositor* compositor = NULL;
 
 static void HandleInterfaceAddition(void* data,
                                     struct wl_registry* registry,
@@ -23,8 +22,11 @@ static void HandleInterfaceAddition(void* data,
     else if (strcmp(interface, wl_seat_interface.name) == 0)
         BindInputGroup(registry, name, version);
     else if (strcmp(interface, wl_compositor_interface.name) == 0)
-        compositor =
+        wm_data.compositor =
             wl_registry_bind(registry, name, &wl_compositor_interface, 1);
+    else if (strcmp(interface, wl_subcompositor_interface.name) == 0)
+        wm_data.subcompositor = wl_registry_bind(
+            registry, name, &wl_subcompositor_interface, version);
     else if (strcmp(interface, xdg_wm_base_interface.name) == 0)
     {
         wm_data.xsh_base =
@@ -57,10 +59,10 @@ void SetupWayland(void)
     if (wl_display_roundtrip(display) == -1)
         ReportError(wayland_server_processing_fail, false);
 
-    if (compositor == NULL || wm_data.xsh_base == NULL)
+    if (wm_data.compositor == NULL || wm_data.xsh_base == NULL)
         ReportError(wayland_missing_features, false);
 
-    wm_data.wl_window = wl_compositor_create_surface(compositor);
+    wm_data.wl_window = wl_compositor_create_surface(wm_data.compositor);
     wm_data.xsh_surface =
         xdg_wm_base_get_xdg_surface(wm_data.xsh_base, wm_data.wl_window);
     wm_data.xsh_toplevel = xdg_surface_get_toplevel(wm_data.xsh_surface);
