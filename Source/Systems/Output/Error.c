@@ -14,6 +14,7 @@ static const char* error_explanations[] = {
     [shm_open_failure] = "shared memory file open failure",
     [child_process_error] = "child process error",
     [subshell_error] = "fatal subshell opening error",
+    [time_get_error] = "failed to get clock time",
     [wayland_display_fail] = "failed to connect to wayland display",
     [wayland_server_processing_fail] = "wayland server processing error",
     [wayland_missing_features] = "wayland server missing features"};

@@ -2,3 +2,5 @@
 /.cache/
 /BuildProject.sh
 /TODO.md
+/Dependencies/xdg-shell.c
+/Dependencies/xdg-shell.h

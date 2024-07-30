@@ -33,9 +33,14 @@ bool CheckForNotificationPackage(void);
  */
 void LogNotification(const char* title, const char* body, ...);
 
-void ReportMessage_(const char* file, const char* function,
-                    const char* body);
-
-#define ReportMessage(body) ReportMessage_(FILENAME, __func__, body)
+// Only define the debug message interface if we're compiling in debug
+// mode.
+#ifdef DEBUG
+void ReportMessage_(const char* body, ...);
+    #define ReportMessage(...)                                            \
+        ReportMessage_(" " FILENAME " :: " __VA_ARGS__)
+#else
+    #define ReportMessage(body)
+#endif
 
 #endif // _MSENG_MESSAGE_OUTPUT_SYSTEM_

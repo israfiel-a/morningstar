@@ -5,6 +5,7 @@
 #include <Globals.h>
 #include <Input/Hardware.h>
 #include <Output/Error.h>
+#include <Output/Messages.h>
 #include <linux/input-event-codes.h>
 
 static struct wl_display* display = NULL;

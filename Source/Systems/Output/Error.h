@@ -42,6 +42,10 @@ typedef enum
      */
     subshell_error,
     /**
+     * @brief Failed to get clock time on the system.
+     */
+    time_get_error,
+    /**
      * @brief We failed to connect to a Wayland display device. The user is
      * probably not running a Wayland session.
      */

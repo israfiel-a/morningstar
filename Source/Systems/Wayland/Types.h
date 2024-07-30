@@ -11,9 +11,9 @@
 #ifndef _MSENG_WAYLAND_TYPES_
 #define _MSENG_WAYLAND_TYPES_
 
-#include <XDG_SH/xdg-shell.h>
 #include <wayland-client-protocol.h>
 #include <wayland-client.h>
+#include <xdg-shell.h>
 
 typedef struct wl_buffer pixel_buffer_t;
 typedef struct wl_buffer_listener pixel_buffer_monitor_t;

@@ -1,5 +1,6 @@
 #include "Messages.h"
 #include "System.h"
+#include <Diagnostic/Time.h>
 #include <Globals.h>
 
 extern globals_t global_flags;
@@ -35,7 +36,21 @@ void LogNotification(const char* title, const char* body, ...)
     (void)SystemCall(error_system_call);
 }
 
-void ReportMessage_(const char* file, const char* function,
-                    const char* body)
+#ifdef DEBUG
+
+void ReportMessage_(const char* body, ...)
 {
+    char time[512] = "\033[32m[";
+    GetTimeString(time + 6, 511);
+    time[18] = ']';
+    printf("%s", time);
+
+    va_list args;
+    va_start(args, body);
+    vprintf(body, args);
+
+    printf("\"\033[0m\n");
+    va_end(args);
 }
+
+#endif

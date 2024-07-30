@@ -18,6 +18,7 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     set(CMAKE_EXPORT_COMPILE_COMMANDS YES)
     add_compile_options(-g -fsanitize=undefined)    
     add_link_options(-fsanitize=undefined)
+    add_compile_definitions(DEBUG)
 else()
     add_compile_options(-Ofast)
 endif()
@@ -44,9 +45,9 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME})
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME})
 
 execute_process(COMMAND bash "-c" 
-"wayland-scanner client-header /usr/share/wayland-protocols/stable/xdg-shell/xdg-shell.xml Dependencies/XDG_SH/xdg-shell.h")
+"wayland-scanner client-header /usr/share/wayland-protocols/stable/xdg-shell/xdg-shell.xml Dependencies/xdg-shell.h")
 execute_process(COMMAND bash "-c" 
-"wayland-scanner private-code /usr/share/wayland-protocols/stable/xdg-shell/xdg-shell.xml Dependencies/XDG_SH/xdg-shell.c")
+"wayland-scanner private-code /usr/share/wayland-protocols/stable/xdg-shell/xdg-shell.xml Dependencies/xdg-shell.c")
 
 file(GLOB PROJECT_FILES 
     ${CMAKE_SOURCE_DIR}/Source/Systems/*.c 
@@ -55,7 +56,7 @@ file(GLOB PROJECT_FILES
     ${CMAKE_SOURCE_DIR}/Source/Systems/Output/*.c 
     ${CMAKE_SOURCE_DIR}/Source/Systems/Diagnostic/*.c 
     ${CMAKE_SOURCE_DIR}/Source/Utilities/Utilities.c 
-    ${CMAKE_SOURCE_DIR}/Dependencies/XDG_SH/xdg-shell.c)
+    ${CMAKE_SOURCE_DIR}/Dependencies/xdg-shell.c)
 file(GLOB PROJECT_HEADERS ${CMAKE_SOURCE_DIR}/Source/*.h 
     ${CMAKE_SOURCE_DIR}/Source/Systems/*.h
     ${CMAKE_SOURCE_DIR}/Source/Systems/Wayland/*.h
