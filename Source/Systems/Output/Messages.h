@@ -36,11 +36,23 @@ void LogNotification(const char* title, const char* body, ...);
 // Only define the debug message interface if we're compiling in debug
 // mode.
 #ifdef DEBUG
+
+/**
+ * @brief Send a debug message to the terminal associated with the process.
+ * If no terminal is associated with the process, simply return quietly.
+ * @param body The meat of the log, also a format string for the variable
+ * args.
+ */
 void ReportMessage_(const char* body, ...);
-    #define ReportMessage(...)                                            \
-        ReportMessage_(" " FILENAME " :: " __VA_ARGS__)
+
+/**
+ * @brief A macro to make reporting a message both easier and look better
+ * by providing an indication of where the file came from.
+ */
+#define ReportMessage(...) ReportMessage_(" " FILENAME " :: " __VA_ARGS__)
+
 #else
-    #define ReportMessage(body)
+#define ReportMessage(body)
 #endif
 
 #endif // _MSENG_MESSAGE_OUTPUT_SYSTEM_

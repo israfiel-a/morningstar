@@ -5,11 +5,19 @@
 
 extern globals_t global_flags;
 
+/**
+ * @brief A flag to specify if libnotify has already been polled for, as
+ * the @ref access function is not particularly inexpensive, and I would
+ * like to avoid needless calls.
+ */
 static bool libnotify_polled = false;
+
 bool CheckForNotificationPackage(void)
 {
     if (!libnotify_polled)
     {
+        // Check for the notify-send binary since that's the only one we
+        // use.
         global_flags.libnotify_available =
             access("/usr/bin/notify-send", X_OK) == 0;
         libnotify_polled = true;
@@ -19,6 +27,7 @@ bool CheckForNotificationPackage(void)
 
 void LogNotification(const char* title, const char* body, ...)
 {
+    // Fail silently if we can't send notifications.
     if (!CheckForNotificationPackage()) return;
 
     char error_system_call[512];
@@ -28,6 +37,7 @@ void LogNotification(const char* title, const char* body, ...)
     char error_body[256];
     vsnprintf(error_body, 256, body, args);
     va_end(args);
+
     snprintf(error_system_call, 512,
              "notify-send -a '" ID "' -u critical -t 0 "
              "'%s' \"%s\"",

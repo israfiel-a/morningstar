@@ -2,7 +2,11 @@
 #include <Output/Error.h>
 #include <time.h>
 
+/**
+ * @brief The start time of the application in milliseconds.
+ */
 static uint64_t start_time = 0;
+
 uint64_t GetCurrentTime(void)
 {
     // On Linux, clock_gettime(MONO) reports seconds since system booted,
@@ -21,7 +25,7 @@ uint64_t GetCurrentTime(void)
 
 void GetTimeString(char* buffer, size_t buffer_length)
 {
-    if (buffer_length < 20)
+    if (buffer_length < 13)
     {
         buffer = NULL;
         return;
