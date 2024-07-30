@@ -1,0 +1,2 @@
+## Security Policy
+I take security & privacy very seriously, and while Morningstar does not really interact with the host computer beyond linking libraries, if there are any potential security issues caught, please waste no time in posting an Issue, unless the bug (somehow) poses an immediate threat to users. In that case you should contact me via my buisness email at [israfiel.anguished694@passinbox.com](mailto:israfiel.anguished694@passinbox.com).
