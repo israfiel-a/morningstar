@@ -22,7 +22,7 @@ static mouse_event_t last_mouse_event;
  * @param y_pos The Y coordinate the mouse entered on.
  */
 static void HME(void* d, mouse_object_t* m, uint32_t serial,
-                window_raw_t* s, wl_fixed_t x_pos, wl_fixed_t y_pos)
+                raw_window_t* s, wl_fixed_t x_pos, wl_fixed_t y_pos)
 {
     last_mouse_event.events |= enter;
     last_mouse_event.x = x_pos;
@@ -37,7 +37,7 @@ static void HME(void* d, mouse_object_t* m, uint32_t serial,
  * @param s Nothing of use.
  */
 static void HML(void* d, mouse_object_t* m, uint32_t serial,
-                window_raw_t* s)
+                raw_window_t* s)
 {
     last_mouse_event.events |= leave;
 }

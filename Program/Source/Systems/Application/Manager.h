@@ -13,23 +13,27 @@
 
 #include <WaylandTypes.h>
 
-typedef struct
-{
-    const window_manager_monitor_t xsh_monitor;
-    const window_manager_surface_monitor_t xsh_surface_monitor;
-    const window_manager_root_monitor_t xsh_toplevel_monitor;
-} window_manager_monitors_t;
-extern const window_manager_monitors_t wm_monitors;
+void BindWindowManager(registry_t* registry, uint32_t name,
+                       uint32_t version);
 
-typedef struct
-{
-    window_manager_base_t* xsh_base;
-    window_manager_root_t* xsh_toplevel;
-    compositor_t* compositor;
-    subcompositor_t* subcompositor;
-} window_manager_data_t;
-extern window_manager_data_t wm_data;
+void BindCompositor(registry_t* registry, uint32_t name, uint32_t version);
+void BindSubcompositor(registry_t* registry, uint32_t name,
+                       uint32_t version);
 
-void SetupWindowManager(void);
+void UnbindWindowManager(void);
+void UnbindCompositor(void);
+void UnbindSubcompositor(void);
+
+void SetToplevelWindow(window_t* window);
+toplevel_t* GetToplevelWindow(void);
+
+raw_window_t* CreateRawWindow(void);
+raw_subwindow_t* CreateRawSubwindow(raw_window_t** window,
+                                    raw_window_t** parent);
+window_t* WrapRawWindow(raw_window_t* raw_window);
+
+const window_manager_t* GetWindowManager(void);
+const compositor_t* GetCompositor(void);
+const subcompositor_t* GetSubcompositor(void);
 
 #endif // _MSENG_WINDOW_MANAGER_SYSTEM_

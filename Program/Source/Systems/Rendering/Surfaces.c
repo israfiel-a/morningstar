@@ -1,7 +1,7 @@
 #include "Surfaces.h"
 #include "SHM.h"
 
-void SendBlankColor(window_raw_t* window, uint32_t width, uint32_t height,
+void SendBlankColor(raw_window_t* window, uint32_t width, uint32_t height,
                     uint32_t color)
 {
     pixel_buffer_t* pixels =

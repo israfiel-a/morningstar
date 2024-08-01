@@ -14,7 +14,7 @@
 #include <Master.h>
 #include <WaylandTypes.h>
 
-void SendBlankColor(window_raw_t* window, uint32_t width, uint32_t height,
+void SendBlankColor(raw_window_t* window, uint32_t width, uint32_t height,
                     uint32_t color);
 
 #endif // _MSENG_SURFACES_RENDERING_SYSTEM_

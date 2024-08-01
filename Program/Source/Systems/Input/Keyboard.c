@@ -46,7 +46,7 @@ static void HKM(void* d, keyboard_object_t* k,
  * @param keys The keys currently down.
  */
 static void HKE(void* d, keyboard_object_t* k, uint32_t serial,
-                window_raw_t* s, struct wl_array* keys)
+                raw_window_t* s, struct wl_array* keys)
 {
     if (input_callbacks.keyboard_enter != NULL)
         input_callbacks.keyboard_enter();
@@ -59,7 +59,7 @@ static void HKE(void* d, keyboard_object_t* k, uint32_t serial,
  * @param s The serial number of the operation.
  * @param w Nothing of use.
  */
-static void HKL(void* d, keyboard_object_t* k, uint32_t s, window_raw_t* w)
+static void HKL(void* d, keyboard_object_t* k, uint32_t s, raw_window_t* w)
 {
     if (input_callbacks.keyboard_leave != NULL)
         input_callbacks.keyboard_leave();
