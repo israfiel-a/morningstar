@@ -44,6 +44,7 @@ file(GLOB PROJECT_FILES
     ${CMAKE_SOURCE_DIR}/Source/Systems/Input/*.c 
     ${CMAKE_SOURCE_DIR}/Source/Systems/Output/*.c 
     ${CMAKE_SOURCE_DIR}/Source/Systems/Diagnostic/*.c 
+    ${CMAKE_SOURCE_DIR}/Source/Systems/Rendering/*.c 
     ${CMAKE_SOURCE_DIR}/Source/Utilities/Utilities.c 
     ${CMAKE_SOURCE_DIR}/Dependencies/xdg-shell.c)
 file(GLOB PROJECT_HEADERS ${CMAKE_SOURCE_DIR}/Source/*.h 
@@ -51,6 +52,7 @@ file(GLOB PROJECT_HEADERS ${CMAKE_SOURCE_DIR}/Source/*.h
     ${CMAKE_SOURCE_DIR}/Source/Systems/Windowing/*.h
     ${CMAKE_SOURCE_DIR}/Source/Systems/Input/*.h
     ${CMAKE_SOURCE_DIR}/Source/Systems/Output/*.h
+    ${CMAKE_SOURCE_DIR}/Source/Systems/Rendering/*.h
     ${CMAKE_SOURCE_DIR}/Source/Systems/Diagnostic/*.h
     ${CMAKE_SOURCE_DIR}/Source/Utilities/*.h)
 

@@ -2,8 +2,6 @@
 #include "Messages.h"
 #include <Globals.h>
 
-extern globals_t global_flags;
-
 /**
  * @brief An array of explanations to go along with each error code. Every
  * error must have an explanation.

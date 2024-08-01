@@ -3,8 +3,6 @@
 #include <Diagnostic/Time.h>
 #include <Globals.h>
 
-extern globals_t global_flags;
-
 /**
  * @brief A flag to specify if libnotify has already been polled for, as
  * the @ref access function is not particularly inexpensive, and I would

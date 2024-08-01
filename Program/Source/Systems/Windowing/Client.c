@@ -6,6 +6,7 @@
 #include <Input/Hardware.h>
 #include <Output/Error.h>
 #include <Output/Messages.h>
+#include <Rendering/SHM.h>
 #include <Utilities/Macros.h>
 #include <linux/input-event-codes.h>
 
@@ -18,8 +19,7 @@ static void HandleInterfaceAddition(void* data,
                                     uint32_t version)
 {
     if (strcmp(interface, wl_shm_interface.name) == 0)
-        wm_data.wl_sharedmemory =
-            wl_registry_bind(registry, name, &wl_shm_interface, 1);
+        BindSHM(registry, name, version);
     else if (strcmp(interface, wl_seat_interface.name) == 0)
         BindInputGroup(registry, name, version);
     else if (strcmp(interface, wl_compositor_interface.name) == 0)

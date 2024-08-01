@@ -22,8 +22,6 @@ static void HandleWMWindowConfigure(void* data,
     wl_surface_attach(wm_data.wl_window, background, 0, 0);
     wl_surface_commit(wm_data.wl_window);
 
-    AssignSubwindowDimensions();
-    AssignSubwindowPositions();
     CreateSubwindows();
 
     pixel_buffer_t* background2 =
@@ -77,6 +75,6 @@ const window_manager_monitors_t wm_monitors = {
     {HandleWMConfigure, HandleWMClose, HandleWMWindowSizeAdvice,
      HandleCompositorAbilityList}};
 
-window_manager_data_t wm_data = {NULL, NULL, NULL, NULL, NULL, NULL, NULL};
+window_manager_data_t wm_data = {NULL, NULL, NULL, NULL, NULL, NULL};
 
 void SetupWindowManager(void) {}

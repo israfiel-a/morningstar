@@ -25,8 +25,6 @@ typedef struct
     subwindow_raw_t* subwindow;
 } subwindow_t;
 
-void AssignSubwindowDimensions(void);
-void AssignSubwindowPositions(void);
 void CreateSubwindows(void);
 
 pixel_buffer_t* GenerateWindowBackground(void);

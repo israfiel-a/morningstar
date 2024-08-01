@@ -27,7 +27,6 @@ typedef struct
     window_manager_root_t* xsh_toplevel;
     window_manager_window_t* xsh_surface;
     window_raw_t* wl_window;
-    shared_memory_buffer_t* wl_sharedmemory;
     compositor_t* compositor;
     subcompositor_t* subcompositor;
 } window_manager_data_t;

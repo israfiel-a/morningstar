@@ -46,5 +46,9 @@ typedef struct wl_registry_listener interface_monitor_t;
 typedef struct wl_subsurface subwindow_raw_t;
 typedef struct wl_compositor compositor_t;
 typedef struct wl_subcompositor subcompositor_t;
+typedef enum wl_shm_format color_type_t;
+
+#define XRGB WL_SHM_FORMAT_XRGB8888
+#define ARGB WL_SHM_FORMAT_ARGB8888
 
 #endif // _MSENG_WAYLAND_TYPES_

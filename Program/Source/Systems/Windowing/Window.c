@@ -2,78 +2,64 @@
 #include "Manager.h"
 #include <Diagnostic/Monitor.h>
 #include <Output/Error.h>
+#include <Rendering/SHM.h>
 #include <Utilities/Math.h>
-#include <Utilities/SharedMemory.h>
 
 static subwindow_t bust_window = {0, 0, 0, 0, NULL, NULL};
 static subwindow_t gameplay_window = {0, 0, 0, 0, NULL, NULL};
 static subwindow_t stat_window = {0, 0, 0, 0, NULL, NULL};
 
-static void HandleBufferDeletion(void* data, pixel_buffer_t* buffer)
+typedef enum
 {
-    wl_buffer_destroy(buffer);
-}
+    bust_pane,
+    information_pane,
+    main_pane
+} window_type_t;
 
-static const pixel_buffer_monitor_t wl_buffer_listener = {
-    HandleBufferDeletion};
-
-void AssignSubwindowDimensions(void)
+static void CreateSubwindow(subwindow_t* subwindow, window_type_t type)
 {
-    gameplay_window.height = GetMonitorShortSide();
-    gameplay_window.width = GetMonitorShortSide();
-    const uint32_t gap_size =
-        (GetMonitorWidth() - GetMonitorShortSide()) / 2;
 
-    bust_window.height = GetMonitorHeight() / 1.25;
-    bust_window.width = gap_size / 1.25;
-    stat_window.height = GetMonitorHeight();
-    stat_window.width = gap_size;
-}
-
-void AssignSubwindowPositions(void)
-{
-    if (GetMonitorShortSide() == GetMonitorHeight())
+    // The middles of each side of the monitor. We use these measurements
+    // multiple times, so might as well just make them constants.
+    const uint32_t width_middle =
+                       GetMiddle(GetMonitorWidth(), GetMonitorHeight()),
+                   height_middle = GetMiddle(GetMonitorHeight(),
+                                             GetMonitorShortSide());
+    switch (type)
     {
-        gameplay_window.x =
-            GetMiddle(GetMonitorWidth(), GetMonitorShortSide());
-        gameplay_window.y = 0;
-    }
-    else
-    {
-        gameplay_window.x = 0;
-        gameplay_window.y =
-            GetMiddle(GetMonitorHeight(), GetMonitorShortSide());
+        case bust_pane:
+            subwindow->width = width_middle / 1.25;
+            subwindow->height = GetMonitorHeight() / 1.25;
+            subwindow->x = GetMiddle(width_middle, subwindow->width);
+            subwindow->y =
+                GetMiddle(GetMonitorHeight(), subwindow->height);
+            break;
+        case information_pane:
+            subwindow->width = width_middle;
+            subwindow->height = GetMonitorHeight();
+            subwindow->x = GetMonitorWidth() - subwindow->width;
+            break;
+        case main_pane:
+            subwindow->width = GetMonitorShortSide();
+            subwindow->height = GetMonitorShortSide();
+            if (GetMonitorShortSideName() == monitor_height)
+                subwindow->x = width_middle;
+            else subwindow->y = height_middle;
+            break;
     }
 
-    bust_window.x = (GetMiddle(GetMonitorWidth(), GetMonitorShortSide()) -
-                     bust_window.width) /
-                    2;
-    bust_window.y = GetMiddle(GetMonitorHeight(), bust_window.height);
-
-    stat_window.x = GetMonitorWidth() - stat_window.width;
-    stat_window.y = 0;
+    subwindow->window = wl_compositor_create_surface(wm_data.compositor);
+    subwindow->subwindow = wl_subcompositor_get_subsurface(
+        wm_data.subcompositor, subwindow->window, wm_data.wl_window);
+    wl_subsurface_set_position(subwindow->subwindow, subwindow->x,
+                               subwindow->y);
 }
 
 void CreateSubwindows(void)
 {
-    bust_window.window = wl_compositor_create_surface(wm_data.compositor);
-    bust_window.subwindow = wl_subcompositor_get_subsurface(
-        wm_data.subcompositor, bust_window.window, wm_data.wl_window);
-    wl_subsurface_set_position(bust_window.subwindow, bust_window.x,
-                               bust_window.y);
-
-    gameplay_window.window =
-        wl_compositor_create_surface(wm_data.compositor);
-    gameplay_window.subwindow = wl_subcompositor_get_subsurface(
-        wm_data.subcompositor, gameplay_window.window, wm_data.wl_window);
-    wl_subsurface_set_position(gameplay_window.subwindow,
-                               gameplay_window.x, gameplay_window.y);
-
-    stat_window.window = wl_compositor_create_surface(wm_data.compositor);
-    stat_window.subwindow = wl_subcompositor_get_subsurface(
-        wm_data.subcompositor, stat_window.window, wm_data.wl_window);
-    wl_subsurface_set_position(stat_window.subwindow, stat_window.x,
-                               stat_window.y);
+    CreateSubwindow(&gameplay_window, main_pane);
+    CreateSubwindow(&bust_window, bust_pane);
+    CreateSubwindow(&stat_window, information_pane);
 }
 
 void SetWindowTitle(const char* id, const char* title)
@@ -85,60 +71,15 @@ void SetWindowTitle(const char* id, const char* title)
 
 pixel_buffer_t* GenerateWindowBackground(void)
 {
-    const uint32_t stride = (uint32_t)GetMonitorWidth() * 4;
-    const uint32_t size = (uint32_t)GetMonitorHeight() * stride;
-
-    int fd = OpenSHM(size);
-
-    uint32_t* frame_data =
-        mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
-    if (frame_data == MAP_FAILED) ReportError(memory_map_failure, false);
-
-    shared_memory_pool_t* pool =
-        wl_shm_create_pool(wm_data.wl_sharedmemory, fd, (int32_t)size);
-    pixel_buffer_t* buffer = wl_shm_pool_create_buffer(
-        pool, 0, GetMonitorWidth(), GetMonitorHeight(), (int32_t)stride,
-        WL_SHM_FORMAT_XRGB8888);
-    wl_shm_pool_destroy(pool);
-    close(fd);
-
-    if (munmap(frame_data, size) == -1)
-        ReportError(memory_unmap_failure, false);
-
-    wl_buffer_add_listener(buffer, &wl_buffer_listener, NULL);
-    return buffer;
-    return NULL;
+    return CreateSolidPixelBuffer(GetMonitorWidth(), GetMonitorHeight(),
+                                  XRGB, BLACK);
 }
 
 pixel_buffer_t* GenerateSubwindowBackground(const subwindow_t* window,
                                             uint32_t background_color)
 {
-    // Since we use 4-channel RGBA formatting for each pixel, and
-    // the count of pixels is the window's width, multiply it by
-    // four to get the total amount of bytes per row.
-    const int32_t stride = (uint32_t)window->width * 4,
-                  size = window->height * stride;
-
-    int fd = OpenSHM(size);
-
-    uint32_t* frame_data =
-        mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
-    if (frame_data == MAP_FAILED) ReportError(memory_map_failure, false);
-
-    shared_memory_pool_t* pool =
-        wl_shm_create_pool(wm_data.wl_sharedmemory, fd, size);
-    pixel_buffer_t* buffer =
-        wl_shm_pool_create_buffer(pool, 0, window->width, window->height,
-                                  stride, WL_SHM_FORMAT_XRGB8888);
-    wl_shm_pool_destroy(pool);
-    close(fd);
-
-    FillMemory32(frame_data, background_color, size);
-    if (munmap(frame_data, size) == -1)
-        ReportError(memory_unmap_failure, false);
-
-    wl_buffer_add_listener(buffer, &wl_buffer_listener, NULL);
-    return buffer;
+    return CreateSolidPixelBuffer(window->width, window->height, XRGB,
+                                  background_color);
 }
 
 const subwindow_t* GetBustWindow(void) { return &bust_window; }

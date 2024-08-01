@@ -22,11 +22,14 @@ typedef struct
     bool monitor_already_polled;
     bool stdout_available;
     bool libnotify_available;
+    uint64_t start_time;
     enum
     {
-        unified,      // just gameplay window
-        paneled_full, // all three panels
-        paneled_half  // just stats + gameplay
+        unified,            // just gameplay window
+        unified_locked,     // locked in unified mode
+        paneled_full,       // all three panels
+        paneled_half,       // just stats + gameplay
+        paneled_half_locked // locked at stats + gameplay
     } ui_mode;
     enum
     {

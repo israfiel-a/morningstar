@@ -7,7 +7,7 @@
  * @brief An object full of the various data we need about the user's
  * primary monitor. All values are initialized to zero by default.
  */
-static monitor_t primary_monitor = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+static monitor_t primary_monitor = {0, 0, 0, 0, 0, 0, 0.0f, 0, 0, 0, 0, 0};
 
 /**
  * @brief The actual Wayland-reported monitor interface. This object is
@@ -71,12 +71,29 @@ static void HMV(void* d, monitor_information_t* m, uint32_t f,
  */
 static void HMD(void* d, monitor_information_t* m)
 {
-    primary_monitor.sside =
+    primary_monitor.shortest_size_measurement =
         int32_min(primary_monitor.width, primary_monitor.height);
-    if (primary_monitor.scale == 0) primary_monitor.scale = 1;
+    if (primary_monitor.shortest_size_measurement ==
+            primary_monitor.height &&
+        primary_monitor.shortest_size_measurement == primary_monitor.width)
+        primary_monitor.shortest_side = monitor_square;
+    else if (primary_monitor.shortest_size_measurement ==
+             primary_monitor.height)
+        primary_monitor.shortest_side = monitor_height;
+    else
+    {
+        global_flags.application_mode = unified_locked;
+        primary_monitor.shortest_side = monitor_width;
+    }
 
-    // We no longer need the full list of monitor information since we've
-    // recorded all we need.
+    if (primary_monitor.scale == 0) primary_monitor.scale = 1;
+    primary_monitor.ratio = (float)primary_monitor.physical_width /
+                            primary_monitor.physical_height;
+    if (primary_monitor.ratio == 1)
+        global_flags.application_mode = unified_locked;
+
+    // We no longer need the full list of monitor information since
+    // we've recorded all we need.
     wl_output_release(monitor_information);
     monitor_information = NULL;
     global_flags.monitor_already_polled = true;
@@ -124,7 +141,15 @@ static const monitor_information_monitor_t monitor_listener = {
 const monitor_t* GetMonitor(void) { return &primary_monitor; }
 const int32_t GetMonitorWidth(void) { return primary_monitor.width; }
 const int32_t GetMonitorHeight(void) { return primary_monitor.height; }
-const int32_t GetMonitorShortSide(void) { return primary_monitor.sside; }
+const int32_t GetMonitorShortSide(void)
+{
+    return primary_monitor.shortest_size_measurement;
+}
+const monitor_shortest_side_t GetMonitorShortSideName(void)
+{
+    return primary_monitor.shortest_side;
+}
+const float GetMonitorSizeRatio(void) { return primary_monitor.ratio; }
 
 void BindMonitor(registry_t* registry, const uint32_t name,
                  const uint32_t version)

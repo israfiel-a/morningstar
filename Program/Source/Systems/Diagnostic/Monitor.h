@@ -18,6 +18,26 @@
 #include <Windowing/Types.h>
 
 /**
+ * @brief An enum to eliminate some unneeded calculations in responsiveness
+ * functions by providing which side is the shortest off the bat.
+ */
+typedef enum
+{
+    /**
+     * @brief The width of the monitor is the shortest.
+     */
+    monitor_width,
+    /**
+     * @brief The height of the monitor is the shortest.
+     */
+    monitor_height,
+    /**
+     * @brief Both sides are exactly the same in length.
+     */
+    monitor_square
+} monitor_shortest_side_t;
+
+/**
  * @brief The information associated with a specific hardware monitor,
  * including width, height, refresh rate, and scale, among other things.
  * This object is filled out automatically by Wayland event listeners.
@@ -46,7 +66,19 @@ typedef struct
      * @brief The smallest side of the monitor, used to contrict viewport
      * size and things of the like.
      */
-    int32_t sside;
+    int32_t shortest_size_measurement;
+    /**
+     * @brief The shortest side of the monitor in name, this is used for
+     * responsiveness functionality.
+     */
+    monitor_shortest_side_t shortest_side;
+    /**
+     * @brief The ratio of width to height on the given monitor (i.e 16:9,
+     * 4:3, etc.) except to save space they're already divided, so a 16:9
+     * monitor would be a ratio of 1.777r, a monitor of 4:3 would
+     * be 1.333r, etc.
+     */
+    float ratio;
     /**
      * @brief The X position of the monitor within the global interface, in
      * pixels (I assume?).
@@ -109,5 +141,17 @@ const int32_t GetMonitorHeight(void);
  * @return The pixel count of the smallest side.
  */
 const int32_t GetMonitorShortSide(void);
+
+/**
+ * @brief Get the name of the monitor's shortest side.
+ * @return The shortest side.
+ */
+const monitor_shortest_side_t GetMonitorShortSideName(void);
+
+/**
+ * @brief Return the user's monitor's size ratio.
+ * @return The ratio between the width and height of the user's monitor.
+ */
+const float GetMonitorSizeRatio(void);
 
 #endif // _MSENG_MONITOR_DIAGNOSTIC_SYSTEM_
