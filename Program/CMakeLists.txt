@@ -12,7 +12,7 @@ if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
         "${PROJECT_NAME_FULL} is not currently meant to run anywhere but Linux.")
 endif()
 
-if(EXISTS "${CMAKE_SOURCE_DIR}/.git")
+if(EXISTS "${CMAKE_SOURCE_DIR}/../.git")
     execute_process(COMMAND bash "-c" "git tag | wc -l" OUTPUT_VARIABLE 
         PROJECT_VERSION_MAJOR OUTPUT_STRIP_TRAILING_WHITESPACE)
     execute_process(COMMAND bash "-c" 
