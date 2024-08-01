@@ -12,7 +12,6 @@
 #define _MSENG_SHARED_MEMORY_UTILITIES_
 
 #include <Master.h>
-#include <Windowing/Types.h>
 
 void FillMemory64(void* dest, uint64_t value, uintptr_t size);
 void FillMemory32(void* dest, uint32_t value, uintptr_t size);

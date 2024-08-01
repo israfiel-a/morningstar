@@ -11,7 +11,7 @@
 #ifndef _MSENG_WINDOW_MANAGER_SYSTEM_
 #define _MSENG_WINDOW_MANAGER_SYSTEM_
 
-#include "Types.h"
+#include <WaylandTypes.h>
 
 typedef struct
 {
@@ -25,8 +25,6 @@ typedef struct
 {
     window_manager_base_t* xsh_base;
     window_manager_root_t* xsh_toplevel;
-    window_manager_window_t* xsh_surface;
-    window_raw_t* wl_window;
     compositor_t* compositor;
     subcompositor_t* subcompositor;
 } window_manager_data_t;

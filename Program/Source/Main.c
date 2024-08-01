@@ -1,7 +1,7 @@
+#include <Application/Client.h>
 #include <Diagnostic/Time.h>
 #include <Globals.h>
 #include <Input/Terminal.h>
-#include <Windowing/Client.h>
 
 int main(int argc, char** argv)
 {

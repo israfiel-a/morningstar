@@ -40,7 +40,7 @@ execute_process(COMMAND bash "-c"
 
 file(GLOB PROJECT_FILES 
     ${CMAKE_SOURCE_DIR}/Source/Systems/*.c 
-    ${CMAKE_SOURCE_DIR}/Source/Systems/Windowing/*.c 
+    ${CMAKE_SOURCE_DIR}/Source/Systems/Application/*.c 
     ${CMAKE_SOURCE_DIR}/Source/Systems/Input/*.c 
     ${CMAKE_SOURCE_DIR}/Source/Systems/Output/*.c 
     ${CMAKE_SOURCE_DIR}/Source/Systems/Diagnostic/*.c 
@@ -49,7 +49,7 @@ file(GLOB PROJECT_FILES
     ${CMAKE_SOURCE_DIR}/Dependencies/xdg-shell.c)
 file(GLOB PROJECT_HEADERS ${CMAKE_SOURCE_DIR}/Source/*.h 
     ${CMAKE_SOURCE_DIR}/Source/Systems/*.h
-    ${CMAKE_SOURCE_DIR}/Source/Systems/Windowing/*.h
+    ${CMAKE_SOURCE_DIR}/Source/Systems/Application/*.h
     ${CMAKE_SOURCE_DIR}/Source/Systems/Input/*.h
     ${CMAKE_SOURCE_DIR}/Source/Systems/Output/*.h
     ${CMAKE_SOURCE_DIR}/Source/Systems/Rendering/*.h

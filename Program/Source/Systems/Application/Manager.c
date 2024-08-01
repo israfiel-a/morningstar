@@ -2,6 +2,7 @@
 #include "Window.h"
 #include <Diagnostic/Monitor.h>
 #include <Globals.h>
+#include <Rendering/Surfaces.h>
 
 static void HandleWMPing(void* data, struct xdg_wm_base* xdg_wm_base,
                          uint32_t serial)
@@ -17,27 +18,16 @@ static void HandleWMWindowConfigure(void* data,
                                     uint32_t serial)
 {
     xdg_surface_ack_configure(xdg_surface, serial); // ack = acknowledge
+    CreateUIWindows();
 
-    pixel_buffer_t* background = GenerateWindowBackground();
-    wl_surface_attach(wm_data.wl_window, background, 0, 0);
-    wl_surface_commit(wm_data.wl_window);
-
-    CreateSubwindows();
-
-    pixel_buffer_t* background2 =
-        GenerateSubwindowBackground(GetBustWindow(), WHITE);
-    wl_surface_attach(GetBustRawWindow(), background2, 0, 0);
-    wl_surface_commit(GetBustRawWindow());
-
-    pixel_buffer_t* background3 =
-        GenerateSubwindowBackground(GetGameplayWindow(), RED);
-    wl_surface_attach(GetGameplayRawWindow(), background3, 0, 0);
-    wl_surface_commit(GetGameplayRawWindow());
-
-    pixel_buffer_t* background4 =
-        GenerateSubwindowBackground(GetStatWindow(), GREEN);
-    wl_surface_attach(GetStatRawWindow(), background4, 0, 0);
-    wl_surface_commit(GetStatRawWindow());
+    SendBlankColor(GetBackgroundWindowRaw(), GetMonitorWidth(),
+                   GetMonitorHeight(), BLACK);
+    SendBlankColor(GetGameplayRawWindow(), GetGameplayWindow()->width,
+                   GetGameplayWindow()->height, WHITE);
+    SendBlankColor(GetBustRawWindow(), GetBustWindow()->width,
+                   GetBustWindow()->height, RED);
+    SendBlankColor(GetStatRawWindow(), GetStatWindow()->width,
+                   GetStatWindow()->height, RED);
 }
 
 static void HandleWMConfigure(void* data,
@@ -75,6 +65,6 @@ const window_manager_monitors_t wm_monitors = {
     {HandleWMConfigure, HandleWMClose, HandleWMWindowSizeAdvice,
      HandleCompositorAbilityList}};
 
-window_manager_data_t wm_data = {NULL, NULL, NULL, NULL, NULL, NULL};
+window_manager_data_t wm_data = {NULL, NULL, NULL, NULL};
 
 void SetupWindowManager(void) {}

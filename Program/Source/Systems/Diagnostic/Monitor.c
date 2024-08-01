@@ -1,7 +1,7 @@
 #include "Monitor.h"
+#include <Application/Manager.h>
 #include <Globals.h>
 #include <Utilities/Math.h>
-#include <Windowing/Manager.h>
 
 /**
  * @brief An object full of the various data we need about the user's

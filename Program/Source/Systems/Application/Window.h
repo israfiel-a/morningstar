@@ -11,9 +11,9 @@
 #ifndef _MSENG_WINDOW_SYSTEM_
 #define _MSENG_WINDOW_SYSTEM_
 
-#include "Types.h"
 #include <Master.h>
 #include <Utilities/Colors.h>
+#include <WaylandTypes.h>
 
 typedef struct
 {
@@ -25,17 +25,17 @@ typedef struct
     subwindow_raw_t* subwindow;
 } subwindow_t;
 
-void CreateSubwindows(void);
+void CreateMainWindow(void);
+void CreateUIWindows(void);
+void DestroyMainWindow(void);
+void DestroyUIWindows(void);
 
-pixel_buffer_t* GenerateWindowBackground(void);
-
-pixel_buffer_t* GenerateSubwindowBackground(const subwindow_t* window,
-                                            uint32_t background_color);
-
+window_manager_window_t* GetBackgroundWindow(void);
 const subwindow_t* GetBustWindow(void);
 const subwindow_t* GetGameplayWindow(void);
 const subwindow_t* GetStatWindow(void);
 
+window_raw_t* GetBackgroundWindowRaw(void);
 window_raw_t* GetBustRawWindow(void);
 window_raw_t* GetGameplayRawWindow(void);
 window_raw_t* GetStatRawWindow(void);
@@ -43,7 +43,5 @@ window_raw_t* GetStatRawWindow(void);
 subwindow_raw_t* GetBustRawSubwindow(void);
 subwindow_raw_t* GetGameplayRawSubwindow(void);
 subwindow_raw_t* GetStatRawSubwindow(void);
-
-void SetWindowTitle(const char* id, const char* title);
 
 #endif // _MSENG_WINDOW_SYSTEM_

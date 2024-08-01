@@ -20,6 +20,8 @@ void BindSHM(registry_t* registry, uint32_t name, uint32_t version)
         wl_registry_bind(registry, name, &wl_shm_interface, version);
 }
 
+void UnbindSHM(void) { wl_shm_destroy(shm_buffer); }
+
 static void CreateRandomFileName(char* filename_buffer)
 {
     struct timespec ts;

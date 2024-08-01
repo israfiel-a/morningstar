@@ -13,7 +13,7 @@
 // The master include file of the project.
 #include <Master.h>
 // Wayland/XDG type definitions.
-#include <Windowing/Types.h>
+#include <WaylandTypes.h>
 
 /**
  * @brief A group of callback functions that are triggered upon any of the
@@ -136,6 +136,11 @@ typedef struct
  */
 void BindInputGroup(registry_t* registry, const uint32_t name,
                     const uint32_t version);
+
+/**
+ * @brief Unbind the application's input group.
+ */
+void UnbindInputGroup(void);
 
 /**
  * @brief Add a callback to the mouse enter callback. See @ref

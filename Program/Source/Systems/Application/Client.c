@@ -50,7 +50,7 @@ void temp_callback(uint32_t button, uint32_t time)
 void SetupWayland(void)
 {
     // Connect to the default Wayland compositor (Wayland-0).
-    display = wl_display_connect(NULL);
+    display = wl_display_connect(0);
     if (display == NULL) ReportError(wayland_display_fail, false);
 
     registry = wl_display_get_registry(display);
@@ -63,20 +63,9 @@ void SetupWayland(void)
     if (wm_data.compositor == NULL || wm_data.xsh_base == NULL)
         ReportError(wayland_missing_features, false);
 
-    wm_data.wl_window = wl_compositor_create_surface(wm_data.compositor);
-    wm_data.xsh_surface =
-        xdg_wm_base_get_xdg_surface(wm_data.xsh_base, wm_data.wl_window);
-    wm_data.xsh_toplevel = xdg_surface_get_toplevel(wm_data.xsh_surface);
+    CreateMainWindow();
 
-    xdg_surface_add_listener(wm_data.xsh_surface,
-                             &wm_monitors.xsh_surface_monitor, NULL);
-    xdg_toplevel_add_listener(wm_data.xsh_toplevel,
-                              &wm_monitors.xsh_toplevel_monitor, NULL);
-
-    SetWindowTitle(ID, TITLE);
     SetMouseButtonDownCallback(temp_callback);
-
-    wl_surface_commit(wm_data.wl_window);
 
     //! TEMPORARY LOCATION UNTIL APPLICATION INTERFACE IS ADDED
     while (wl_display_dispatch(display) != -1 &&
@@ -88,7 +77,14 @@ void SetupWayland(void)
 
 void DestroyWayland(void)
 {
+    UnbindInputGroup();
+    UnbindSHM();
+    DestroyUIWindows();
+    DestroyMainWindow();
     xdg_toplevel_destroy(wm_data.xsh_toplevel);
-    xdg_surface_destroy(wm_data.xsh_surface);
-    wl_surface_destroy(wm_data.wl_window);
+    xdg_wm_base_destroy(wm_data.xsh_base);
+    wl_compositor_destroy(wm_data.compositor);
+    wl_subcompositor_destroy(wm_data.subcompositor);
+    wl_registry_destroy(registry);
+    wl_display_disconnect(display);
 }

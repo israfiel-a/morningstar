@@ -6,6 +6,12 @@ extern const keyboard_monitor_t keyboard_listener;
 extern const mouse_monitor_t mouse_listener;
 
 /**
+ * @brief The input group given to us by the compositor for use in the
+ * application.
+ */
+static input_group_t* seat = NULL;
+
+/**
  * @brief The mouse currently registered to the application. If none
  * are, then this value is set to NULL.
  */
@@ -86,9 +92,15 @@ static const input_group_monitor_t input_group_listener = {HIDC, HSN};
 void BindInputGroup(registry_t* registry, const uint32_t name,
                     const uint32_t version)
 {
-    input_group_t* seat =
-        wl_registry_bind(registry, name, &wl_seat_interface, version);
+    seat = wl_registry_bind(registry, name, &wl_seat_interface, version);
     wl_seat_add_listener(seat, &input_group_listener, NULL);
+}
+
+void UnbindInputGroup(void)
+{
+    wl_seat_release(seat);
+    wl_pointer_release(mouse);
+    wl_keyboard_release(keyboard);
 }
 
 void SetMouseEnterCallback(void (*func)(wl_fixed_t, wl_fixed_t))

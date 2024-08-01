@@ -14,8 +14,7 @@
 
 // The project's master system include file.
 #include <Master.h>
-// Wayland interface type definitions.
-#include <Windowing/Types.h>
+#include <WaylandTypes.h>
 
 /**
  * @brief An enum to eliminate some unneeded calculations in responsiveness

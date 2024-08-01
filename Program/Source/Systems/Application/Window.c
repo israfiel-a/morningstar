@@ -1,9 +1,10 @@
 #include "Window.h"
 #include "Manager.h"
 #include <Diagnostic/Monitor.h>
-#include <Output/Error.h>
-#include <Rendering/SHM.h>
 #include <Utilities/Math.h>
+
+static window_raw_t* background_raw = NULL;
+static window_manager_window_t* background = NULL;
 
 static subwindow_t bust_window = {0, 0, 0, 0, NULL, NULL};
 static subwindow_t gameplay_window = {0, 0, 0, 0, NULL, NULL};
@@ -50,37 +51,53 @@ static void CreateSubwindow(subwindow_t* subwindow, window_type_t type)
 
     subwindow->window = wl_compositor_create_surface(wm_data.compositor);
     subwindow->subwindow = wl_subcompositor_get_subsurface(
-        wm_data.subcompositor, subwindow->window, wm_data.wl_window);
+        wm_data.subcompositor, subwindow->window, background_raw);
     wl_subsurface_set_position(subwindow->subwindow, subwindow->x,
                                subwindow->y);
 }
 
-void CreateSubwindows(void)
+void CreateMainWindow(void)
+{
+    background_raw = wl_compositor_create_surface(wm_data.compositor);
+    background =
+        xdg_wm_base_get_xdg_surface(wm_data.xsh_base, background_raw);
+    wm_data.xsh_toplevel = xdg_surface_get_toplevel(background);
+
+    xdg_surface_add_listener(background, &wm_monitors.xsh_surface_monitor,
+                             NULL);
+    xdg_toplevel_add_listener(wm_data.xsh_toplevel,
+                              &wm_monitors.xsh_toplevel_monitor, NULL);
+
+    xdg_toplevel_set_app_id(wm_data.xsh_toplevel, ID);
+    xdg_toplevel_set_title(wm_data.xsh_toplevel, TITLE);
+    wl_surface_commit(background_raw);
+}
+
+void CreateUIWindows(void)
 {
     CreateSubwindow(&gameplay_window, main_pane);
     CreateSubwindow(&bust_window, bust_pane);
     CreateSubwindow(&stat_window, information_pane);
 }
 
-void SetWindowTitle(const char* id, const char* title)
+void DestroyMainWindow(void)
 {
-    assert(title != NULL);
-    xdg_toplevel_set_app_id(wm_data.xsh_toplevel, id);
-    xdg_toplevel_set_title(wm_data.xsh_toplevel, title);
+    xdg_surface_destroy(background);
+    wl_surface_destroy(background_raw);
 }
 
-pixel_buffer_t* GenerateWindowBackground(void)
+void DestroyUIWindows(void)
 {
-    return CreateSolidPixelBuffer(GetMonitorWidth(), GetMonitorHeight(),
-                                  XRGB, BLACK);
+    wl_subsurface_destroy(bust_window.subwindow);
+    wl_surface_destroy(bust_window.window);
+    wl_subsurface_destroy(gameplay_window.subwindow);
+    wl_surface_destroy(gameplay_window.window);
+    wl_subsurface_destroy(stat_window.subwindow);
+    wl_surface_destroy(stat_window.window);
 }
 
-pixel_buffer_t* GenerateSubwindowBackground(const subwindow_t* window,
-                                            uint32_t background_color)
-{
-    return CreateSolidPixelBuffer(window->width, window->height, XRGB,
-                                  background_color);
-}
+window_raw_t* GetBackgroundWindowRaw(void) { return background_raw; }
+window_manager_window_t* GetBackgroundWindow(void) { return background; }
 
 const subwindow_t* GetBustWindow(void) { return &bust_window; }
 const subwindow_t* GetGameplayWindow(void) { return &gameplay_window; }
