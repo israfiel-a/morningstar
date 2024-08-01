@@ -29,7 +29,7 @@ toplevel_t* GetToplevelWindow(void);
 
 raw_window_t* CreateRawWindow(void);
 raw_subwindow_t* CreateRawSubwindow(raw_window_t** window,
-                                    raw_window_t** parent);
+                                    raw_window_t* parent);
 window_t* WrapRawWindow(raw_window_t* raw_window);
 
 const window_manager_t* GetWindowManager(void);

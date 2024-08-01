@@ -115,11 +115,10 @@ raw_window_t* CreateRawWindow(void)
     return wl_compositor_create_surface(compositor);
 }
 raw_subwindow_t* CreateRawSubwindow(raw_window_t** window,
-                                    raw_window_t** parent)
+                                    raw_window_t* parent)
 {
     *window = CreateRawWindow();
-    return wl_subcompositor_get_subsurface(subcompositor, *window,
-                                           *parent);
+    return wl_subcompositor_get_subsurface(subcompositor, *window, parent);
 }
 
 window_t* WrapRawWindow(raw_window_t* raw_window)

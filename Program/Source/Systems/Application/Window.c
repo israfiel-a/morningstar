@@ -50,7 +50,7 @@ static void CreateSubwindow(subwindow_t* subwindow, window_type_t type)
     }
 
     subwindow->subwindow =
-        CreateRawSubwindow(&subwindow->window, &background_raw);
+        CreateRawSubwindow(&subwindow->window, background_raw);
     wl_subsurface_set_position(subwindow->subwindow, subwindow->x,
                                subwindow->y);
     wl_surface_commit(subwindow->window);
@@ -79,12 +79,12 @@ void DestroyMainWindow(void)
 
 void DestroyUIWindows(void)
 {
-    wl_subsurface_destroy(bust_window.subwindow);
-    wl_subsurface_destroy(gameplay_window.subwindow);
-    wl_subsurface_destroy(stat_window.subwindow);
     wl_surface_destroy(bust_window.window);
     wl_surface_destroy(gameplay_window.window);
     wl_surface_destroy(stat_window.window);
+    wl_subsurface_destroy(bust_window.subwindow);
+    wl_subsurface_destroy(gameplay_window.subwindow);
+    wl_subsurface_destroy(stat_window.subwindow);
 }
 
 raw_window_t* GetBackgroundWindowRaw(void) { return background_raw; }
@@ -98,15 +98,15 @@ raw_window_t* GetBustRawWindow(void) { return bust_window.window; }
 raw_window_t* GetGameplayRawWindow(void) { return gameplay_window.window; }
 raw_window_t* GetStatRawWindow(void) { return stat_window.window; }
 
-// raw_subwindow_t* GetBustRawSubwindow(void)
-// {
-//     return bust_window.subwindow;
-// }
-// raw_subwindow_t* GetGameplayRawSubwindow(void)
-// {
-//     return gameplay_window.subwindow;
-// }
-// raw_subwindow_t* GetStatRawSubwindow(void)
-// {
-//     return stat_window.subwindow;
-// }
+raw_subwindow_t* GetBustRawSubwindow(void)
+{
+    return bust_window.subwindow;
+}
+raw_subwindow_t* GetGameplayRawSubwindow(void)
+{
+    return gameplay_window.subwindow;
+}
+raw_subwindow_t* GetStatRawSubwindow(void)
+{
+    return stat_window.subwindow;
+}
