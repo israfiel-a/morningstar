@@ -1,6 +1,6 @@
 #include "Hardware.h"
 #include <Session.h>
-#include <Windowing/Registry.h>
+#include <Windowing/System.h>
 #include <linux/input-event-codes.h>
 
 extern const keyboard_monitor_t keyboard_listener;

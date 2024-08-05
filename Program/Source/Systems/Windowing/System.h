@@ -14,10 +14,13 @@
 
 // The master include file for the project.
 #include <Master.h>
+#include <Utilities/WaylandTypes.h>
 
 void SetupWindowingSystem(void);
 void DestroyWindowingSystem(void);
 
 bool CheckDisplayServer(void);
+
+registry_t* GetRegistry(void);
 
 #endif // _MSENG_SYSTEM_WINDOWING_SYSTEM_

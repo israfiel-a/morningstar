@@ -1,5 +1,5 @@
 #include "Manager.h"
-#include "Registry.h"
+#include "System.h"
 #include "Window.h"
 #include <Output/Error.h>
 #include <Session.h>

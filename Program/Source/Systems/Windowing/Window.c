@@ -1,6 +1,6 @@
 #include "Window.h"
 #include "Manager.h"
-#include "Registry.h"
+#include "System.h"
 #include <Rendering/SHM.h>
 #include <Utilities/Math.h>
 

@@ -1,7 +1,7 @@
 #include "SHM.h"
 #include <Output/Error.h>
 #include <Utilities/Memory.h>
-#include <Windowing/Registry.h>
+#include <Windowing/System.h>
 #include <fcntl.h>
 #include <time.h>
 
