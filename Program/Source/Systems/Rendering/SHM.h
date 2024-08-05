@@ -21,5 +21,6 @@ int OpenSHM(size_t size);
 
 void BindSHM(uint32_t name, uint32_t version);
 void UnbindSHM(void);
+shared_memory_buffer_t* GetSHM(void);
 
 #endif // _MSENG_SHM_RENDERING_SYSTEM_

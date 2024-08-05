@@ -12,6 +12,10 @@
 #ifndef _MSENG_MASTER_INCLUDE_
 #define _MSENG_MASTER_INCLUDE_
 
+#ifndef DEBUG
+#define NDEBUG
+#endif
+
 #include <assert.h>   // IWYU pragma: keep
 #include <errno.h>    // IWYU pragma: keep
 #include <stdarg.h>   // IWYU pragma: keep

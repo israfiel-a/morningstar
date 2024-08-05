@@ -82,7 +82,6 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     endif()
 else()
     add_compile_options(-Ofast)
-    file(COPY ${PROJECT_HEADERS} DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Include)
 endif()
 
 string(TOLOWER ${CMAKE_BUILD_TYPE} OUTPUT_VARIABLE CMAKE_BUILD_LOWERCASE)

@@ -46,6 +46,10 @@ typedef enum
      */
     time_get_error,
     /**
+     * @brief Failed to find monitor dimensions properly.
+     */
+    monitor_dimensions_missing,
+    /**
      * @brief We failed to connect to a Wayland display device. The user is
      * probably not running a Wayland session.
      */

@@ -50,4 +50,13 @@ extern globals_t global_flags;
 void BeginSession(int argument_count, char** arguments);
 void CleanupSession(void);
 
+/**
+ * @brief Check the validity of the current session; make sure we haven't
+ * been requested to die, check to make sure the display server is still
+ * sending display, etcetera.
+ * @return true The session is still valid, continue.
+ * @return false The session is no longer valid, kill the process.
+ */
+bool CheckSessionValidity(void);
+
 #endif // _MSENG_APPLICATION_SYSTEM_

@@ -25,7 +25,7 @@ typedef struct xdg_wm_base window_manager_t;
 typedef struct xdg_toplevel toplevel_t;
 typedef struct xdg_wm_base_listener ping_listener_t;
 typedef struct wl_surface_listener raw_window_listener_t;
-typedef struct xdg_surface_listener window_manager_surface_monitor_t;
+typedef struct xdg_surface_listener window_listener_t;
 typedef struct xdg_toplevel_listener toplevel_monitor_t;
 typedef struct wl_pointer_listener mouse_monitor_t;
 typedef enum wl_pointer_button_state mouse_button_state_t;

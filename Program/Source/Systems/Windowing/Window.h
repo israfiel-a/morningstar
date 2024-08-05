@@ -44,6 +44,10 @@ void CreateWindows(void);
 void SetWindowPositions(int32_t suggested_width, int32_t suggested_height);
 void DestroyWindows(void);
 
+raw_window_t* CreateRawWindow(void);
+raw_subwindow_t* CreateRawSubwindow(raw_window_t** window,
+                                    raw_window_t* parent);
+
 window_t* GetBackgroundWindow(void);
 const subwindow_t* GetBustWindow(void);
 const subwindow_t* GetGameplayWindow(void);
@@ -66,5 +70,14 @@ void BindSubcompositor(uint32_t name, uint32_t version);
 
 void UnbindCompositor(void);
 void UnbindSubcompositor(void);
+
+void NoteSuggestedBounds(int32_t width, int32_t height);
+int32_t GetSuggestedWidth(void);
+int32_t GetSuggestedHeight(void);
+int32_t GetShortestSide(void);
+
+void SetSubwindowPosition(subwindow_t* subwindow);
+void SendBlankColor(raw_window_t* window, subsurface_size_t size,
+                    uint32_t color);
 
 #endif // _MSENG_WINDOW_SYSTEM_

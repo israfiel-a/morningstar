@@ -86,3 +86,5 @@ pixel_buffer_t* CreateSolidPixelBuffer(uint32_t width, uint32_t height,
     wl_buffer_add_listener(buffer, &buffer_listener, NULL);
     return buffer;
 }
+
+shared_memory_buffer_t* GetSHM(void) { return shm_buffer; }

@@ -140,6 +140,8 @@ void BindInputGroup(const uint32_t name, const uint32_t version);
  */
 void UnbindInputGroup(void);
 
+input_group_t* GetInputGroup(void);
+
 /**
  * @brief Add a callback to the mouse enter callback. See @ref
  * input_callback_group_t::mouse_enter for function information.

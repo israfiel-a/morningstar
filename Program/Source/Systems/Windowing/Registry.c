@@ -54,8 +54,8 @@ void BeginRegistry(display_t* display)
 
 void DestroyRegistry(void)
 {
-    UnbindInputGroup();
     UnbindSHM();
+    UnbindInputGroup();
     UnbindWindowManager();
     UnbindSubcompositor();
     UnbindCompositor();
@@ -63,3 +63,13 @@ void DestroyRegistry(void)
 }
 
 registry_t* GetRegistry(void) { return registry; }
+
+bool CheckRequiredFeatures(void)
+{
+    // We need the compositor, subcompositor, an input group, shared memory
+    // file functionality, and XDG-shell protocol in order to run the
+    // application.
+    return GetCompositor() != NULL && GetSubcompositor() != NULL &&
+           GetWindowManager() != NULL && GetSHM() != NULL &&
+           GetInputGroup() != NULL;
+}

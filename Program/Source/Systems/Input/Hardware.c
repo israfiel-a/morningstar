@@ -99,10 +99,12 @@ void BindInputGroup(const uint32_t name, const uint32_t version)
 
 void UnbindInputGroup(void)
 {
-    wl_seat_release(seat);
     wl_pointer_release(mouse);
     wl_keyboard_release(keyboard);
+    wl_seat_release(seat);
 }
+
+input_group_t* GetInputGroup(void) { return seat; }
 
 void SetMouseEnterCallback(void (*func)(wl_fixed_t, wl_fixed_t))
 {

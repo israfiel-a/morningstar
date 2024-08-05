@@ -13,6 +13,7 @@ static const char* error_explanations[] = {
     [child_process_error] = "child process error",
     [subshell_error] = "fatal subshell opening error",
     [time_get_error] = "failed to get clock time",
+    [monitor_dimensions_missing] = "failed to get monitor dimensions",
     [wayland_display_fail] = "failed to connect to wayland display",
     [wayland_server_processing_fail] = "wayland server processing error",
     [wayland_missing_features] = "wayland server missing features"};
