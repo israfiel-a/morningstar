@@ -1,4 +1,4 @@
-**Morningstar is _NOT_ currently in a finished state. Many, many things do not work or are straight up unimplemented. Come back when its filled out more.**
+**Morningstar is _NOT_ currently in a finished state. Many, many things do not work or are straight up unimplemented (like Windows functionality). Come back when its filled out more.**
 
 ## The Morningstar Toolkit
 This project is more-or-less a minimal game framework for 2D pixelart RPG-style games. It provides development utilities like debug and error logging, game-related objects like windows, renderers, and localization tools. **But**, this toolkit is not meant for use outside of the types of games I like to create. Without significant source code editing on your side, the UI is static, most processes are static, the rendering loop is static. This is for the sake of performance and my ease of development, but it limits the use case of the project.

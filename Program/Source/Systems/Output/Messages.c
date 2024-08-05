@@ -1,7 +1,7 @@
 #include "Messages.h"
 #include "System.h"
 #include <Diagnostic/Time.h>
-#include <Globals.h>
+#include <Session.h>
 
 /**
  * @brief A flag to specify if libnotify has already been polled for, as

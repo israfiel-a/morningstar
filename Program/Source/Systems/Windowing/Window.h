@@ -13,22 +13,36 @@
 
 #include <Master.h>
 #include <Utilities/Colors.h>
-#include <WaylandTypes.h>
+#include <Utilities/WaylandTypes.h>
+
+typedef enum
+{
+    gap_filler_right,
+    gap_filler_left,
+    gap_centered_right,
+    gap_centered_left,
+    centered
+} subsurface_position_t;
+
+typedef enum
+{
+    gap_filler,
+    gap_filler_centered,
+    main_window,
+    background_window
+} subsurface_size_t;
 
 typedef struct
 {
-    uint32_t width;
-    uint32_t height;
-    uint32_t x;
-    uint32_t y;
+    subsurface_size_t size;
+    subsurface_position_t position;
     raw_window_t* window;
     raw_subwindow_t* subwindow;
 } subwindow_t;
 
-void CreateMainWindow(void);
-void CreateUIWindows(void);
-void DestroyMainWindow(void);
-void DestroyUIWindows(void);
+void CreateWindows(void);
+void SetWindowPositions(int32_t suggested_width, int32_t suggested_height);
+void DestroyWindows(void);
 
 window_t* GetBackgroundWindow(void);
 const subwindow_t* GetBustWindow(void);
@@ -43,5 +57,14 @@ raw_window_t* GetStatRawWindow(void);
 raw_subwindow_t* GetBustRawSubwindow(void);
 raw_subwindow_t* GetGameplayRawSubwindow(void);
 raw_subwindow_t* GetStatRawSubwindow(void);
+
+compositor_t* GetCompositor(void);
+subcompositor_t* GetSubcompositor(void);
+
+void BindCompositor(uint32_t name, uint32_t version);
+void BindSubcompositor(uint32_t name, uint32_t version);
+
+void UnbindCompositor(void);
+void UnbindSubcompositor(void);
 
 #endif // _MSENG_WINDOW_SYSTEM_

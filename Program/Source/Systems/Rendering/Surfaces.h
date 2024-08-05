@@ -12,9 +12,17 @@
 #define _MSENG_SURFACES_RENDERING_SYSTEM_
 
 #include <Master.h>
-#include <WaylandTypes.h>
+#include <Utilities/WaylandTypes.h>
+#include <Windowing/Window.h>
 
-void SendBlankColor(raw_window_t* window, uint32_t width, uint32_t height,
+void SendBlankColor(raw_window_t* window, subsurface_size_t size,
                     uint32_t color);
+
+void NoteSuggestedBounds(int32_t width, int32_t height);
+int32_t GetSuggestedWidth(void);
+int32_t GetSuggestedHeight(void);
+int32_t GetShortestSide(void);
+
+void SetSubwindowPosition(subwindow_t* subwindow);
 
 #endif // _MSENG_SURFACES_RENDERING_SYSTEM_

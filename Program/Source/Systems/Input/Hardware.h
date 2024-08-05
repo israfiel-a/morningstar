@@ -13,7 +13,7 @@
 // The master include file of the project.
 #include <Master.h>
 // Wayland/XDG type definitions.
-#include <WaylandTypes.h>
+#include <Utilities/WaylandTypes.h>
 
 /**
  * @brief A group of callback functions that are triggered upon any of the
@@ -130,12 +130,10 @@ typedef struct
 /**
  * @brief Bind a new input group to the registry. The game is only built to
  * have one of these, but adding multiple is @b theoretically possible.
- * @param registry The Wayland registry of the application.
  * @param name The name of the group.
  * @param version The version of the interface.
  */
-void BindInputGroup(registry_t* registry, const uint32_t name,
-                    const uint32_t version);
+void BindInputGroup(const uint32_t name, const uint32_t version);
 
 /**
  * @brief Unbind the application's input group.

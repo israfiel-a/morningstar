@@ -40,7 +40,7 @@ execute_process(COMMAND bash "-c"
 
 file(GLOB PROJECT_FILES 
     ${CMAKE_SOURCE_DIR}/Source/Systems/*.c 
-    ${CMAKE_SOURCE_DIR}/Source/Systems/Application/*.c 
+    ${CMAKE_SOURCE_DIR}/Source/Systems/Windowing/*.c 
     ${CMAKE_SOURCE_DIR}/Source/Systems/Input/*.c 
     ${CMAKE_SOURCE_DIR}/Source/Systems/Output/*.c 
     ${CMAKE_SOURCE_DIR}/Source/Systems/Diagnostic/*.c 
@@ -49,7 +49,7 @@ file(GLOB PROJECT_FILES
     ${CMAKE_SOURCE_DIR}/Dependencies/xdg-shell.c)
 file(GLOB PROJECT_HEADERS ${CMAKE_SOURCE_DIR}/Source/*.h 
     ${CMAKE_SOURCE_DIR}/Source/Systems/*.h
-    ${CMAKE_SOURCE_DIR}/Source/Systems/Application/*.h
+    ${CMAKE_SOURCE_DIR}/Source/Systems/Windowing/*.h
     ${CMAKE_SOURCE_DIR}/Source/Systems/Input/*.h
     ${CMAKE_SOURCE_DIR}/Source/Systems/Output/*.h
     ${CMAKE_SOURCE_DIR}/Source/Systems/Rendering/*.h
@@ -65,6 +65,7 @@ endforeach()
 include_directories(${CMAKE_SOURCE_DIR}/Dependencies ${CMAKE_SOURCE_DIR}/Source 
     ${CMAKE_SOURCE_DIR}/Source/Types ${CMAKE_SOURCE_DIR}/Source/Systems)
 add_library(morningstar SHARED ${PROJECT_FILES})
+target_link_libraries(morningstar PRIVATE wayland-client PRIVATE rt)
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     set(CMAKE_EXPORT_COMPILE_COMMANDS YES)
@@ -77,8 +78,7 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     if(EXISTS "${CMAKE_SOURCE_DIR}/Source/Main.c")
         list(APPEND CMAKE_BUILD_RPATH "$ORIGIN/")
         add_executable(${PROJECT_NAME} ${CMAKE_SOURCE_DIR}/Source/Main.c)
-        target_link_libraries(${PROJECT_NAME} PRIVATE morningstar 
-            PRIVATE wayland-client PUBLIC rt)
+        target_link_libraries(${PROJECT_NAME} PRIVATE morningstar)
     endif()
 else()
     add_compile_options(-Ofast)

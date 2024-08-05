@@ -14,7 +14,7 @@
 // The master include file of the project.
 #include <Master.h>
 // Wayland/XDG type definitions.
-#include <WaylandTypes.h>
+#include <Utilities/WaylandTypes.h>
 
 /**
  * @brief An enumerator describing the various events that can pass in a

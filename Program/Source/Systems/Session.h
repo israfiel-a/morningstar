@@ -47,4 +47,7 @@ typedef struct
 } globals_t;
 extern globals_t global_flags;
 
+void BeginSession(int argument_count, char** arguments);
+void CleanupSession(void);
+
 #endif // _MSENG_APPLICATION_SYSTEM_

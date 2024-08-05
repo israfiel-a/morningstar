@@ -1,5 +1,6 @@
 #include "Hardware.h"
-#include <Globals.h>
+#include <Session.h>
+#include <Windowing/Registry.h>
 #include <linux/input-event-codes.h>
 
 extern const keyboard_monitor_t keyboard_listener;
@@ -89,10 +90,10 @@ static const input_group_monitor_t input_group_listener = {HIDC, HSN};
 // of their private nature.                                              //
 //-----------------------------------------------------------------------//
 
-void BindInputGroup(registry_t* registry, const uint32_t name,
-                    const uint32_t version)
+void BindInputGroup(const uint32_t name, const uint32_t version)
 {
-    seat = wl_registry_bind(registry, name, &wl_seat_interface, version);
+    seat =
+        wl_registry_bind(GetRegistry(), name, &wl_seat_interface, version);
     wl_seat_add_listener(seat, &input_group_listener, NULL);
 }
 

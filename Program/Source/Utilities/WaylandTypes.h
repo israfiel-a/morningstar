@@ -23,10 +23,10 @@ typedef enum wl_output_transform monitor_transform_t;
 typedef struct wl_registry registry_t;
 typedef struct xdg_wm_base window_manager_t;
 typedef struct xdg_toplevel toplevel_t;
-typedef struct xdg_wm_base_listener window_manager_monitor_t;
+typedef struct xdg_wm_base_listener ping_listener_t;
 typedef struct wl_surface_listener raw_window_listener_t;
 typedef struct xdg_surface_listener window_manager_surface_monitor_t;
-typedef struct xdg_toplevel_listener window_manager_root_monitor_t;
+typedef struct xdg_toplevel_listener toplevel_monitor_t;
 typedef struct wl_pointer_listener mouse_monitor_t;
 typedef enum wl_pointer_button_state mouse_button_state_t;
 typedef enum wl_pointer_axis mouse_axis_t;
@@ -43,11 +43,13 @@ typedef struct wl_keyboard keyboard_object_t;
 typedef struct wl_surface raw_window_t;
 typedef struct wl_shm_pool shared_memory_pool_t;
 typedef struct wl_shm shared_memory_buffer_t;
-typedef struct wl_registry_listener interface_monitor_t;
+typedef struct wl_registry_listener registry_monitor_t;
 typedef struct wl_subsurface raw_subwindow_t;
 typedef struct wl_compositor compositor_t;
 typedef struct wl_subcompositor subcompositor_t;
 typedef enum wl_shm_format color_type_t;
+typedef struct wl_display display_t;
+typedef struct wl_registry registry_t;
 
 #define XRGB WL_SHM_FORMAT_XRGB8888
 #define ARGB WL_SHM_FORMAT_ARGB8888

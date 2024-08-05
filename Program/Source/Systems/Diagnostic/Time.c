@@ -1,6 +1,6 @@
 #include "Time.h"
-#include <Globals.h>
 #include <Output/Error.h>
+#include <Session.h>
 #include <time.h>
 
 uint64_t GetCurrentTime(void)

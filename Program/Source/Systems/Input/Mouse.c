@@ -1,6 +1,6 @@
 #include "Mouse.h"
 #include "Hardware.h"
-#include <Globals.h>
+#include <Session.h>
 #include <linux/input-event-codes.h>
 
 extern input_callback_group_t input_callbacks;

@@ -1,6 +1,6 @@
 #include "Error.h"
 #include "Messages.h"
-#include <Globals.h>
+#include <Session.h>
 
 /**
  * @brief An array of explanations to go along with each error code. Every

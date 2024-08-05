@@ -1,6 +1,7 @@
 #include "SHM.h"
 #include <Output/Error.h>
 #include <Utilities/Memory.h>
+#include <Windowing/Registry.h>
 #include <fcntl.h>
 #include <time.h>
 
@@ -14,10 +15,10 @@ static const pixel_buffer_monitor_t buffer_listener = {
 
 static shared_memory_buffer_t* shm_buffer = NULL;
 
-void BindSHM(registry_t* registry, uint32_t name, uint32_t version)
+void BindSHM(uint32_t name, uint32_t version)
 {
     shm_buffer =
-        wl_registry_bind(registry, name, &wl_shm_interface, version);
+        wl_registry_bind(GetRegistry(), name, &wl_shm_interface, version);
 }
 
 void UnbindSHM(void) { wl_shm_destroy(shm_buffer); }
