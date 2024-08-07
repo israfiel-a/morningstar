@@ -33,10 +33,13 @@ add_compile_options(-Wall -Werror -Wpedantic)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME})
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME})
 
-execute_process(COMMAND bash "-c" 
-"wayland-scanner client-header /usr/share/wayland-protocols/stable/xdg-shell/xdg-shell.xml Dependencies/xdg-shell.h")
-execute_process(COMMAND bash "-c" 
-"wayland-scanner private-code /usr/share/wayland-protocols/stable/xdg-shell/xdg-shell.xml Dependencies/xdg-shell.c")
+if(NOT EXISTS "${CMAKE_SOURCE_DIR}/Dependencies/xdg-shell.h" OR NOT EXISTS 
+    "${CMAKE_SOURCE_DIR}/Dependencies/xdg-shell.c")
+    execute_process(COMMAND bash "-c" 
+    "wayland-scanner client-header /usr/share/wayland-protocols/stable/xdg-shell/xdg-shell.xml Dependencies/xdg-shell.h")
+    execute_process(COMMAND bash "-c" 
+    "wayland-scanner private-code /usr/share/wayland-protocols/stable/xdg-shell/xdg-shell.xml Dependencies/xdg-shell.c")
+endif()
 
 file(GLOB PROJECT_FILES 
     ${CMAKE_SOURCE_DIR}/Source/*.c 
