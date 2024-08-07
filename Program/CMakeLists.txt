@@ -19,10 +19,10 @@ if(EXISTS "${CMAKE_SOURCE_DIR}/../.git")
         "git rev-list  `git rev-list --tags --no-walk --max-count=1`..HEAD --count" 
         OUTPUT_VARIABLE PROJECT_VERSION_MINOR OUTPUT_STRIP_TRAILING_WHITESPACE)
 
-    file(WRITE ${CMAKE_SOURCE_DIR}/Source/Assets/version.txt 
+    file(WRITE ${CMAKE_SOURCE_DIR}/Assets/version.txt 
         "${PROJECT_VERSION_MAJOR} ${PROJECT_VERSION_MINOR}")
 else()
-    file(READ ${CMAKE_SOURCE_DIR}/Source/Assets/version.txt PROJECT_VERSION_STRING)
+    file(READ ${CMAKE_SOURCE_DIR}/Assets/version.txt PROJECT_VERSION_STRING)
     separate_arguments(PROJECT_VERSION_STRING)
     list(GET PROJECT_VERSION_STRING 0 PROJECT_VERSION_MAJOR)
     list(GET PROJECT_VERSION_STRING 1 PROJECT_VERSION_MINOR)
@@ -62,8 +62,7 @@ foreach(file ${PROJECT_FILES} ${PROJECT_HEADERS} ${CMAKE_SOURCE_DIR}/Source/Main
         FILENAME="${CURRENT_FILENAME}") 
 endforeach()
 
-include_directories(${CMAKE_SOURCE_DIR}/Dependencies ${CMAKE_SOURCE_DIR}/Source 
-    ${CMAKE_SOURCE_DIR}/Source/Types ${CMAKE_SOURCE_DIR}/Source/Systems)
+include_directories(${CMAKE_SOURCE_DIR}/Dependencies ${CMAKE_SOURCE_DIR}/Source)
 add_library(morningstar SHARED ${PROJECT_FILES})
 target_link_libraries(morningstar PRIVATE wayland-client PRIVATE rt)
 
@@ -82,6 +81,7 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     endif()
 else()
     add_compile_options(-Ofast)
+    file(COPY ${PROJECT_HEADERS} DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
 endif()
 
 string(TOLOWER ${CMAKE_BUILD_TYPE} OUTPUT_VARIABLE CMAKE_BUILD_LOWERCASE)
