@@ -39,21 +39,21 @@ execute_process(COMMAND bash "-c"
 "wayland-scanner private-code /usr/share/wayland-protocols/stable/xdg-shell/xdg-shell.xml Dependencies/xdg-shell.c")
 
 file(GLOB PROJECT_FILES 
-    ${CMAKE_SOURCE_DIR}/Source/Systems/*.c 
-    ${CMAKE_SOURCE_DIR}/Source/Systems/Windowing/*.c 
-    ${CMAKE_SOURCE_DIR}/Source/Systems/Input/*.c 
-    ${CMAKE_SOURCE_DIR}/Source/Systems/Output/*.c 
-    ${CMAKE_SOURCE_DIR}/Source/Systems/Diagnostic/*.c 
-    ${CMAKE_SOURCE_DIR}/Source/Systems/Rendering/*.c 
+    ${CMAKE_SOURCE_DIR}/Source/*.c 
+    ${CMAKE_SOURCE_DIR}/Source/Windowing/*.c 
+    ${CMAKE_SOURCE_DIR}/Source/Input/*.c 
+    ${CMAKE_SOURCE_DIR}/Source/Output/*.c 
+    ${CMAKE_SOURCE_DIR}/Source/Diagnostic/*.c 
+    ${CMAKE_SOURCE_DIR}/Source/Rendering/*.c 
     ${CMAKE_SOURCE_DIR}/Source/Utilities/Utilities.c 
     ${CMAKE_SOURCE_DIR}/Dependencies/xdg-shell.c)
 file(GLOB PROJECT_HEADERS ${CMAKE_SOURCE_DIR}/Source/*.h 
-    ${CMAKE_SOURCE_DIR}/Source/Systems/*.h
-    ${CMAKE_SOURCE_DIR}/Source/Systems/Windowing/*.h
-    ${CMAKE_SOURCE_DIR}/Source/Systems/Input/*.h
-    ${CMAKE_SOURCE_DIR}/Source/Systems/Output/*.h
-    ${CMAKE_SOURCE_DIR}/Source/Systems/Rendering/*.h
-    ${CMAKE_SOURCE_DIR}/Source/Systems/Diagnostic/*.h
+    ${CMAKE_SOURCE_DIR}/Source/*.h
+    ${CMAKE_SOURCE_DIR}/Source/Windowing/*.h
+    ${CMAKE_SOURCE_DIR}/Source/Input/*.h
+    ${CMAKE_SOURCE_DIR}/Source/Output/*.h
+    ${CMAKE_SOURCE_DIR}/Source/Rendering/*.h
+    ${CMAKE_SOURCE_DIR}/Source/Diagnostic/*.h
     ${CMAKE_SOURCE_DIR}/Source/Utilities/*.h)
 
 foreach(file ${PROJECT_FILES} ${PROJECT_HEADERS} ${CMAKE_SOURCE_DIR}/Source/Main.c)
