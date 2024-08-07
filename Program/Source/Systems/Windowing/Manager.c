@@ -1,8 +1,8 @@
 #include "Manager.h"
-#include "System.h"
-#include "Window.h"
-#include <Output/Error.h>
-#include <Session.h>
+#include "System.h"       // Registry functionality
+#include "Window.h"       // Windowing
+#include <Output/Error.h> // Error reporting
+#include <Session.h>      // Global session data
 
 /**
  * @brief The base of the XDG-shell window manager. This is bound by the

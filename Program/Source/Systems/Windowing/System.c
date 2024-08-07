@@ -1,14 +1,15 @@
 #include "System.h"
-#include "Manager.h"
-#include "Window.h"
-#include <Input/Hardware.h>
-#include <Output/Error.h>
-#include <Rendering/SHM.h>
+#include "Manager.h"        // Window managing
+#include "Window.h"         // Windowing
+#include <Input/Hardware.h> // Mouse/keyboard functionality
+#include <Output/Error.h>   // Error reporting
+#include <Rendering/SHM.h>  // Shared memory file functionality
 
 /**
  * @brief The application's display object.
  */
 static display_t* display = NULL;
+
 /**
  * @brief The application's registry object, contained in this file for
  * cleanliness reasons.
@@ -51,67 +52,18 @@ static void HID(void* d, struct wl_registry* r, uint32_t n) {}
 static const registry_monitor_t registry_listener = {HIA, HID};
 
 /**
- * @brief Grab the registry from the display server and setup a listener to
- * wait for more interfaces to be reported by Wayland.
- * @param display The display from which to grab the registry object.
- */
-void BeginRegistry(display_t* display)
-{
-    assert(display != NULL);
-    registry = wl_display_get_registry(display);
-    wl_registry_add_listener(registry, &registry_listener, NULL);
-}
-
-/**
- * @brief Destroy the registry object, and de-allocate all things bound
- * within it.
- */
-void DestroyRegistry(void)
-{
-    UnbindSHM();
-    UnbindInputGroup();
-    UnbindWindowManager();
-    UnbindSubcompositor();
-    UnbindCompositor();
-    wl_registry_destroy(registry);
-}
-
-/**
- * @brief Grab the registry object of the application.
- * @return The registry object.
- */
-registry_t* GetRegistry(void) { return registry; }
-
-/**
- * @brief Check to make sure the features we require were reported by the
- * Wayland display server, and that they were bound properly within the
- * registry.
- * @return true Everything was bound properly.
- * @return false Something's amiss. This should trigger an error, probably
- * @enum wayland_missing_features.
- */
-bool CheckRequiredFeatures(void)
-{
-    // We need the compositor, subcompositor, an input group, shared memory
-    // file functionality, and XDG-shell protocol in order to run the
-    // application.
-    return GetCompositor() != NULL && GetSubcompositor() != NULL &&
-           GetWindowManager() != NULL && GetSHM() != NULL &&
-           GetInputGroup() != NULL;
-}
-
-/**
  * @brief A function to setup the Wayland server, the display environment
  * one used for the Linux distribution of Morningstar. This takes no
  * arguments and returns none, but creates, binds, and does the first poll
  * for the display interface and registry.
  */
-void SetupWayland(void)
+static void SetupWayland(void)
 {
     // Connect to the default Wayland compositor (Wayland-0).
     display = wl_display_connect(0);
     if (display == NULL) ReportError(wayland_display_fail, false);
-    BeginRegistry(display);
+    registry = wl_display_get_registry(display);
+    wl_registry_add_listener(registry, &registry_listener, NULL);
 
     // Wait for the server to catch up, and if it can't, fail the
     // program.
@@ -119,32 +71,31 @@ void SetupWayland(void)
         ReportError(wayland_server_processing_fail, false);
     // By now we should have these items, and if we don't then trigger a
     // warning that something's wrong.
-    if (!CheckRequiredFeatures())
+    if (GetCompositor() == NULL || GetSubcompositor() == NULL ||
+        GetWindowManager() == NULL || GetSHM() == NULL ||
+        GetInputGroup() == NULL)
         ReportError(wayland_missing_features, false);
 }
 
 /**
  * @brief Destroy the Wayland display server data stored in our
- * application. All getters having to do with Wayland will return NULL
- * until @ref SetupWayland is called again.
+ * application. This function is irreversible without effort.
  */
-void DestroyWayland(void)
+static void DestroyWayland(void)
 {
-    DestroyRegistry(); // This'll unbind all registry devices as well.
+    UnbindSHM(), UnbindInputGroup();
+    UnbindWindowManager(), UnbindSubcompositor(), UnbindCompositor();
+    wl_registry_destroy(registry);
     wl_display_disconnect(display);
 }
 
-void SetupWindowingSystem(void)
+void SetupDisplayServer(void) { SetupWayland(); }
+void EndDisplayServer(void) { DestroyWayland(); }
+
+void CheckDisplayServer(void)
 {
-    SetupWayland(); // just linux for now
+    if (wl_display_dispatch(display) == -1)
+        ReportError(wayland_server_processing_fail, true);
 }
 
-void DestroyWindowingSystem(void)
-{
-    DestroyWayland(); // just linux for now
-}
-
-bool CheckDisplayServer(void)
-{
-    return wl_display_dispatch(display) != -1;
-}
+registry_t* GetRegistry(void) { return registry; }

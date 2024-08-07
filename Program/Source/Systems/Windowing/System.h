@@ -14,13 +14,37 @@
 
 // The master include file for the project.
 #include <Master.h>
+// Wayland/XDG type definitions.
 #include <Utilities/WaylandTypes.h>
 
-void SetupWindowingSystem(void);
-void DestroyWindowingSystem(void);
+/**
+ * @brief Setup the interface to the display server for the application.
+ * This function doesn't do a lot on Windows, as the display server is damn
+ * near untouchable as a userspace application--not that we'd need to touch
+ * it, of course.
+ */
+void SetupDisplayServer(void);
 
-bool CheckDisplayServer(void);
+/**
+ * @brief Clean up all things having to do with the display server of the
+ * application. Like @ref SetupDisplayServer, this function doesn't do much
+ * on Windows.
+ */
+void EndDisplayServer(void);
 
+/**
+ * @brief Check to make sure the Wayland display server is still
+ * sending/processing events. If the server is no longer processing events,
+ * this function kills the process immediately with a code of 8, figuring
+ * something must be wrong with the user's computer.
+ */
+void CheckDisplayServer(void);
+
+/**
+ * @brief Get the Wayland registry object for the application. This
+ * function returns NULL if the Wayland display server used is not Wayland.
+ * @return A pointer to the registry.
+ */
 registry_t* GetRegistry(void);
 
 #endif // _MSENG_SYSTEM_WINDOWING_SYSTEM_

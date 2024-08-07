@@ -1,7 +1,10 @@
 #include "Keyboard.h"
-#include "Hardware.h"
-#include <linux/input-event-codes.h>
+#include "Hardware.h"                // The input callback group
+#include <linux/input-event-codes.h> // Linux input codes
 
+/**
+ * @brief The internal input callback group.
+ */
 extern input_callback_group_t input_callbacks;
 
 /**
@@ -130,15 +133,8 @@ static void HKR(void* d, keyboard_object_t* k, int32_t rate, int32_t delay)
 const keyboard_monitor_t keyboard_listener = {HKM, HKE,  HKL,
                                               HKK, HKMO, HKR};
 
-//-----------------------------------------------------------------------//
-// The functions below this point are methods that access private values //
-// linked only to this translation unit (i.e. the capabilities of the    //
-// input group), and are simply getters. The reason they are not inline, //
-// and are contained within this file instead of the header, is because  //
-// of their private nature.                                              //
-//-----------------------------------------------------------------------//
-
 const uint32_t GetLastKeyPressed(void) { return last_key_pressed; }
+
 const uint64_t GetLastKeyCombo(void)
 {
     uint64_t key_combo =

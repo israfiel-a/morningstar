@@ -1,7 +1,7 @@
 /**
  * @file Colors.h
  * @author Israfiel (https://github.com/israfiel-a)
- * @brief Some simple hexadecimal definitions for ARGB8888 colors.
+ * @brief Some simple hexadecimal definitions for XRGB8888 colors.
  * @date 2024-07-26
  *
  * @copyright (c) 2024 - Israfiel

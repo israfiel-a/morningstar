@@ -11,19 +11,49 @@
 #ifndef _MSENG_WINDOW_SYSTEM_
 #define _MSENG_WINDOW_SYSTEM_
 
+// The master include file for the project.
 #include <Master.h>
-#include <Utilities/Colors.h>
+// XRGB888 color codes.
+#include <Rendering/Colors.h>
+// Wayland/XDG type definitions.
 #include <Utilities/WaylandTypes.h>
 
+/**
+ * @brief An enumerator for the various positions an application subwindow
+ * can take. On a monitor much smaller than 16:9, none of these but @enum
+ * centered matter at all.
+ */
 typedef enum
 {
+    /**
+     * @brief This window fills the gap to the right of the gameplay
+     * window.
+     */
     gap_filler_right,
+    /**
+     * @brief This window fills the gap to the left of the gameplay window.
+     */
     gap_filler_left,
+    /**
+     * @brief This window fills the gap to the right of the gameplay
+     * window, with a padding of .25 and centered.
+     */
     gap_centered_right,
+    /**
+     * @brief This window fills the gap to the left of the gameplay window,
+     * with a padding of .25 and centered.
+     */
     gap_centered_left,
+    /**
+     * @brief This window is the gameplay window, and as such is centered
+     * on either the Y or X axis, whichever is larger.
+     */
     centered
 } subsurface_position_t;
 
+/**
+ * @brief An enumerator to describe the various sizes a subwindow can have.
+ */
 typedef enum
 {
     gap_filler,

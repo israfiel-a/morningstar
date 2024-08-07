@@ -1,9 +1,17 @@
 #include "Hardware.h"
-#include <Session.h>
-#include <Windowing/System.h>
-#include <linux/input-event-codes.h>
+#include <Session.h>                 // Globals
+#include <Windowing/System.h>        // Registry functions
+#include <linux/input-event-codes.h> // Linux input codes
 
+/**
+ * @brief The application's keyboard listener as created by @file
+ * Keyboard.c.
+ */
 extern const keyboard_monitor_t keyboard_listener;
+
+/**
+ * @brief The application's mouse listener as created by @file Mouse.c.
+ */
 extern const mouse_monitor_t mouse_listener;
 
 /**
@@ -27,7 +35,8 @@ static keyboard_object_t* keyboard = NULL;
 
 /**
  * @brief The internal group of callbacks to be triggered by all the
- * various listener functions set up below.
+ * various listener functions defined in @file Mouse.c and @file
+ * Keyboard.c.
  */
 input_callback_group_t input_callbacks = {NULL, NULL, NULL, NULL, NULL,
                                           NULL, NULL, NULL, NULL, NULL,
@@ -81,14 +90,6 @@ NOOP HSN(void* d, input_group_t* s, const char* n) {}
  * disconnection of devices from the host machine.
  */
 static const input_group_monitor_t input_group_listener = {HIDC, HSN};
-
-//-----------------------------------------------------------------------//
-// The functions below this point are methods that access private values //
-// linked only to this translation unit (i.e. the capabilities of the    //
-// input group), and are simply getters. The reason they are not inline, //
-// and are contained within this file instead of the header, is because  //
-// of their private nature.                                              //
-//-----------------------------------------------------------------------//
 
 void BindInputGroup(const uint32_t name, const uint32_t version)
 {

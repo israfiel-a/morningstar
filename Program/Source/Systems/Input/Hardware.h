@@ -7,8 +7,8 @@
  * @copyright (c) 2024 - Israfiel
  */
 
-#ifndef _MSENG_GENERAL_INPUT_SYSTEM_
-#define _MSENG_GENERAL_INPUT_SYSTEM_
+#ifndef _MSENG_HARDWARE_INPUT_SYSTEM_
+#define _MSENG_HARDWARE_INPUT_SYSTEM_
 
 // The master include file of the project.
 #include <Master.h>
@@ -140,6 +140,10 @@ void BindInputGroup(const uint32_t name, const uint32_t version);
  */
 void UnbindInputGroup(void);
 
+/**
+ * @brief Grab a pointer to the application's input group from Wayland.
+ * @return The pointer to the input group.
+ */
 input_group_t* GetInputGroup(void);
 
 /**
@@ -147,26 +151,31 @@ input_group_t* GetInputGroup(void);
  * input_callback_group_t::mouse_enter for function information.
  */
 void SetMouseEnterCallback(void (*)(wl_fixed_t, wl_fixed_t));
+
 /**
  * @brief Add a callback to the mouse leave callback. See @ref
  * input_callback_group_t::mouse_leave for function information.
  */
 void SetMouseLeaveCallback(void (*)(void));
+
 /**
  * @brief Add a callback to the mouse move callback. See @ref
  * input_callback_group_t::mouse_move for function information.
  */
 void SetMouseMoveCallback(void (*)(uint32_t, wl_fixed_t, wl_fixed_t));
+
 /**
  * @brief Add a callback to the mouse button down callback. See @ref
  * input_callback_group_t::mouse_button_down for function information.
  */
 void SetMouseButtonDownCallback(void (*)(uint32_t, uint32_t));
+
 /**
  * @brief Add a callback to the mouse button up callback. See @ref
  * input_callback_group_t::mouse_button_up for function information.
  */
 void SetMouseButtonUpCallback(void (*)(uint32_t, uint32_t));
+
 /**
  * @brief Add a callback to the mouse scroll callback. See @ref
  * input_callback_group_t::mouse_scroll for function information.
@@ -186,35 +195,41 @@ void SetMouseRockCallback(void (*)(mouse_axis_type_t,
  * input_callback_group_t::keyboard_enter for function information.
  */
 void SetKeyboardEnterCallback(void (*)(void));
+
 /**
  * @brief Add a callback to the keyboard leave callback. See @ref
  * input_callback_group_t::keyboard_leave for function information.
  */
 void SetKeyboardLeaveCallback(void (*)(void));
+
 /**
  * @brief Add a callback to the keyboard keymap callback. See @ref
  * input_callback_group_t::keyboard_keymap for function information.
  */
 void SetKeyboardKeymapCallback(void (*)(char*));
+
 /**
  * @brief Add a callback to the keyboard keydown callback. See @ref
  * input_callback_group_t::keyboard_keydown for function information.
  */
 void SetKeyboardKeydownCallback(void (*)(uint32_t));
+
 /**
  * @brief Add a callback to the keyboard keyup callback. See @ref
  * input_callback_group_t::keyboard_keyup for function information.
  */
 void SetKeyboardKeyupCallback(void (*)(uint32_t));
+
 /**
  * @brief Add a callback to the keyboard repeat callback. See @ref
  * input_callback_group_t::keyboard_repeat for function information.
  */
 void SetKeyboardRepeatCallback(void (*)(uint32_t));
+
 /**
  * @brief Add a callback to the keyboard modifier callback. See @ref
  * input_callback_group_t::keyboard_modifier for function information.
  */
 void SetKeyboardModifierCallback(void (*)(uint32_t, uint32_t, uint32_t));
 
-#endif // _MSENG_GENERAL_INPUT_SYSTEM_
+#endif // _MSENG_HARDWARE_INPUT_SYSTEM_

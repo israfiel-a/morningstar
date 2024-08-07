@@ -1,8 +1,11 @@
 #include "Mouse.h"
-#include "Hardware.h"
-#include <Session.h>
-#include <linux/input-event-codes.h>
+#include "Hardware.h"                // Input callback group
+#include <Session.h>                 // Global variables
+#include <linux/input-event-codes.h> // Linux input codes
 
+/**
+ * @brief The internal input callback group.
+ */
 extern input_callback_group_t input_callbacks;
 
 /**
@@ -227,13 +230,5 @@ static void HMF(void* d, mouse_object_t* m)
  */
 const mouse_monitor_t mouse_listener = {HME,  HML,  HMM,  HMP,   HMA,  HMF,
                                         HMAI, HMAS, HMAD, HMAHR, HMARD};
-
-//-----------------------------------------------------------------------//
-// The functions below this point are methods that access private values //
-// linked only to this translation unit (i.e. the capabilities of the    //
-// input group), and are simply getters. The reason they are not inline, //
-// and are contained within this file instead of the header, is because  //
-// of their private nature.                                              //
-//-----------------------------------------------------------------------//
 
 void SetCursorImage(pixel_buffer_t* buffer) {}
