@@ -10,17 +10,18 @@
  */
 static bool libnotify_polled = false;
 
+static bool libnotify_available = false;
+
 bool CheckForNotificationPackage(void)
 {
     if (!libnotify_polled)
     {
         // Check for the notify-send binary since that's the only one we
         // use.
-        global_flags.libnotify_available =
-            access("/usr/bin/notify-send", X_OK) == 0;
+        libnotify_available = access("/usr/bin/notify-send", X_OK) == 0;
         libnotify_polled = true;
     }
-    return global_flags.libnotify_available;
+    return libnotify_available;
 }
 
 void LogNotification(const char* title, const char* body, ...)

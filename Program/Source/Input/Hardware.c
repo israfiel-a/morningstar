@@ -57,13 +57,13 @@ static void HIDC(void* d, input_group_t* seat, uint32_t capabilities)
     {
         mouse = wl_seat_get_pointer(seat);
         wl_pointer_add_listener(mouse, &mouse_listener, NULL);
-        global_flags.application_mode = full;
+        global_flags.input_mode = full;
     }
     else if (!supports_mouse && mouse != NULL)
     {
         wl_pointer_release(mouse);
         mouse = NULL;
-        global_flags.application_mode = keyboard_only_locked;
+        global_flags.input_mode = keyboard_only_locked;
     }
 
     bool supports_keyboard = capabilities & WL_SEAT_CAPABILITY_KEYBOARD;
@@ -83,7 +83,7 @@ static void HIDC(void* d, input_group_t* seat, uint32_t capabilities)
  * @brief An unused function for handling the change of name for an input
  * group.
  */
-NOOP HSN(void* d, input_group_t* s, const char* n) {}
+static void HSN(void* d, input_group_t* s, const char* n) {}
 
 /**
  * @brief A listener for input groups that handles the connection /

@@ -1,18 +1,9 @@
 #include "Session.h"
-#include <Diagnostic/Time.h>
-#include <Input/Terminal.h>
-#include <Windowing/System.h>
+#include <Diagnostic/Time.h>  // Time functionality
+#include <Input/Terminal.h>   // Terminal argument parsing
+#include <Windowing/System.h> // Display server setup
 
-globals_t global_flags = {true, false,        false,        false,
-                          0,    {0, 0, 0, 0}, paneled_full, full};
-
-bool CheckSessionValidity(void)
-{
-    // Check to make sure the display isn't fucked and that the application
-    // should still be running.
-    CheckDisplayServer();
-    return global_flags.application_running;
-}
+globals_t global_flags = {true, false, {0, 0, 0, 0}, paneled_full, full};
 
 void BeginSession(int argument_count, char** arguments)
 {
@@ -28,3 +19,11 @@ void BeginSession(int argument_count, char** arguments)
 }
 
 void CleanupSession(void) { EndDisplayServer(); }
+
+bool CheckSessionValidity(void)
+{
+    // Check to make sure the display isn't fucked and that the application
+    // should still be running.
+    CheckDisplayServer();
+    return running;
+}

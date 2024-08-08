@@ -51,10 +51,7 @@ static void HTLC(void* d, toplevel_t* t, int32_t w, int32_t h,
  * many things, like an ALT+F4, close button, etc. None of the parameters
  * are important to us.
  */
-static void HAC(void* d, toplevel_t* t)
-{
-    global_flags.application_running = false;
-}
+static void HAC(void* d, toplevel_t* t) { running = false; }
 
 /**
  * @brief Handle the suggested bounds of the window. This is typically the
@@ -85,7 +82,7 @@ static void HWSS(void* d, toplevel_t* t, int32_t width, int32_t height)
  * abilities. We get this in the form of the @ref wl_registry bind event
  * calls, so we don't particularly care about this.
  */
-NOOP HCAL(void* d, toplevel_t* t, struct wl_array* c) {}
+static void HCAL(void* d, toplevel_t* t, struct wl_array* c) {}
 
 /**
  * @brief A monitor for the application's toplevel, handling things like

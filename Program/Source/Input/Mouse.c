@@ -146,7 +146,7 @@ static void HMAD(void* d, mouse_object_t* m, mouse_axis_t axis,
  * @brief An unused function to handle high-resolution axis discrete
  * information. We don't need this, and as such do not use it.
  */
-NOOP HMAHR(void* d, mouse_object_t* m, uint32_t a, int32_t v) {}
+static void HMAHR(void* d, mouse_object_t* m, uint32_t a, int32_t v) {}
 
 /**
  * @brief Handle the relative direction of the axis operation. Think of

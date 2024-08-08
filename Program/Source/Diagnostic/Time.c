@@ -1,7 +1,9 @@
 #include "Time.h"
-#include <Output/Error.h>
-#include <Session.h>
-#include <time.h>
+#include <Output/Error.h> // Error reporting functionality
+#include <Session.h>      // Global variables
+#include <time.h>         // GLIBC time functionality
+
+static uint64_t start_time = 0;
 
 uint64_t GetCurrentTime(void)
 {
@@ -11,12 +13,12 @@ uint64_t GetCurrentTime(void)
     int time_get_return = clock_gettime(CLOCK_MONOTONIC, &retrieved_time);
     if (time_get_return == -1) ReportError(time_get_error, false);
 
-    if (global_flags.start_time == 0)
+    if (start_time == 0)
     {
-        global_flags.start_time = NSEC_TO_MSEC(retrieved_time.tv_nsec);
+        start_time = NSEC_TO_MSEC(retrieved_time.tv_nsec);
         return 0;
     }
-    return NSEC_TO_MSEC(retrieved_time.tv_nsec) - global_flags.start_time;
+    return NSEC_TO_MSEC(retrieved_time.tv_nsec) - start_time;
 }
 
 void GetTimeString(char* buffer, size_t buffer_length)

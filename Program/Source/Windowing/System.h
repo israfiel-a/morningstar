@@ -47,7 +47,16 @@ void CheckDisplayServer(void);
  */
 registry_t* GetRegistry(void);
 
+/**
+ * @brief Get the Wayland compositor's compositor.
+ * @return The Wayland compositor's compositor.
+ */
 compositor_t* GetCompositor(void);
+
+/**
+ * @brief Get the Wayland compositor's compositor's compositor. Dear god.
+ * @return The Wayland compositor's compositor's compositor.
+ */
 subcompositor_t* GetSubcompositor(void);
 
 #endif // _MSENG_SYSTEM_WINDOWING_SYSTEM_

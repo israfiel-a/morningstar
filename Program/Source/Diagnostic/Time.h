@@ -11,6 +11,7 @@
 #ifndef _MSENG_TIME_DIAGNOSTIC_SYSTEM_
 #define _MSENG_TIME_DIAGNOSTIC_SYSTEM_
 
+// The program's master include file.
 #include <Master.h>
 
 /**
