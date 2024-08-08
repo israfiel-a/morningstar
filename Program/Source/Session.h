@@ -16,6 +16,8 @@
 
 #define NOOP static void
 
+#define dimensions global_flags.application_dimensions
+
 typedef struct
 {
     bool application_running;
@@ -23,6 +25,26 @@ typedef struct
     bool stdout_available;
     bool libnotify_available;
     uint64_t start_time;
+    struct
+    {
+        /**
+         * @brief The width of the monitor as reported by XDG-shell.
+         */
+        int32_t width;
+        /**
+         * @brief The height of the monitor as reported by XDG-shell.
+         */
+        int32_t height;
+        /**
+         * @brief The shortest side of the monitor; width or height.
+         */
+        int32_t shortest_side;
+        /**
+         * @brief The size of the gaps between the end of the x-border of
+         * the gameplay window and end of the backdrop window.
+         */
+        int32_t gap_size;
+    } application_dimensions;
     enum
     {
         unified,            // just gameplay window
@@ -31,11 +53,6 @@ typedef struct
         paneled_half,       // just stats + gameplay
         paneled_half_locked // locked at stats + gameplay
     } ui_mode;
-    enum
-    {
-        dark,
-        light
-    } application_theme;
     enum
     {
         keyboard_only,

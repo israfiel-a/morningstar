@@ -47,4 +47,7 @@ void CheckDisplayServer(void);
  */
 registry_t* GetRegistry(void);
 
+compositor_t* GetCompositor(void);
+subcompositor_t* GetSubcompositor(void);
+
 #endif // _MSENG_SYSTEM_WINDOWING_SYSTEM_

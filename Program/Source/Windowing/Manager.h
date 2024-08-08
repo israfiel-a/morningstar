@@ -35,7 +35,7 @@ void UnbindWindowManager(void);
  * @param raw_window The window to wrap.
  * @return The created XDG window.
  */
-window_t* WrapRawWindow(raw_window_t* raw_window);
+wrapped_window_t* WrapRawWindow(raw_window_t* raw_window);
 
 /**
  * @brief Grab the XDG base object.

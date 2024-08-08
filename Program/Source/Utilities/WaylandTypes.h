@@ -34,7 +34,7 @@ typedef enum wl_pointer_axis_source mouse_axis_type_t;
 typedef enum wl_pointer_axis_relative_direction mouse_axis_direction_t;
 typedef struct wl_keyboard_listener keyboard_monitor_t;
 typedef struct wl_seat_listener input_group_monitor_t;
-typedef struct xdg_surface window_t;
+typedef struct xdg_surface wrapped_window_t;
 typedef struct wl_seat input_group_t;
 typedef struct wl_pointer mouse_object_t;
 typedef enum wl_keyboard_keymap_format keyboard_keymap_format_t;

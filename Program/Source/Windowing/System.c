@@ -1,6 +1,5 @@
 #include "System.h"
 #include "Manager.h"        // Window managing
-#include "Window.h"         // Windowing
 #include <Input/Hardware.h> // Mouse/keyboard functionality
 #include <Output/Error.h>   // Error reporting
 #include <Rendering/SHM.h>  // Shared memory file functionality
@@ -15,6 +14,18 @@ static display_t* display = NULL;
  * cleanliness reasons.
  */
 static registry_t* registry = NULL;
+
+/**
+ * @brief The Wayland compositor's compositor. It is responsible for
+ * creating surfaces and regions.
+ */
+static compositor_t* compositor = NULL;
+
+/**
+ * @brief The Wayland's compositor's compositor's compositor. The nesting
+ * is crazy here. This is responsible for creating subsurfaces.
+ */
+static subcompositor_t* subcompositor = NULL;
 
 /**
  * @brief Basically a big switch statement that binds whatever interface
@@ -32,9 +43,11 @@ static void HIA(void* d, registry_t* r, uint32_t name,
     else if (!strcmp(interface, wl_seat_interface.name))
         BindInputGroup(name, version);
     else if (!strcmp(interface, wl_compositor_interface.name))
-        BindCompositor(name, version);
+        compositor = wl_registry_bind(GetRegistry(), name,
+                                      &wl_compositor_interface, version);
     else if (!strcmp(interface, wl_subcompositor_interface.name))
-        BindSubcompositor(name, version);
+        subcompositor = wl_registry_bind(
+            GetRegistry(), name, &wl_subcompositor_interface, version);
     else if (!strcmp(interface, xdg_wm_base_interface.name))
         BindWindowManager(name, version);
 }
@@ -84,7 +97,9 @@ static void SetupWayland(void)
 static void DestroyWayland(void)
 {
     UnbindSHM(), UnbindInputGroup();
-    UnbindWindowManager(), UnbindSubcompositor(), UnbindCompositor();
+    UnbindWindowManager();
+    wl_subcompositor_destroy(subcompositor);
+    wl_compositor_destroy(compositor);
     wl_registry_destroy(registry);
     wl_display_disconnect(display);
 }
@@ -99,3 +114,5 @@ void CheckDisplayServer(void)
 }
 
 registry_t* GetRegistry(void) { return registry; }
+compositor_t* GetCompositor(void) { return compositor; }
+subcompositor_t* GetSubcompositor(void) { return subcompositor; }

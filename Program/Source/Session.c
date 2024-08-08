@@ -3,8 +3,8 @@
 #include <Input/Terminal.h>
 #include <Windowing/System.h>
 
-globals_t global_flags = {true, false,        false, false,
-                          0,    paneled_full, light, nothing};
+globals_t global_flags = {true, false,        false,        false,
+                          0,    {0, 0, 0, 0}, paneled_full, full};
 
 bool CheckSessionValidity(void)
 {

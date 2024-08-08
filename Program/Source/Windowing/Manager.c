@@ -1,8 +1,10 @@
 #include "Manager.h"
-#include "System.h"       // Registry functionality
-#include "Window.h"       // Windowing
-#include <Output/Error.h> // Error reporting
-#include <Session.h>      // Global session data
+#include "System.h"           // Registry functionality
+#include "Window.h"           // Windowing
+#include <Output/Error.h>     // Error reporting
+#include <Rendering/Colors.h> // Blank buffer creation
+#include <Session.h>          // Global session data
+#include <Utilities/Math.h>   // Simple math functions
 
 /**
  * @brief The base of the XDG-shell window manager. This is bound by the
@@ -69,7 +71,13 @@ static void HWSS(void* d, toplevel_t* t, int32_t width, int32_t height)
 {
     if (width == 0 || height == 0)
         ReportError(monitor_dimensions_missing, false);
-    SetWindowPositions(width, height);
+
+    dimensions.width = width, dimensions.height = height;
+    dimensions.shortest_side = min(dimensions.width, dimensions.height);
+    dimensions.gap_size =
+        ((float)dimensions.width - dimensions.shortest_side) / 2;
+
+    SetWindowPositions();
 }
 
 /**
@@ -94,7 +102,7 @@ const static toplevel_monitor_t toplevel_listener = {HTLC, HAC, HWSS,
  * @param window The XDG ("wrapped") version of the background window.
  */
 static void SetToplevel(raw_window_t* restrict window_raw,
-                        window_t* restrict window)
+                        wrapped_window_t* restrict window)
 {
     assert(window != NULL && toplevel == NULL);
 
@@ -113,13 +121,13 @@ void BindWindowManager(uint32_t name, uint32_t version)
     base = wl_registry_bind(GetRegistry(), name, &xdg_wm_base_interface,
                             version);
     xdg_wm_base_add_listener(base, &ponger, NULL);
-    CreateWindows();
-    SetToplevel(GetWindowRaw(backdrop), GetBackgroundWindow());
+    CreateUIWindows();
+    SetToplevel(GetWindowRaw(backdrop), GetBackdrop());
 }
 
 void UnbindWindowManager(void)
 {
-    DestroyWindows();
+    DestroyUIWindows();
     xdg_toplevel_destroy(toplevel);
     xdg_wm_base_destroy(base);
 }
@@ -133,14 +141,14 @@ void UnbindWindowManager(void)
  * @param s Nothing of use.
  * @param serial The serial number of the configuration event.
  */
-static void HWC(void* d, window_t* s, uint32_t serial)
+static void HWC(void* d, wrapped_window_t* s, uint32_t serial)
 {
-    xdg_surface_ack_configure(GetBackgroundWindow(), serial);
+    xdg_surface_ack_configure(GetBackdrop(), serial);
 
-    SendBlankColor(GetWindowRaw(backdrop), backdrop_window, BLACK);
-    SendBlankColor(GetWindowRaw(gameplay), GetWindowType(gameplay), WHITE);
-    SendBlankColor(GetWindowRaw(bust), GetWindowType(bust), RED);
-    SendBlankColor(GetWindowRaw(stat), GetWindowType(stat), RED);
+    SendBlankColor(GetWindowRaw(backdrop), backdrop, BLACK);
+    SendBlankColor(GetWindowRaw(gameplay), gameplay, WHITE);
+    SendBlankColor(GetWindowRaw(bust), bust, RED);
+    SendBlankColor(GetWindowRaw(stat), stat, RED);
 }
 
 /**
@@ -150,9 +158,10 @@ static void HWC(void* d, window_t* s, uint32_t serial)
  */
 const static window_listener_t surface_listener = {HWC};
 
-window_t* WrapRawWindow(raw_window_t* raw_window)
+wrapped_window_t* WrapRawWindow(raw_window_t* raw_window)
 {
-    window_t* window = xdg_wm_base_get_xdg_surface(base, raw_window);
+    wrapped_window_t* window =
+        xdg_wm_base_get_xdg_surface(base, raw_window);
     xdg_surface_add_listener(window, &surface_listener, NULL);
     return window;
 }

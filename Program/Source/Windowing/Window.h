@@ -13,87 +13,120 @@
 
 // The master include file for the project.
 #include <Master.h>
-// XRGB888 color codes.
-#include <Rendering/Colors.h>
 // Wayland/XDG type definitions.
 #include <Utilities/WaylandTypes.h>
 
 /**
- * @brief An enumerator for the various positions an application subwindow
- * can take. On a monitor much smaller than 16:9, none of these but @enum
- * centered matter at all.
+ * @brief An enum to specify which window you're trying to access.
  */
 typedef enum __attribute__((__packed__))
 {
     /**
-     * @brief This window fills the gap to the right of the gameplay
-     * window.
+     * @brief You're trying to access the window at index 0, the character
+     * bust display.
      */
-    gap_filler_right,
-    /**
-     * @brief This window fills the gap to the left of the gameplay window.
-     */
-    gap_filler_left,
-    /**
-     * @brief This window fills the gap to the right of the gameplay
-     * window, with a padding of .25 and centered.
-     */
-    gap_centered_right,
-    /**
-     * @brief This window fills the gap to the left of the gameplay window,
-     * with a padding of .25 and centered.
-     */
-    gap_centered_left,
-    /**
-     * @brief This window is the gameplay window, and as such is centered
-     * on either the Y or X axis, whichever is larger.
-     */
-    central_window,
-    /**
-     * @brief This window is the background surface for the application.
-     * This surface is always a sheer black, with no other rendering done
-     * to it beyond painting said black.
-     */
-    backdrop_window
-} subsurface_type_t;
-
-typedef enum __attribute__((__packed__))
-{
     bust,
-    stat,
+    /**
+     * @brief You're trying to access the window at index 1, the actual
+     * gameplay window.
+     */
     gameplay,
+    /**
+     * @brief You're trying to access the stat window at index 2.
+     */
+    stat,
+    /**
+     * @brief You're trying to access the window behind the rest, the
+     * backdrop window. This one doesn't have an index, as its object
+     * contains the array.
+     */
     backdrop
 } requested_window_t;
 
-void CreateWindows(void);
-void SetWindowPositions(int32_t suggested_width, int32_t suggested_height);
-void DestroyWindows(void);
+/**
+ * @brief A structure describing the various states of a particular
+ * subwindow.
+ */
+typedef struct
+{
+    /**
+     * @brief The actual subsurface interface of the window. This includes
+     * position and sync information.
+     */
+    raw_subwindow_t* inner;
+    /**
+     * @brief The inner @ref wl_surface of the subwindow. This should
+     * really not be edited by anything, beyond the occasional @ref
+     * wl_surface_commit to push changes to the surface.
+     */
+    raw_window_t* _win;
+} subwindow_t;
 
-raw_window_t* CreateRawWindow(void);
-raw_subwindow_t* CreateRawSubwindow(raw_window_t** window,
-                                    raw_window_t* parent);
+/**
+ * @brief A structure to describe the various states of a particular
+ * window. In the base, unmodified version of the toolkit, there is only
+ * one version of this object ever created.
+ */
+typedef struct
+{
+    /**
+     * @brief The raw Wayland surface within the XDG-shell one.
+     */
+    raw_window_t* _win;
+    /**
+     * @brief The XDG-shell surface. An actual "window", one could say.
+     */
+    wrapped_window_t* inner;
+    /**
+     * @brief An array of subwindows.
+     */
+    subwindow_t* subwindows;
+} window_t;
 
-window_t* GetBackgroundWindow(void);
+/**
+ * @brief Create the UI windows our application will render to in a couple
+ * of milliseconds. These regions start out with neither a size nor a
+ * position, those values are to be set with the functions @ref
+ * SendBlankColor and @ref SetUIWindowPositions respectively.
+ */
+void CreateUIWindows(void);
 
+/**
+ * @brief Destroy the UI windows of the application. UI WINDOWS, not UI
+ * PANELS. Panels and decorations draw by the game are to be disposed of
+ * far before this function is called.
+ */
+void DestroyUIWindows(void);
+
+/**
+ * @brief Set the positions of the windows. This function should be called
+ * by the @ref HWSS method called from @file Manager.c in response of
+ * XDG-shell reporting monitor dimensions. Any other calls are pointless,
+ * and will be ignored.
+ */
+void SetWindowPositions(void);
+
+/**
+ * @brief Get the XDG-shell surface corresponding to the backdrop window of
+ * the application.
+ * @return The backdrop window.
+ */
+wrapped_window_t* GetBackdrop(void);
+
+/**
+ * @brief Get a raw window from one of the application's full windows or
+ * subwindows.
+ * @param requested The requested window.
+ * @return The requested raw window.
+ */
 raw_window_t* GetWindowRaw(requested_window_t requested);
+
+/**
+ * @brief Get a raw subwindow from one of the application's subwindows. If
+ * @enum backdrop is passed to this function, NULL is returned.
+ * @param requested The requested subwindow.
+ * @return The requested raw subwindow.
+ */
 raw_subwindow_t* GetSubwindowRaw(requested_window_t requested);
-subsurface_type_t GetWindowType(requested_window_t requested);
-
-compositor_t* GetCompositor(void);
-subcompositor_t* GetSubcompositor(void);
-
-void BindCompositor(uint32_t name, uint32_t version);
-void BindSubcompositor(uint32_t name, uint32_t version);
-
-void UnbindCompositor(void);
-void UnbindSubcompositor(void);
-
-void NoteSuggestedBounds(int32_t width, int32_t height);
-int32_t GetSuggestedWidth(void);
-int32_t GetSuggestedHeight(void);
-int32_t GetShortestSide(void);
-
-void SendBlankColor(raw_window_t* window, subsurface_type_t type,
-                    uint32_t color);
 
 #endif // _MSENG_WINDOW_SYSTEM_

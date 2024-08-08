@@ -13,30 +13,8 @@
 
 #include <Master.h>
 
-#define min(x, y)                                                         \
-    _Generic((x), uint32_t: uint32_min(x, y), int32_t: int32_min(x, y))
-#define max(x, y)                                                         \
-    _Generic((x), uint32_t: uint32_max(x, y), int32_t: int32_max(x, y))
-
-inline static uint32_t uint32_min(uint32_t x, uint32_t y)
-{
-    return x < y ? x : y;
-}
-
-inline static uint32_t uint32_max(uint32_t x, uint32_t y)
-{
-    return x > y ? x : y;
-}
-
-inline static int32_t int32_min(int32_t x, int32_t y)
-{
-    return x < y ? x : y;
-}
-
-inline static int32_t int32_max(int32_t x, int32_t y)
-{
-    return x > y ? x : y;
-}
+#define min(x, y) (x < y ? x : y)
+#define max(x, y) (x > y ? x : y)
 
 // note this only works with certain numbers
 int32_t simple_round(double x);
