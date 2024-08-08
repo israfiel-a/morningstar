@@ -114,7 +114,7 @@ void BindWindowManager(uint32_t name, uint32_t version)
                             version);
     xdg_wm_base_add_listener(base, &ponger, NULL);
     CreateWindows();
-    SetToplevel(GetBackgroundWindowRaw(), GetBackgroundWindow());
+    SetToplevel(GetWindowRaw(backdrop), GetBackgroundWindow());
 }
 
 void UnbindWindowManager(void)
@@ -137,11 +137,10 @@ static void HWC(void* d, window_t* s, uint32_t serial)
 {
     xdg_surface_ack_configure(GetBackgroundWindow(), serial);
 
-    SendBlankColor(GetBackgroundWindowRaw(), background_window, BLACK);
-    SendBlankColor(GetGameplayRawWindow(), GetGameplayWindow()->size,
-                   WHITE);
-    SendBlankColor(GetBustRawWindow(), GetBustWindow()->size, RED);
-    SendBlankColor(GetStatRawWindow(), GetStatWindow()->size, RED);
+    SendBlankColor(GetWindowRaw(backdrop), backdrop_window, BLACK);
+    SendBlankColor(GetWindowRaw(gameplay), GetWindowType(gameplay), WHITE);
+    SendBlankColor(GetWindowRaw(bust), GetWindowType(bust), RED);
+    SendBlankColor(GetWindowRaw(stat), GetWindowType(stat), RED);
 }
 
 /**

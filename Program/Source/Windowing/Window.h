@@ -23,7 +23,7 @@
  * can take. On a monitor much smaller than 16:9, none of these but @enum
  * centered matter at all.
  */
-typedef enum
+typedef enum __attribute__((__packed__))
 {
     /**
      * @brief This window fills the gap to the right of the gameplay
@@ -48,27 +48,22 @@ typedef enum
      * @brief This window is the gameplay window, and as such is centered
      * on either the Y or X axis, whichever is larger.
      */
-    centered
-} subsurface_position_t;
+    central_window,
+    /**
+     * @brief This window is the background surface for the application.
+     * This surface is always a sheer black, with no other rendering done
+     * to it beyond painting said black.
+     */
+    backdrop_window
+} subsurface_type_t;
 
-/**
- * @brief An enumerator to describe the various sizes a subwindow can have.
- */
-typedef enum
+typedef enum __attribute__((__packed__))
 {
-    gap_filler,
-    gap_filler_centered,
-    main_window,
-    background_window
-} subsurface_size_t;
-
-typedef struct
-{
-    subsurface_size_t size;
-    subsurface_position_t position;
-    raw_window_t* window;
-    raw_subwindow_t* subwindow;
-} subwindow_t;
+    bust,
+    stat,
+    gameplay,
+    backdrop
+} requested_window_t;
 
 void CreateWindows(void);
 void SetWindowPositions(int32_t suggested_width, int32_t suggested_height);
@@ -79,18 +74,10 @@ raw_subwindow_t* CreateRawSubwindow(raw_window_t** window,
                                     raw_window_t* parent);
 
 window_t* GetBackgroundWindow(void);
-const subwindow_t* GetBustWindow(void);
-const subwindow_t* GetGameplayWindow(void);
-const subwindow_t* GetStatWindow(void);
 
-raw_window_t* GetBackgroundWindowRaw(void);
-raw_window_t* GetBustRawWindow(void);
-raw_window_t* GetGameplayRawWindow(void);
-raw_window_t* GetStatRawWindow(void);
-
-raw_subwindow_t* GetBustRawSubwindow(void);
-raw_subwindow_t* GetGameplayRawSubwindow(void);
-raw_subwindow_t* GetStatRawSubwindow(void);
+raw_window_t* GetWindowRaw(requested_window_t requested);
+raw_subwindow_t* GetSubwindowRaw(requested_window_t requested);
+subsurface_type_t GetWindowType(requested_window_t requested);
 
 compositor_t* GetCompositor(void);
 subcompositor_t* GetSubcompositor(void);
@@ -106,8 +93,7 @@ int32_t GetSuggestedWidth(void);
 int32_t GetSuggestedHeight(void);
 int32_t GetShortestSide(void);
 
-void SetSubwindowPosition(subwindow_t* subwindow);
-void SendBlankColor(raw_window_t* window, subsurface_size_t size,
+void SendBlankColor(raw_window_t* window, subsurface_type_t type,
                     uint32_t color);
 
 #endif // _MSENG_WINDOW_SYSTEM_
