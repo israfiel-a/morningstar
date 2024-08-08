@@ -47,6 +47,7 @@ file(GLOB PROJECT_FILES
     ${CMAKE_SOURCE_DIR}/Source/Windowing/*.c 
     ${CMAKE_SOURCE_DIR}/Source/Input/*.c 
     ${CMAKE_SOURCE_DIR}/Source/Output/*.c 
+    ${CMAKE_SOURCE_DIR}/Source/Memory/*.c 
     ${CMAKE_SOURCE_DIR}/Source/Diagnostic/*.c 
     ${CMAKE_SOURCE_DIR}/Source/Rendering/*.c 
     ${CMAKE_SOURCE_DIR}/Source/Utilities/Utilities.c 
@@ -56,6 +57,7 @@ file(GLOB PROJECT_HEADERS ${CMAKE_SOURCE_DIR}/Source/*.h
     ${CMAKE_SOURCE_DIR}/Source/Windowing/*.h
     ${CMAKE_SOURCE_DIR}/Source/Input/*.h
     ${CMAKE_SOURCE_DIR}/Source/Output/*.h
+    ${CMAKE_SOURCE_DIR}/Source/Memory/*.h
     ${CMAKE_SOURCE_DIR}/Source/Rendering/*.h
     ${CMAKE_SOURCE_DIR}/Source/Diagnostic/*.h
     ${CMAKE_SOURCE_DIR}/Source/Utilities/*.h)
@@ -67,9 +69,13 @@ foreach(file ${PROJECT_FILES} ${PROJECT_HEADERS} ${CMAKE_SOURCE_DIR}/Source/Main
 endforeach()
 
 include_directories(${CMAKE_SOURCE_DIR}/Dependencies ${CMAKE_SOURCE_DIR}/Source)
-add_library(morningstar SHARED ${PROJECT_FILES})
-add_library(morningstar_static STATIC ${PROJECT_FILES})
-target_link_libraries(morningstar PRIVATE wayland-client PRIVATE rt)
+
+add_library(morningstar_source OBJECT ${PROJECT_FILES})
+set_property(TARGET morningstar_source PROPERTY POSITION_INDEPENDENT_CODE 1)
+add_library(morningstar_shared SHARED $<TARGET_OBJECTS:morningstar_source>)
+add_library(morningstar_static STATIC $<TARGET_OBJECTS:morningstar_source>)
+target_link_libraries(morningstar_shared PRIVATE wayland-client)
+target_link_libraries(morningstar_static PRIVATE wayland-client)
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     set(CMAKE_EXPORT_COMPILE_COMMANDS YES)
@@ -82,7 +88,7 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     if(EXISTS "${CMAKE_SOURCE_DIR}/Source/Main.c")
         list(APPEND CMAKE_BUILD_RPATH "$ORIGIN/")
         add_executable(${PROJECT_NAME} ${CMAKE_SOURCE_DIR}/Source/Main.c)
-        target_link_libraries(${PROJECT_NAME} PRIVATE morningstar)
+        target_link_libraries(${PROJECT_NAME} PRIVATE morningstar_shared)
     endif()
 else()  
     add_compile_options(-Ofast)

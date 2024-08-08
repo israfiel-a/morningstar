@@ -13,7 +13,7 @@
 // The master include file of the project.
 #include <Master.h>
 // Wayland/XDG type definitions.
-#include <Utilities/WaylandTypes.h>
+#include <Types.h>
 
 /**
  * @brief A group of callback functions that are triggered upon any of the

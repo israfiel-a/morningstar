@@ -11,7 +11,7 @@
 #define _MSENG_COLORS_UTILITIES_
 
 #include <Master.h>
-#include <Utilities/WaylandTypes.h>
+#include <Types.h>
 #include <Windowing/Window.h>
 
 // Extremes

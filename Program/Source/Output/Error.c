@@ -2,11 +2,19 @@
 #include "Messages.h"
 #include <Session.h>
 
+// outline of new system (to be implemented):
+// report function: (file, function, line, code)
+// severity array: program_error, external_error, os_error
+// override functionality based on severity
+// descriptive error strings reported alongside code
+
 /**
  * @brief An array of explanations to go along with each error code. Every
  * error must have an explanation.
  */
 static const char* error_explanations[] = {
+    [memory_allocation_failure] = "failed to allocate memory (OS error?)",
+    [memory_free_failure] = "null pointer passed to free function",
     [memory_map_failure] = "failure to map memory",
     [memory_unmap_failure] = "failure to unmap memory",
     [shm_open_failure] = "shared memory file open failure",

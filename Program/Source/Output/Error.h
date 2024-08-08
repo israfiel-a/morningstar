@@ -20,6 +20,8 @@
  */
 typedef enum
 {
+    memory_allocation_failure,
+    memory_free_failure,
     /**
      * @brief We failed to create a memory map.
      */

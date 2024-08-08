@@ -14,7 +14,7 @@
 // The master include file for the project.
 #include <Master.h>
 // Wayland/XDG type definitions.
-#include <Utilities/WaylandTypes.h>
+#include <Types.h>
 
 /**
  * @brief An enum to specify which window you're trying to access.

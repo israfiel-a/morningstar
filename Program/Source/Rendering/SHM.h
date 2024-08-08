@@ -11,7 +11,7 @@
 #define _MSENG_SHM_RENDERING_SYSTEM_
 
 #include <Master.h>
-#include <Utilities/WaylandTypes.h>
+#include <Types.h>
 
 pixel_buffer_t* CreateSolidPixelBuffer(uint32_t width, uint32_t height,
                                        color_type_t format,

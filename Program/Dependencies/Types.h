@@ -1,18 +1,21 @@
 /**
  * @file Types.h
  * @author Israfiel (https://github.com/israfiel-a)
- * @brief Some type definitions to make the various Wayland and XDG
- * interface names make more sense.
- * @date 2024-07-27
+ * @brief Type definitions for external libraries, that better explain the
+ * use of any given interface (in my opinion).
+ * @date 2024-08-08
  *
  * @copyright (c) 2024 - Israfiel
  */
 
-#ifndef _MSENG_WAYLAND_TYPES_
-#define _MSENG_WAYLAND_TYPES_
+#ifndef _MSENG_EXTERNAL_TYPES_
+#define _MSENG_EXTERNAL_TYPES_
 
-#include <wayland-client-protocol.h>
+// The Wayland client header file.
 #include <wayland-client.h>
+// The Wayland protocol general header file.
+#include <wayland-client-protocol.h>
+// The XDG-shell Wayland protocol.
 #include <xdg-shell.h>
 
 typedef struct wl_buffer pixel_buffer_t;
@@ -54,4 +57,4 @@ typedef struct wl_registry registry_t;
 #define XRGB WL_SHM_FORMAT_XRGB8888
 #define ARGB WL_SHM_FORMAT_ARGB8888
 
-#endif // _MSENG_WAYLAND_TYPES_
+#endif // _MSENG_EXTERNAL_TYPES_
