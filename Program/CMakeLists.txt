@@ -30,6 +30,7 @@ endif()
 
 set(CMAKE_C_STANDARD 11)
 add_compile_options(-Wall -Werror -Wpedantic)
+add_link_options(-nodefaultlibs)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME})
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME})
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME})
@@ -68,7 +69,7 @@ endforeach()
 
 include_directories(${CMAKE_SOURCE_DIR}/Dependencies ${CMAKE_SOURCE_DIR}/Source)
 add_library(morningstar SHARED STATIC ${PROJECT_FILES})
-target_link_libraries(morningstar PRIVATE wayland-client PRIVATE rt)
+target_link_libraries(morningstar PRIVATE c PRIVATE wayland-client PRIVATE rt)
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     set(CMAKE_EXPORT_COMPILE_COMMANDS YES)
