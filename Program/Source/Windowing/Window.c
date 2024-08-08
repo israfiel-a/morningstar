@@ -1,8 +1,7 @@
 #include "Window.h"
-#include "Manager.h"        // Window wrapping
-#include "System.h"         // Registry & compositor getter
-#include <Session.h>        // Global values
-#include <Utilities/Math.h> // Basic math functions
+#include "Manager.h" // Window wrapping
+#include "System.h"  // Registry & compositor getter
+#include <Session.h> // Global values
 
 /**
  * @brief The application's window, and all its children.

@@ -4,7 +4,6 @@
 #include <Output/Error.h>     // Error reporting
 #include <Rendering/Colors.h> // Blank buffer creation
 #include <Session.h>          // Global session data
-#include <Utilities/Math.h>   // Simple math functions
 
 /**
  * @brief The base of the XDG-shell window manager. This is bound by the
@@ -70,7 +69,9 @@ static void HWSS(void* d, toplevel_t* t, int32_t width, int32_t height)
         ReportError(monitor_dimensions_missing, false);
 
     dimensions.width = width, dimensions.height = height;
-    dimensions.shortest_side = min(dimensions.width, dimensions.height);
+    dimensions.shortest_side =
+        (dimensions.width > dimensions.height ? dimensions.height
+                                              : dimensions.width);
     dimensions.gap_size =
         ((float)dimensions.width - dimensions.shortest_side) / 2;
 
