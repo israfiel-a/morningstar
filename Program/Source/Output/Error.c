@@ -8,38 +8,59 @@
 // override functionality based on severity
 // descriptive error strings reported alongside code
 
-/**
- * @brief An array of explanations to go along with each error code. Every
- * error must have an explanation.
- */
-static const char* error_explanations[] = {
-    [memory_allocation_failure] = "failed to allocate memory (OS error?)",
-    [memory_free_failure] = "null pointer passed to free function",
-    [memory_map_failure] = "failure to map memory",
-    [memory_unmap_failure] = "failure to unmap memory",
-    [shm_open_failure] = "shared memory file open failure",
-    [child_process_error] = "child process error",
-    [subshell_error] = "fatal subshell opening error",
-    [time_get_error] = "failed to get clock time",
-    [monitor_dimensions_missing] = "failed to get monitor dimensions",
-    [wayland_display_fail] = "failed to connect to wayland display",
-    [wayland_server_processing_fail] = "wayland server processing error",
-    [wayland_missing_features] = "wayland server missing features"};
+typedef enum __attribute__((__packed__))
+{
+    program_error,
+    external_error,
+    os_error
+} error_severity_t;
+
+typedef struct
+{
+    error_severity_t severity;
+    const char* message;
+} error_t;
+
+static const error_t errors[] = {
+    [allocation_failure] = {os_error, "failed to allocate memory"},
+    [free_failure] = {program_error, "null pointer passed to free"},
+    [mmap_failure] = {os_error, "failed to map memory"},
+    [unmmap_failure] = {os_error, "failed to unmap memory"},
+    [shm_open_failure] = {program_error, "failed to open shm file"},
+    [child_open_failure] = {external_error,
+                            "failed to open child process"},
+    [subshell_open_failure] = {external_error, "failed to open subshell"},
+    [display_connect_failure] = {program_error,
+                                 "failed to connect to wayland display"},
+    [server_processing_failure] = {external_error,
+                                   "wayland processing failed"},
+    [compositor_missing_features] =
+        {external_error, "wayland compositor missing features"},
+    [monitor_measure_failure] = {external_error,
+                                 "xdg-shell failed to get monitor size"},
+    [time_get_failure] = {program_error, "failed to get time"}};
 
 _Noreturn void ReportError_(const char* file, const char* function,
-                            uint64_t line, error_t code, bool override)
+                            uint64_t line, error_code_t code)
 {
-    if (global_flags.stdout_available || override)
+    error_t err = errors[code];
+    if (global_flags.stdout_available || err.severity != program_error)
+    {
         fprintf(stderr,
-                "\n\033[31m" ID " has run into a fatal "
-                "error.\nLocation: %s() @ %s, ln. %lu\nCode: %d :: "
-                "%s\n\n\033[0m",
-                function, file, line, code, error_explanations[code]);
+                "\n\033[1m\033[31m-- Morningstar Error Reporter "
+                "--\n-- Fatal Error Reported.\n-- "
+                "Location:\033[0m\033[31m %s() at %s, ln. %lu\n\033[1m-- "
+                "Severity:\033[0m\033[31m %u\n\033[1m-- "
+                "Description:\033[0m\033[31m cd. %d, %s\033[0m\n\n",
+                function, file, line, err.severity, code, err.message);
+    }
     else
-        LogNotification(ID " Error Reporter",
+    {
+        LogNotification("Morningstar Error Reporter",
                         ID " has run into a fatal error. Location: %s() @ "
                            "%s, ln. %lu. Code: %d :: %s.",
                         function, file, line, code);
+    }
 
     exit(EXIT_FAILURE);
 }

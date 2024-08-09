@@ -46,18 +46,18 @@ int OpenSHM(size_t size)
         if (fd >= 0)
         {
             shm_unlink(name);
-            if (fd < 0) ReportError(shm_open_failure, false);
+            if (fd < 0) ReportError(shm_open_failure);
 
             int ret;
             do {
                 ret = ftruncate(fd, size);
             } while (ret < 0 && errno == EINTR);
-            if (ret < 0) ReportError(shm_open_failure, false);
+            if (ret < 0) ReportError(shm_open_failure);
 
             return fd;
         }
     } while (retries > 0 && errno == EEXIST);
-    ReportError(shm_open_failure, false);
+    ReportError(shm_open_failure);
 }
 
 pixel_buffer_t* CreateSolidPixelBuffer(uint32_t width, uint32_t height,
@@ -71,7 +71,7 @@ pixel_buffer_t* CreateSolidPixelBuffer(uint32_t width, uint32_t height,
 
     uint32_t* frame_data =
         mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
-    if (frame_data == MAP_FAILED) ReportError(memory_map_failure, false);
+    if (frame_data == MAP_FAILED) ReportError(mmap_failure);
 
     shared_memory_pool_t* pool = wl_shm_create_pool(shm_buffer, fd, size);
     pixel_buffer_t* buffer =
@@ -86,8 +86,7 @@ pixel_buffer_t* CreateSolidPixelBuffer(uint32_t width, uint32_t height,
         memcpy(((char*)frame_data) + i, &color, 4);
     for (; i < size; i++) ((char*)frame_data)[i] = ((char*)&color)[i & 7];
 
-    if (munmap(frame_data, size) == -1)
-        ReportError(memory_unmap_failure, false);
+    if (munmap(frame_data, size) == -1) ReportError(unmmap_failure);
 
     wl_buffer_add_listener(buffer, &buffer_listener, NULL);
     return buffer;

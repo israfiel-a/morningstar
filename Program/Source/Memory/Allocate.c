@@ -5,8 +5,7 @@ ptr_t AllocateBlock(size_t size)
 {
     ptr_t created_ptr = {NULL, size};
     created_ptr.inner = malloc(size);
-    if (created_ptr.inner == NULL)
-        ReportError(memory_allocation_failure, false);
+    if (created_ptr.inner == NULL) ReportError(allocation_failure);
 
     return created_ptr;
 }
@@ -15,16 +14,14 @@ ptr_t AllocateZeroedBlock(size_t size)
 {
     ptr_t created_ptr = {NULL, size};
     created_ptr.inner = calloc(1, size);
-    if (created_ptr.inner == NULL)
-        ReportError(memory_allocation_failure, false);
+    if (created_ptr.inner == NULL) ReportError(allocation_failure);
 
     return created_ptr;
 }
 
 void FreeBlock(ptr_t* ptr)
 {
-    if (ptr == NULL || ptr->inner == NULL)
-        ReportError(memory_free_failure, false);
+    if (ptr == NULL || ptr->inner == NULL) ReportError(free_failure);
     free(ptr->inner);
 
     ptr->inner = NULL;

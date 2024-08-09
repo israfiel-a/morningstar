@@ -11,7 +11,7 @@ uint64_t GetCurrentTime(void)
     // so we just multiply it by a thousand to get milliseconds.
     struct timespec retrieved_time;
     int time_get_return = clock_gettime(CLOCK_MONOTONIC, &retrieved_time);
-    if (time_get_return == -1) ReportError(time_get_error, false);
+    if (time_get_return == -1) ReportError(time_get_failure);
 
     if (start_time == 0)
     {

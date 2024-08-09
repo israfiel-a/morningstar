@@ -74,20 +74,20 @@ static void SetupWayland(void)
 {
     // Connect to the default Wayland compositor (Wayland-0).
     display = wl_display_connect(0);
-    if (display == NULL) ReportError(wayland_display_fail, false);
+    if (display == NULL) ReportError(display_connect_failure);
     registry = wl_display_get_registry(display);
     wl_registry_add_listener(registry, &registry_listener, NULL);
 
     // Wait for the server to catch up, and if it can't, fail the
     // program.
     if (wl_display_roundtrip(display) == -1)
-        ReportError(wayland_server_processing_fail, false);
+        ReportError(server_processing_failure);
     // By now we should have these items, and if we don't then trigger a
     // warning that something's wrong.
     if (GetCompositor() == NULL || GetSubcompositor() == NULL ||
         GetWindowManager() == NULL || GetSHM() == NULL ||
         GetInputGroup() == NULL)
-        ReportError(wayland_missing_features, false);
+        ReportError(compositor_missing_features);
 }
 
 /**
@@ -110,7 +110,7 @@ void EndDisplayServer(void) { DestroyWayland(); }
 void CheckDisplayServer(void)
 {
     if (wl_display_dispatch(display) == -1)
-        ReportError(wayland_server_processing_fail, true);
+        ReportError(server_processing_failure);
 }
 
 registry_t* GetRegistry(void) { return registry; }

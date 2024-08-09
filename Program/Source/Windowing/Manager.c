@@ -65,8 +65,7 @@ static void HAC(void* d, toplevel_t* t) { running = false; }
  */
 static void HWSS(void* d, toplevel_t* t, int32_t width, int32_t height)
 {
-    if (width == 0 || height == 0)
-        ReportError(monitor_dimensions_missing, false);
+    if (width == 0 || height == 0) ReportError(monitor_measure_failure);
 
     dimensions.width = width, dimensions.height = height;
     dimensions.shortest_side =
