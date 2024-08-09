@@ -13,9 +13,7 @@
 #include "Allocate.h"
 #include <Master.h>
 
-void FillMemory64(void* dest, uint64_t value, uintptr_t size);
-void FillMemory32(void* dest, uint32_t value, uintptr_t size);
-
 void ZeroBlock(ptr_t* ptr);
+void FillBlock(ptr_t* ptr, uint32_t value, size_t size);
 
 #endif // _MSENG_FILL_MEMORY_SYSTEM_

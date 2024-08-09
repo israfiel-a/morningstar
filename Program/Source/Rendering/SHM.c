@@ -79,7 +79,13 @@ pixel_buffer_t* CreateSolidPixelBuffer(uint32_t width, uint32_t height,
     wl_shm_pool_destroy(pool);
     close(fd);
 
-    FillMemory32(frame_data, color, size);
+    // Some bizzare code stolen from
+    // https://stackoverflow.com/questions/108866/is-there-memset-that-accepts-integers-larger-than-char
+    uintptr_t i;
+    for (i = 0; i < (size & (~7)); i += 4)
+        memcpy(((char*)frame_data) + i, &color, 4);
+    for (; i < size; i++) ((char*)frame_data)[i] = ((char*)&color)[i & 7];
+
     if (munmap(frame_data, size) == -1)
         ReportError(memory_unmap_failure, false);
 
