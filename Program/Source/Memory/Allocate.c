@@ -35,61 +35,20 @@ void CopyBlock(ptr_t* dest, const ptr_t src)
 
     if (dest->inner != NULL) FreeBlock(dest);
     *dest = AllocateBlock(src.size);
-    SetBlockContents(dest, src.inner);
-}
-
-static void ChangeBlockSize(ptr_t* ptr, size_t new_size)
-{
-    if (ptr->inner != NULL) FreeBlock(ptr);
-    *ptr = AllocateBlock(new_size);
-}
-
-void ShrinkBlock(ptr_t* ptr, size_t new_size)
-{
-    if (new_size >= ptr->size) return;
-    ChangeBlockSize(ptr, new_size);
-}
-
-void ExpandBlock(ptr_t* ptr, size_t new_size)
-{
-    if (new_size <= ptr->size) return;
-    ChangeBlockSize(ptr, new_size);
+    SetBlockContents(dest, src.inner, src.size);
 }
 
 void ReallocateBlock(ptr_t* ptr, size_t new_size)
 {
     if (new_size == ptr->size) return;
-    if (new_size > ptr->size) ExpandBlock(ptr, new_size);
-    else ShrinkBlock(ptr, new_size);
+    ptr->inner = realloc(ptr->inner, new_size);
+    if (errno == ENOMEM) ReportError(allocation_failure);
+    ptr->size = new_size;
 }
 
-static void ChangeBlockSizeSafe(ptr_t* ptr, size_t new_size)
+void SetBlockContents(ptr_t* ptr, void* content, size_t content_size)
 {
-    ptr_t contents = AllocateBlock(new_size);
-    if (ptr->inner != NULL)
-    {
-        SetBlockContents(&contents, ptr->inner);
-        FreeBlock(ptr);
-    }
-    *ptr = AllocateBlock(new_size);
-    SetBlockContents(ptr, contents.inner);
-}
-
-void ShrinkBlockSafe(ptr_t* ptr, size_t new_size)
-{
-    if (new_size >= ptr->size) return;
-    ChangeBlockSizeSafe(ptr, new_size);
-}
-
-void ExpandBlockSafe(ptr_t* ptr, size_t new_size)
-{
-    if (new_size <= ptr->size) return;
-    ChangeBlockSizeSafe(ptr, new_size);
-}
-
-void ReallocateBlockSafe(ptr_t* ptr, size_t new_size)
-{
-    if (new_size == ptr->size) return;
-    if (new_size > ptr->size) ExpandBlockSafe(ptr, new_size);
-    else ShrinkBlockSafe(ptr, new_size);
+    if (content == NULL) return;
+    if (ptr->size < content_size) ReportError(memory_bound_mismatch);
+    memcpy(ptr->inner, content, content_size);
 }

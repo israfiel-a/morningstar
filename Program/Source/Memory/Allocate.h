@@ -24,7 +24,7 @@ typedef struct
      */
     void* inner;
     /**
-     * @brief The size of the allocated pointer. Editing this will likely
+     * @brief The size of the associated pointer. Editing this will likely
      * cause problems as the interface either reads data that doesn't
      * exist, or cuts off data that @b does exist.
      */
@@ -74,72 +74,18 @@ void FreeBlock(ptr_t* ptr);
 void CopyBlock(ptr_t* dest, const ptr_t src);
 
 /**
- * @brief Shrink the given pointer's usable section of memory. This is not
- * guaranteed to keep the data inside the pointer. For that behavior, check
- * out @ref ShrinkBlockSafe. If the passed-in size is greater than or equal
- * to the pointer's current size, nothing is done.
- * @param ptr The pointer to shrink.
- * @param new_size The new size of the pointer.
- */
-void ShrinkBlock(ptr_t* ptr, size_t new_size);
-
-/**
- * @brief Grow the given pointer's usable section of memory. This is not
- * guaranteed to keep the data inside the pointer. For that behavior, check
- * out @ref ExpandBlockSafe. If the passed-in size is less than or equal
- * to the pointer's current size, nothing is done.
- * @param ptr The pointer to shrink.
- * @param new_size The new size of the pointer.
- */
-void ExpandBlock(ptr_t* ptr, size_t new_size);
-
-/**
- * @brief Resize the given pointer's usable section of memory. This,
- * depending on the size passed to the function, either calls @ref
- * ShrinkBlock or @ref ExpandBlock. If the size is equal to the given
- * pointer's current size, nothing is done.
- * @param ptr The pointer to be resized.
- * @param new_size The requested new size of the pointer.
+ * @brief Re-allocate the size of the given pointer. The contents of the
+ * pointer are the same up until the boundary of the new memory section.
+ * @param ptr The pointer to reallocate.
+ * @param new_size The requested new size of the block.
  */
 void ReallocateBlock(ptr_t* ptr, size_t new_size);
-
-/**
- * @brief Shrink the given pointer's usable section of memory. This is
- * guaranteed to keep the data inside the pointer. If the passed-in size is
- * greater than or equal to the pointer's current size, nothing is done.
- * @param ptr The pointer to shrink.
- * @param new_size The new size of the pointer.
- */
-void ShrinkBlockSafe(ptr_t* ptr, size_t new_size);
-
-/**
- * @brief Grow the given pointer's usable section of memory. This is
- * guaranteed to keep the data inside the pointer. If the passed-in size is
- * less than or equal to the pointer's current size, nothing is done.
- * @param ptr The pointer to shrink.
- * @param new_size The new size of the pointer.
- */
-void ExpandBlockSafe(ptr_t* ptr, size_t new_size);
-
-/**
- * @brief Resize the given pointer's usable section of memory. This,
- * depending on the size passed to the function, either calls @ref
- * ShrinkBlockSafe or @ref ExpandBlockSafe. If the size is equal to the
- * given pointer's current size, nothing is done.
- * @param ptr The pointer to be resized.
- * @param new_size The requested new size of the pointer.
- */
-void ReallocateBlockSafe(ptr_t* ptr, size_t new_size);
 
 /**
  * @brief Set the contents of the given pointer to the given value.
  * @param ptr The pointer to set.
  * @param contents The new contents of the pointer.
  */
-static inline void SetBlockContents(ptr_t* ptr, void* contents)
-{
-    if (contents == NULL) return;
-    memcpy(ptr->inner, contents, ptr->size);
-}
+void SetBlockContents(ptr_t* ptr, void* content, size_t content_size);
 
 #endif // _MSENG_ALLOCATE_MEMORY_SYSTEM_

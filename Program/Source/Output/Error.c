@@ -24,6 +24,8 @@ typedef struct
 static const error_t errors[] = {
     [allocation_failure] = {os_error, "failed to allocate memory"},
     [free_failure] = {program_error, "null pointer passed to free"},
+    [memory_bound_mismatch] = {os_error,
+                               "smaller area to copy into than copy size"},
     [mmap_failure] = {os_error, "failed to map memory"},
     [unmmap_failure] = {os_error, "failed to unmap memory"},
     [shm_open_failure] = {program_error, "failed to open shm file"},

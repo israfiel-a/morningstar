@@ -17,6 +17,7 @@ typedef enum
 {
     allocation_failure,
     free_failure,
+    memory_bound_mismatch,
     mmap_failure,
     unmmap_failure,
     shm_open_failure,
