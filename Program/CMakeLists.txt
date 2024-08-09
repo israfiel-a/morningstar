@@ -72,6 +72,7 @@ include_directories(${CMAKE_SOURCE_DIR}/Dependencies ${CMAKE_SOURCE_DIR}/Source)
 
 add_library(morningstar_source OBJECT ${PROJECT_FILES})
 set_property(TARGET morningstar_source PROPERTY POSITION_INDEPENDENT_CODE 1)
+
 add_library(morningstar_shared SHARED $<TARGET_OBJECTS:morningstar_source>)
 add_library(morningstar_static STATIC $<TARGET_OBJECTS:morningstar_source>)
 target_link_libraries(morningstar_shared PRIVATE wayland-client)
@@ -87,8 +88,8 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     # file exists.
     if(EXISTS "${CMAKE_SOURCE_DIR}/Source/Main.c")
         list(APPEND CMAKE_BUILD_RPATH "$ORIGIN/")
-        add_executable(${PROJECT_NAME} ${CMAKE_SOURCE_DIR}/Source/Main.c)
-        target_link_libraries(${PROJECT_NAME} PRIVATE morningstar_shared)
+        add_executable(MorningstarDemo ${CMAKE_SOURCE_DIR}/Source/Main.c)
+        target_link_libraries(MorningstarDemo PRIVATE morningstar_shared)
     endif()
 else()  
     add_compile_options(-Ofast)
