@@ -16,6 +16,7 @@
 pixel_buffer_t* CreateSolidPixelBuffer(uint32_t width, uint32_t height,
                                        color_type_t format,
                                        uint32_t color);
+void draw(void);
 
 int OpenSHM(size_t size);
 

@@ -1,4 +1,5 @@
 #include "Manager.h"
+#include "Rendering/SHM.h"
 #include "System.h"           // Registry functionality
 #include "Window.h"           // Windowing
 #include <Output/Error.h>     // Error reporting
@@ -146,6 +147,8 @@ static void HWC(void* d, wrapped_window_t* s, uint32_t serial)
     SendBlankColor(GetWindowRaw(gameplay), gameplay, WHITE);
     SendBlankColor(GetWindowRaw(bust), bust, RED);
     SendBlankColor(GetWindowRaw(stat), stat, RED);
+
+    draw();
 }
 
 /**

@@ -1,8 +1,12 @@
 #include "SHM.h"
 #include <Memory/Fill.h>
 #include <Output/Error.h>
+#define STB_IMAGE_IMPLEMENTATION
+#include <STBI.h>
+#include <Session.h>
 #include <Windowing/System.h>
 #include <fcntl.h>
+#include <glad.h>
 #include <time.h>
 
 static void HandleBufferDeletion(void* data, pixel_buffer_t* buffer)
@@ -90,6 +94,36 @@ pixel_buffer_t* CreateSolidPixelBuffer(uint32_t width, uint32_t height,
 
     wl_buffer_add_listener(buffer, &buffer_listener, NULL);
     return buffer;
+}
+
+const char* vert_shader_text = "attribute vec4 pos;\n"
+                               "void main() {\n"
+                               "  gl_Position = pos;\n"
+                               "}\n";
+
+const char* frag_shader_text =
+    "precision mediump float;\n"
+    "void main() {\n"
+    "  gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);\n"
+    "}\n";
+
+void draw(void)
+{
+    // glViewport(0, 0, dimensions.width, dimensions.height);
+
+    // // Clear the color buffer.
+    // glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    // glClear(GL_COLOR_BUFFER_BIT);
+
+    // static const GLfloat verts[] = {0.0f, 0.5f, 0.0f,  -0.5, -0.5f,
+    //                                 0.0f, 0.5f, -0.5f, 0.0f};
+    // GL* gl = WaylandPlatform::getInstance()->getGL();
+    // glVertexAttribPointer(gl->pos, 3, GL_FLOAT, GL_FALSE, 0, verts);
+    // glEnableVertexAttribArray(gl->pos);
+
+    // glDrawArrays(GL_TRIANGLES, 0, 3);
+
+    // glDisableVertexAttribArray(gl->pos);
 }
 
 shared_memory_buffer_t* GetSHM(void) { return shm_buffer; }

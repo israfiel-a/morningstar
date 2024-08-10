@@ -69,14 +69,15 @@ foreach(file ${PROJECT_FILES} ${PROJECT_HEADERS} ${CMAKE_SOURCE_DIR}/Source/Main
 endforeach()
 
 include_directories(${CMAKE_SOURCE_DIR}/Dependencies ${CMAKE_SOURCE_DIR}/Source)
+link_directories(${CMAKE_SOURCE_DIR}/Dependencies)
 
 add_library(morningstar_source OBJECT ${PROJECT_FILES})
 set_property(TARGET morningstar_source PROPERTY POSITION_INDEPENDENT_CODE 1)
 
 add_library(morningstar_shared SHARED $<TARGET_OBJECTS:morningstar_source>)
 add_library(morningstar_static STATIC $<TARGET_OBJECTS:morningstar_source>)
-target_link_libraries(morningstar_shared PRIVATE wayland-client)
-target_link_libraries(morningstar_static PRIVATE wayland-client)
+target_link_libraries(morningstar_shared PRIVATE wayland-client PRIVATE glad)
+target_link_libraries(morningstar_static PRIVATE wayland-client PRIVATE glad)
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     set(CMAKE_EXPORT_COMPILE_COMMANDS YES)
