@@ -1,6 +1,7 @@
 #include "Window.h"
 #include "Manager.h" // Window wrapping
 #include "System.h"  // Registry & compositor getter
+#include <Rendering/System.h>
 #include <Session.h> // Global values
 
 /**
@@ -66,6 +67,9 @@ void DestroyUIWindows(void)
     wl_subsurface_destroy(bust_window.inner),
         wl_subsurface_destroy(gameplay_window.inner),
         wl_subsurface_destroy(stat_window.inner);
+    wl_egl_window_destroy(bust_window._eglwin),
+        wl_egl_window_destroy(gameplay_window._eglwin),
+        wl_egl_window_destroy(stat_window._eglwin);
     free(application_window.subwindows);
 
     // Make sure to free the XDG surface of the toplevel rather than just
@@ -121,6 +125,18 @@ raw_window_t* GetWindowRaw(requested_window_t requested)
     return NULL; // unreachable, but the gcc compiler is stupid
 }
 
+subwindow_t* GetSubwindow(requested_window_t requested)
+{
+    switch (requested)
+    {
+        case bust:     return &bust_window;
+        case stat:     return &stat_window;
+        case gameplay: return &gameplay_window;
+        case backdrop: return NULL;
+    }
+    return NULL; // unreachable, but the gcc compiler is stupid
+}
+
 raw_subwindow_t* GetSubwindowRaw(requested_window_t requested)
 {
     switch (requested)
@@ -133,4 +149,25 @@ raw_subwindow_t* GetSubwindowRaw(requested_window_t requested)
     return NULL; // unreachable, but the gcc compiler is stupid
 }
 
-void UnbindCompositors(void) {}
+uint32_t GetSubwindowWidth(requested_window_t requested)
+{
+    switch (requested)
+    {
+        case bust:     return dimensions.gap_size / 1.25;
+        case gameplay: return dimensions.shortest_side;
+        case stat:     return dimensions.gap_size;
+        case backdrop: return dimensions.width;
+    }
+    return 0;
+}
+uint32_t GetSubwindowHeight(requested_window_t requested)
+{
+    switch (requested)
+    {
+        case bust:     return dimensions.height / 1.25;
+        case gameplay: return dimensions.shortest_side;
+        case stat:     return dimensions.height;
+        case backdrop: return dimensions.height;
+    }
+    return 0;
+}

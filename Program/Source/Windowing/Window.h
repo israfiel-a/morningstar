@@ -11,10 +11,10 @@
 #ifndef _MSENG_WINDOW_SYSTEM_
 #define _MSENG_WINDOW_SYSTEM_
 
+#include <GLAD/glad.h>
 // The master include file for the project.
 #include <Master.h>
 // Wayland/XDG type definitions.
-#include <Rendering/System.h>
 #include <Types.h>
 
 /**
@@ -55,12 +55,14 @@ typedef struct
      * position and sync information.
      */
     raw_subwindow_t* inner;
+    EGLSurface render_target;
     /**
      * @brief The inner @ref wl_surface of the subwindow. This should
      * really not be edited by anything, beyond the occasional @ref
      * wl_surface_commit to push changes to the surface.
      */
     raw_window_t* _win;
+    opengl_window_t* _eglwin;
 } subwindow_t;
 
 /**
@@ -121,6 +123,11 @@ wrapped_window_t* GetBackdrop(void);
  * @return The requested raw window.
  */
 raw_window_t* GetWindowRaw(requested_window_t requested);
+
+subwindow_t* GetSubwindow(requested_window_t requested);
+
+uint32_t GetSubwindowWidth(requested_window_t requested);
+uint32_t GetSubwindowHeight(requested_window_t requested);
 
 /**
  * @brief Get a raw subwindow from one of the application's subwindows. If

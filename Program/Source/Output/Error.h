@@ -28,10 +28,14 @@ typedef enum
     compositor_missing_features,
     monitor_measure_failure,
     time_get_failure,
-    egl_display_failure,
+    egl_display_connect_failure,
     egl_initialization_failure,
     egl_config_failure,
+    egl_context_create_failure,
     egl_context_bind_failure,
+    egl_window_made_current_failure,
+    egl_window_create_failure,
+    egl_swap_buffer_failure,
     opengl_api_bind_failure,
     opengl_shader_creation_failure
 } error_code_t;

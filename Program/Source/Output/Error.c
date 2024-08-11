@@ -41,12 +41,22 @@ static const error_t errors[] = {
     [monitor_measure_failure] = {external_error,
                                  "xdg-shell failed to get monitor size"},
     [time_get_failure] = {program_error, "failed to get time"},
-    [egl_display_failure] = {external_error, "failed to get EGL display"},
+    [egl_display_connect_failure] = {external_error,
+                                     "failed to get EGL display"},
     [egl_initialization_failure] = {program_error,
                                     "failed to initialize EGL"},
     [egl_config_failure] = {program_error, "failed to configure EGL"},
+    [egl_context_create_failure] = {program_error,
+                                    "failed to create EGL context"},
     [egl_context_bind_failure] = {external_error,
                                   "failed to bind EGL context"},
+    [egl_window_made_current_failure] =
+        {program_error, "failed to make egl window current"},
+    [egl_window_create_failure] = {program_error,
+                                   "failed to create EGL window"},
+    [egl_swap_buffer_failure] =
+        {program_error,
+         "failed to swap buffers -- failed to prevent hanging"},
     [opengl_api_bind_failure] = {program_error,
                                  "failed to bind the OpenGL api"},
     [opengl_shader_creation_failure] = {

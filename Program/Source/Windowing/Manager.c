@@ -76,7 +76,9 @@ static void HWSS(void* d, toplevel_t* t, int32_t width, int32_t height)
         ((float)dimensions.width - dimensions.shortest_side) / 2;
 
     SetWindowPositions();
-    BindEGLContext(GetWindowRaw(backdrop));
+    BindEGLContext(GetSubwindow(gameplay), gameplay);
+    BindEGLContext(GetSubwindow(bust), bust);
+    BindEGLContext(GetSubwindow(stat), stat);
 }
 
 /**
@@ -122,15 +124,10 @@ void BindWindowManager(uint32_t name, uint32_t version)
     xdg_wm_base_add_listener(base, &ponger, NULL);
     CreateUIWindows();
     SetToplevel(GetWindowRaw(backdrop), GetBackdrop());
-
-    //! temp
-    SetupEGL();
 }
 
 void UnbindWindowManager(void)
 {
-    //! temp
-    DestroyEGL();
     DestroyUIWindows();
     xdg_toplevel_destroy(toplevel);
     xdg_wm_base_destroy(base);
@@ -150,11 +147,9 @@ static void HWC(void* d, wrapped_window_t* s, uint32_t serial)
     xdg_surface_ack_configure(GetBackdrop(), serial);
 
     SendBlankColor(GetWindowRaw(backdrop), backdrop, BLACK);
-    SendBlankColor(GetWindowRaw(gameplay), gameplay, WHITE);
-    SendBlankColor(GetWindowRaw(bust), bust, RED);
-    SendBlankColor(GetWindowRaw(stat), stat, RED);
-
-    draw();
+    draw(GetSubwindow(gameplay), gameplay);
+    draw(GetSubwindow(bust), bust);
+    draw(GetSubwindow(stat), stat);
 }
 
 /**

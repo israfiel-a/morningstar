@@ -3,6 +3,7 @@
 #include <Input/File.h>     // Shared memory file functionality
 #include <Input/Hardware.h> // Mouse/keyboard functionality
 #include <Output/Error.h>   // Error reporting
+#include <Rendering/System.h>
 
 /**
  * @brief The application's display object.
@@ -77,6 +78,7 @@ static void SetupWayland(void)
     if (display == NULL) ReportError(display_connect_failure);
     registry = wl_display_get_registry(display);
     wl_registry_add_listener(registry, &registry_listener, NULL);
+    SetupEGL();
 
     // Wait for the server to catch up, and if it can't, fail the
     // program.
@@ -98,6 +100,7 @@ static void DestroyWayland(void)
 {
     UnbindSHM(), UnbindInputGroup();
     UnbindWindowManager();
+    DestroyEGL();
     wl_subcompositor_destroy(subcompositor);
     wl_compositor_destroy(compositor);
     wl_registry_destroy(registry);

@@ -4,112 +4,71 @@
 #include <Session.h>
 #include <Windowing/System.h>
 
-static EGLDisplay egl_display = NULL;
-static EGLConfig egl_config = NULL;
-static EGLContext egl_context = NULL;
-static EGLSurface egl_surface = NULL; //! temp location
-static opengl_window_t* egl_window = NULL;
+static const EGLint ca[] = {EGL_CONTEXT_CLIENT_VERSION, 2, EGL_NONE};
+
+static EGLDisplay display = NULL;
+static EGLConfig config = NULL;
+static EGLContext* contexts[backdrop];
 
 void SetupEGL(void)
 {
-    EGLint major, minor, count, n, size;
-    EGLConfig* configs;
-    int i;
-    EGLint config_attribs[] = {EGL_SURFACE_TYPE,
-                               EGL_WINDOW_BIT,
-                               EGL_RED_SIZE,
-                               8,
-                               EGL_GREEN_SIZE,
-                               8,
-                               EGL_BLUE_SIZE,
-                               8,
-                               EGL_ALPHA_SIZE,
-                               8,
-                               EGL_RENDERABLE_TYPE,
-                               EGL_OPENGL_ES2_BIT,
-                               EGL_NONE};
+    EGLint major, minor;
+    display = eglGetDisplay((EGLNativeDisplayType)GetDisplay());
+    if (display == NULL) ReportError(egl_display_connect_failure);
+    if (!eglInitialize(display, &major, &minor))
+        ReportError(egl_initialization_failure);
 
-    static const EGLint context_attribs[] = {EGL_CONTEXT_CLIENT_VERSION, 2,
-                                             EGL_NONE};
+    EGLint n, config_attribs[] = EGL_CONFIG_ATTRIBUTES;
+    if (!eglChooseConfig(display, config_attribs, &config, 1, &n))
+        ReportError(egl_config_failure);
 
-    egl_display = eglGetDisplay((EGLNativeDisplayType)GetDisplay());
-    if (egl_display == EGL_NO_DISPLAY)
+    for (int i = 0; i < backdrop; i++)
     {
-        fprintf(stderr, "Can't create egl display\n");
-        exit(1);
+        contexts[i] = eglCreateContext(display, config, NULL, ca);
+        if (contexts[i] == NULL) ReportError(egl_context_create_failure);
     }
-    else { fprintf(stderr, "Created egl display\n"); }
-
-    if (eglInitialize(egl_display, &major, &minor) != EGL_TRUE)
-    {
-        fprintf(stderr, "Can't initialise egl display\n");
-        exit(1);
-    }
-    printf("EGL major: %d, minor %d\n", major, minor);
-
-    eglGetConfigs(egl_display, NULL, 0, &count);
-    printf("EGL has %d configs\n", count);
-
-    configs = calloc(count, sizeof *configs);
-
-    eglChooseConfig(egl_display, config_attribs, configs, count, &n);
-
-    for (i = 0; i < n; i++)
-    {
-        eglGetConfigAttrib(egl_display, configs[i], EGL_BUFFER_SIZE,
-                           &size);
-        printf("Buffer size for config %d is %d\n", i, size);
-        eglGetConfigAttrib(egl_display, configs[i], EGL_RED_SIZE, &size);
-        printf("Red size for config %d is %d\n", i, size);
-
-        // just choose the first one
-        egl_config = configs[i];
-        break;
-    }
-
-    egl_context = eglCreateContext(egl_display, egl_config, EGL_NO_CONTEXT,
-                                   context_attribs);
-    free(configs);
 }
 
 void DestroyEGL(void)
 {
-    wl_egl_window_destroy(egl_window);
-    eglDestroyContext(egl_display, egl_context);
-    eglTerminate(egl_display);
+    for (int i = 0; i < backdrop; i++)
+        eglDestroyContext(display, contexts[i]);
+    eglTerminate(display);
     eglReleaseThread();
 }
 
-void BindEGLContext(raw_window_t* window)
+void BindEGLContext(subwindow_t* subwindow, requested_window_t type)
 {
-    egl_window =
-        wl_egl_window_create(window, dimensions.width, dimensions.height);
-    if (egl_window == EGL_NO_SURFACE)
-    {
-        fprintf(stderr, "Can't create egl window\n");
-        exit(1);
-    }
-    else { fprintf(stderr, "Created egl window\n"); }
+    subwindow->_eglwin =
+        wl_egl_window_create(subwindow->_win, GetSubwindowWidth(type),
+                             GetSubwindowHeight(type));
+    if (subwindow->_eglwin == NULL) ReportError(egl_window_create_failure);
 
-    egl_surface = eglCreateWindowSurface(
-        egl_display, egl_config, (EGLNativeWindowType)egl_window, NULL);
+    subwindow->render_target = eglCreateWindowSurface(
+        display, config, (EGLNativeWindowType)subwindow->_eglwin, NULL);
 
-    if (eglMakeCurrent(egl_display, egl_surface, egl_surface, egl_context))
-    {
-        fprintf(stderr, "Made current\n");
-    }
-    else { fprintf(stderr, "Made current failed\n"); }
+    if (!eglMakeCurrent(display, subwindow->render_target,
+                        subwindow->render_target, contexts[type]))
+        ReportError(egl_window_made_current_failure);
 }
 
-void draw(void)
+void draw(subwindow_t* subwindow, requested_window_t type)
 {
-    glClearColor(1.0f, 1.0f, 0.0f, 1.0f);
+    if (eglGetCurrentSurface(EGL_DRAW) != subwindow->render_target ||
+        eglGetCurrentSurface(EGL_READ) != subwindow->render_target)
+    {
+        EGLBoolean made_current =
+            eglMakeCurrent(display, subwindow->render_target,
+                           subwindow->render_target, contexts[type]);
+        if (!made_current) ReportError(egl_window_made_current_failure);
+    }
+
+    if (type == gameplay) glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+    else glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
+
     glClear(GL_COLOR_BUFFER_BIT);
     glFlush();
 
-    if (eglSwapBuffers(egl_display, egl_surface))
-    {
-        fprintf(stderr, "Swapped buffers\n");
-    }
-    else { fprintf(stderr, "Swapped buffers failed\n"); }
+    if (!eglSwapBuffers(display, subwindow->render_target))
+        ReportError(egl_swap_buffer_failure);
 }

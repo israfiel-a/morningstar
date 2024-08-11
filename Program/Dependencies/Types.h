@@ -56,6 +56,13 @@ typedef struct wl_display display_t;
 typedef struct wl_registry registry_t;
 typedef struct wl_egl_window opengl_window_t;
 
+#define EGL_CONFIG_ATTRIBUTES                                             \
+    {                                                                     \
+        EGL_SURFACE_TYPE, EGL_WINDOW_BIT, EGL_RED_SIZE, 8,                \
+            EGL_GREEN_SIZE, 8, EGL_BLUE_SIZE, 8, EGL_ALPHA_SIZE, 8,       \
+            EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT, EGL_NONE             \
+    }
+
 #define XRGB WL_SHM_FORMAT_XRGB8888
 #define ARGB WL_SHM_FORMAT_ARGB8888
 
