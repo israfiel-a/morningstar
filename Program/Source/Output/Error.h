@@ -27,7 +27,13 @@ typedef enum
     server_processing_failure,
     compositor_missing_features,
     monitor_measure_failure,
-    time_get_failure
+    time_get_failure,
+    egl_display_failure,
+    egl_initialization_failure,
+    egl_config_failure,
+    egl_context_bind_failure,
+    opengl_api_bind_failure,
+    opengl_shader_creation_failure
 } error_code_t;
 
 _Noreturn void ReportError_(const char* file, const char* function,

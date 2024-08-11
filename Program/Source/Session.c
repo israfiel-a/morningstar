@@ -1,6 +1,6 @@
 #include "Session.h"
 #include <Diagnostic/Time.h>  // Time functionality
-#include <Input/Terminal.h>   // Terminal argument parsing
+#include <Input/File.h>       // Terminal argument parsing
 #include <Windowing/System.h> // Display server setup
 
 globals_t global_flags = {true, false, {0, 0, 0, 0}, paneled_full, full};

@@ -1,8 +1,8 @@
 #include "System.h"
 #include "Manager.h"        // Window managing
+#include <Input/File.h>     // Shared memory file functionality
 #include <Input/Hardware.h> // Mouse/keyboard functionality
 #include <Output/Error.h>   // Error reporting
-#include <Rendering/SHM.h>  // Shared memory file functionality
 
 /**
  * @brief The application's display object.
@@ -113,6 +113,7 @@ void CheckDisplayServer(void)
         ReportError(server_processing_failure);
 }
 
+display_t* GetDisplay(void) { return display; }
 registry_t* GetRegistry(void) { return registry; }
 compositor_t* GetCompositor(void) { return compositor; }
 subcompositor_t* GetSubcompositor(void) { return subcompositor; }

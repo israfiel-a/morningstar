@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.30.1)
 
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/Dependencies/FND")
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/Dependencies/FIND")
 find_package(Git REQUIRED)
 find_package(Wayland REQUIRED)
 
@@ -37,9 +37,9 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME})
 if(NOT EXISTS "${CMAKE_SOURCE_DIR}/Dependencies/xdg-shell.h" OR NOT EXISTS 
     "${CMAKE_SOURCE_DIR}/Dependencies/xdg-shell.c")
     execute_process(COMMAND bash "-c" 
-    "wayland-scanner client-header /usr/share/wayland-protocols/stable/xdg-shell/xdg-shell.xml Dependencies/xdg-shell.h")
+    "wayland-scanner client-header /usr/share/wayland-protocols/stable/xdg-shell/xdg-shell.xml Dependencies/XDGS/xdg-shell.h")
     execute_process(COMMAND bash "-c" 
-    "wayland-scanner private-code /usr/share/wayland-protocols/stable/xdg-shell/xdg-shell.xml Dependencies/xdg-shell.c")
+    "wayland-scanner private-code /usr/share/wayland-protocols/stable/xdg-shell/xdg-shell.xml Dependencies/XDGS/xdg-shell.c")
 endif()
 
 file(GLOB PROJECT_FILES 
@@ -51,7 +51,7 @@ file(GLOB PROJECT_FILES
     ${CMAKE_SOURCE_DIR}/Source/Diagnostic/*.c 
     ${CMAKE_SOURCE_DIR}/Source/Rendering/*.c 
     ${CMAKE_SOURCE_DIR}/Source/Utilities/Utilities.c 
-    ${CMAKE_SOURCE_DIR}/Dependencies/xdg-shell.c)
+    ${CMAKE_SOURCE_DIR}/Dependencies/XDGS/xdg-shell.c)
 file(GLOB PROJECT_HEADERS ${CMAKE_SOURCE_DIR}/Source/*.h 
     ${CMAKE_SOURCE_DIR}/Source/*.h
     ${CMAKE_SOURCE_DIR}/Source/Windowing/*.h
@@ -69,15 +69,18 @@ foreach(file ${PROJECT_FILES} ${PROJECT_HEADERS} ${CMAKE_SOURCE_DIR}/Source/Main
 endforeach()
 
 include_directories(${CMAKE_SOURCE_DIR}/Dependencies ${CMAKE_SOURCE_DIR}/Source)
-link_directories(${CMAKE_SOURCE_DIR}/Dependencies)
+link_directories(${CMAKE_SOURCE_DIR}/Dependencies/GLAD 
+    ${CMAKE_SOURCE_DIR}/Dependencies/STBI)
 
 add_library(morningstar_source OBJECT ${PROJECT_FILES})
 set_property(TARGET morningstar_source PROPERTY POSITION_INDEPENDENT_CODE 1)
 
 add_library(morningstar_shared SHARED $<TARGET_OBJECTS:morningstar_source>)
 add_library(morningstar_static STATIC $<TARGET_OBJECTS:morningstar_source>)
-target_link_libraries(morningstar_shared PRIVATE wayland-client PRIVATE glad)
-target_link_libraries(morningstar_static PRIVATE wayland-client PRIVATE glad)
+target_link_libraries(morningstar_shared PRIVATE wayland-client PRIVATE EGL
+    PRIVATE wayland-egl PRIVATE GLESv2 PRIVATE glad PRIVATE stbi)
+target_link_libraries(morningstar_static PRIVATE wayland-client PRIVATE EGL
+    PRIVATE wayland-egl PRIVATE GLESv2 PRIVATE glad PRIVATE stbi)
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     set(CMAKE_EXPORT_COMPILE_COMMANDS YES)
@@ -96,6 +99,8 @@ else()
     add_compile_options(-Ofast)
     file(COPY ${PROJECT_HEADERS} DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
 endif()
+file(COPY ${CMAKE_SOURCE_DIR}/Assets DESTINATION 
+    ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Assets)
 
 string(TOLOWER ${CMAKE_BUILD_TYPE} OUTPUT_VARIABLE CMAKE_BUILD_LOWERCASE)
 set(PROJECT_TITLE "${PROJECT_NAME_FULL} | \

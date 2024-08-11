@@ -14,6 +14,7 @@
 // The master include file for the project.
 #include <Master.h>
 // Wayland/XDG type definitions.
+#include <Rendering/System.h>
 #include <Types.h>
 
 /**

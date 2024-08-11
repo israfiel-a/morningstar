@@ -1,10 +1,10 @@
 #include "Manager.h"
-#include "Rendering/SHM.h"
 #include "System.h"           // Registry functionality
 #include "Window.h"           // Windowing
 #include <Output/Error.h>     // Error reporting
 #include <Rendering/Colors.h> // Blank buffer creation
-#include <Session.h>          // Global session data
+#include <Rendering/System.h>
+#include <Session.h> // Global session data
 
 /**
  * @brief The base of the XDG-shell window manager. This is bound by the
@@ -76,6 +76,7 @@ static void HWSS(void* d, toplevel_t* t, int32_t width, int32_t height)
         ((float)dimensions.width - dimensions.shortest_side) / 2;
 
     SetWindowPositions();
+    BindEGLContext(GetWindowRaw(backdrop));
 }
 
 /**
@@ -121,10 +122,15 @@ void BindWindowManager(uint32_t name, uint32_t version)
     xdg_wm_base_add_listener(base, &ponger, NULL);
     CreateUIWindows();
     SetToplevel(GetWindowRaw(backdrop), GetBackdrop());
+
+    //! temp
+    SetupEGL();
 }
 
 void UnbindWindowManager(void)
 {
+    //! temp
+    DestroyEGL();
     DestroyUIWindows();
     xdg_toplevel_destroy(toplevel);
     xdg_wm_base_destroy(base);

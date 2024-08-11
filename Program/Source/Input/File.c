@@ -1,13 +1,13 @@
-#include "SHM.h"
+#include "File.h"
 #include <Memory/Fill.h>
 #include <Output/Error.h>
-#define STB_IMAGE_IMPLEMENTATION
-#include <STBI.h>
+#include <STBI/STBI.h>
 #include <Session.h>
 #include <Windowing/System.h>
 #include <fcntl.h>
-#include <glad.h>
 #include <time.h>
+
+void HandleCommandLineArgs(int argc, char** argv) {}
 
 static void HandleBufferDeletion(void* data, pixel_buffer_t* buffer)
 {
@@ -96,34 +96,32 @@ pixel_buffer_t* CreateSolidPixelBuffer(uint32_t width, uint32_t height,
     return buffer;
 }
 
-const char* vert_shader_text = "attribute vec4 pos;\n"
-                               "void main() {\n"
-                               "  gl_Position = pos;\n"
-                               "}\n";
-
-const char* frag_shader_text =
-    "precision mediump float;\n"
-    "void main() {\n"
-    "  gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);\n"
-    "}\n";
-
-void draw(void)
-{
-    // glViewport(0, 0, dimensions.width, dimensions.height);
-
-    // // Clear the color buffer.
-    // glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-    // glClear(GL_COLOR_BUFFER_BIT);
-
-    // static const GLfloat verts[] = {0.0f, 0.5f, 0.0f,  -0.5, -0.5f,
-    //                                 0.0f, 0.5f, -0.5f, 0.0f};
-    // GL* gl = WaylandPlatform::getInstance()->getGL();
-    // glVertexAttribPointer(gl->pos, 3, GL_FLOAT, GL_FALSE, 0, verts);
-    // glEnableVertexAttribArray(gl->pos);
-
-    // glDrawArrays(GL_TRIANGLES, 0, 3);
-
-    // glDisableVertexAttribArray(gl->pos);
-}
-
 shared_memory_buffer_t* GetSHM(void) { return shm_buffer; }
+
+bool ReadFileContents(const char* file_path, char* buffer,
+                      size_t buffer_length)
+{
+    FILE* opened_file = fopen(file_path, "rb");
+    if (opened_file)
+    {
+        int position_set_code = fseek(opened_file, 0, SEEK_END);
+        if (position_set_code == -1) return false;
+        size_t file_length = ftell(opened_file);
+        if (file_length == -1) return false;
+        position_set_code = fseek(opened_file, 0, SEEK_SET);
+        if (position_set_code == -1) return false;
+
+        size_t items_written = fread(
+            buffer, 1,
+            (buffer_length < file_length ? buffer_length : file_length),
+            opened_file);
+        if (items_written !=
+            (buffer_length < file_length ? buffer_length : file_length))
+            return false;
+
+        fclose(opened_file);
+
+        return true;
+    }
+    return false;
+}

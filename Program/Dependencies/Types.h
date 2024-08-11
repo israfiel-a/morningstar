@@ -16,7 +16,8 @@
 // The Wayland protocol general header file.
 #include <wayland-client-protocol.h>
 // The XDG-shell Wayland protocol.
-#include <xdg-shell.h>
+#include <XDGS/xdg-shell.h>
+#include <wayland-egl.h>
 
 typedef struct wl_buffer pixel_buffer_t;
 typedef struct wl_buffer_listener pixel_buffer_monitor_t;
@@ -53,6 +54,7 @@ typedef struct wl_subcompositor subcompositor_t;
 typedef enum wl_shm_format color_type_t;
 typedef struct wl_display display_t;
 typedef struct wl_registry registry_t;
+typedef struct wl_egl_window opengl_window_t;
 
 #define XRGB WL_SHM_FORMAT_XRGB8888
 #define ARGB WL_SHM_FORMAT_ARGB8888

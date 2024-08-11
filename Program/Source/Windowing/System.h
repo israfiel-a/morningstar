@@ -40,6 +40,8 @@ void EndDisplayServer(void);
  */
 void CheckDisplayServer(void);
 
+display_t* GetDisplay(void);
+
 /**
  * @brief Get the Wayland registry object for the application. This
  * function returns NULL if the Wayland display server used is not Wayland.

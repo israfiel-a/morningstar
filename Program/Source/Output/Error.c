@@ -40,7 +40,17 @@ static const error_t errors[] = {
         {external_error, "wayland compositor missing features"},
     [monitor_measure_failure] = {external_error,
                                  "xdg-shell failed to get monitor size"},
-    [time_get_failure] = {program_error, "failed to get time"}};
+    [time_get_failure] = {program_error, "failed to get time"},
+    [egl_display_failure] = {external_error, "failed to get EGL display"},
+    [egl_initialization_failure] = {program_error,
+                                    "failed to initialize EGL"},
+    [egl_config_failure] = {program_error, "failed to configure EGL"},
+    [egl_context_bind_failure] = {external_error,
+                                  "failed to bind EGL context"},
+    [opengl_api_bind_failure] = {program_error,
+                                 "failed to bind the OpenGL api"},
+    [opengl_shader_creation_failure] = {
+        program_error, "failed to create an opengl shader object"}};
 
 _Noreturn void ReportError_(const char* file, const char* function,
                             uint64_t line, error_code_t code)
