@@ -69,16 +69,13 @@ static void HWSS(void* d, toplevel_t* t, int32_t width, int32_t height)
     if (width == 0 || height == 0) ReportError(monitor_measure_failure);
 
     dimensions.width = width, dimensions.height = height;
-    dimensions.shortest_side =
-        (dimensions.width > dimensions.height ? dimensions.height
-                                              : dimensions.width);
-    dimensions.gap_size =
-        ((float)dimensions.width - dimensions.shortest_side) / 2;
+    dimensions.shortest_side = (width > height ? height : width);
+    dimensions.gap_size = ((float)width - dimensions.shortest_side) / 2;
 
     SetWindowPositions();
-    BindEGLContext(GetSubwindow(gameplay), gameplay);
-    BindEGLContext(GetSubwindow(bust), bust);
-    BindEGLContext(GetSubwindow(stat), stat);
+    ResizeEGLWindow(GetSubwindow(gameplay), gameplay),
+        ResizeEGLWindow(GetSubwindow(bust), bust),
+        ResizeEGLWindow(GetSubwindow(stat), stat);
 }
 
 /**

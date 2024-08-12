@@ -43,6 +43,7 @@ static const error_t errors[] = {
     [time_get_failure] = {program_error, "failed to get time"},
     [egl_display_connect_failure] = {external_error,
                                      "failed to get EGL display"},
+    [egl_bad_display] = {program_error, "bad EGL display value"},
     [egl_initialization_failure] = {program_error,
                                     "failed to initialize EGL"},
     [egl_config_failure] = {program_error, "failed to configure EGL"},

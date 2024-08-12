@@ -29,6 +29,7 @@ typedef enum
     monitor_measure_failure,
     time_get_failure,
     egl_display_connect_failure,
+    egl_bad_display,
     egl_initialization_failure,
     egl_config_failure,
     egl_context_create_failure,

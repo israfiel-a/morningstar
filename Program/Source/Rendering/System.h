@@ -19,6 +19,8 @@ void SetupEGL(void);
 void DestroyEGL(void);
 
 void BindEGLContext(subwindow_t* subwindow, requested_window_t type);
+void UnbindEGLContext(subwindow_t* subwindow, requested_window_t type);
+void ResizeEGLWindow(subwindow_t* subwindow, requested_window_t type);
 
 void draw(subwindow_t* subwindow, requested_window_t type);
 

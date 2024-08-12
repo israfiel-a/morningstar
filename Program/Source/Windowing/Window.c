@@ -50,6 +50,7 @@ void CreateUIWindows(void)
             wl_subcompositor_get_subsurface(
                 GetSubcompositor(), application_window.subwindows[i]._win,
                 application_window._win);
+        BindEGLContext(&application_window.subwindows[i], i);
     }
 }
 
@@ -67,9 +68,9 @@ void DestroyUIWindows(void)
     wl_subsurface_destroy(bust_window.inner),
         wl_subsurface_destroy(gameplay_window.inner),
         wl_subsurface_destroy(stat_window.inner);
-    wl_egl_window_destroy(bust_window._eglwin),
-        wl_egl_window_destroy(gameplay_window._eglwin),
-        wl_egl_window_destroy(stat_window._eglwin);
+    UnbindEGLContext(&bust_window, bust),
+        UnbindEGLContext(&gameplay_window, gameplay),
+        UnbindEGLContext(&stat_window, stat);
     free(application_window.subwindows);
 
     // Make sure to free the XDG surface of the toplevel rather than just
@@ -160,6 +161,7 @@ uint32_t GetSubwindowWidth(requested_window_t requested)
     }
     return 0;
 }
+
 uint32_t GetSubwindowHeight(requested_window_t requested)
 {
     switch (requested)

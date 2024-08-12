@@ -31,17 +31,13 @@ void SetupEGL(void)
 
 void DestroyEGL(void)
 {
-    for (int i = 0; i < backdrop; i++)
-        eglDestroyContext(display, contexts[i]);
-    eglTerminate(display);
+    if (!eglTerminate(display)) ReportError(egl_bad_display);
     eglReleaseThread();
 }
 
 void BindEGLContext(subwindow_t* subwindow, requested_window_t type)
 {
-    subwindow->_eglwin =
-        wl_egl_window_create(subwindow->_win, GetSubwindowWidth(type),
-                             GetSubwindowHeight(type));
+    subwindow->_eglwin = wl_egl_window_create(subwindow->_win, 1, 1);
     if (subwindow->_eglwin == NULL) ReportError(egl_window_create_failure);
 
     subwindow->render_target = eglCreateWindowSurface(
@@ -50,6 +46,19 @@ void BindEGLContext(subwindow_t* subwindow, requested_window_t type)
     if (!eglMakeCurrent(display, subwindow->render_target,
                         subwindow->render_target, contexts[type]))
         ReportError(egl_window_made_current_failure);
+}
+
+void UnbindEGLContext(subwindow_t* subwindow, requested_window_t type)
+{
+    wl_egl_window_destroy(subwindow->_eglwin);
+    eglDestroySurface(display, subwindow->render_target);
+    eglDestroyContext(display, contexts[type]);
+}
+
+void ResizeEGLWindow(subwindow_t* subwindow, requested_window_t type)
+{
+    wl_egl_window_resize(subwindow->_eglwin, GetSubwindowWidth(type),
+                         GetSubwindowHeight(type), 0, 0);
 }
 
 void draw(subwindow_t* subwindow, requested_window_t type)
@@ -65,9 +74,7 @@ void draw(subwindow_t* subwindow, requested_window_t type)
 
     if (type == gameplay) glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
     else glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
-
-    glClear(GL_COLOR_BUFFER_BIT);
-    glFlush();
+    glClear(GL_COLOR_BUFFER_BIT), glFlush();
 
     if (!eglSwapBuffers(display, subwindow->render_target))
         ReportError(egl_swap_buffer_failure);
