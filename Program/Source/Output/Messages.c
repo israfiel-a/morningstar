@@ -60,7 +60,7 @@ void ReportMessage_(const char* body, ...)
     va_start(args, body);
     vprintf(body, args);
 
-    printf("\"\033[0m\n");
+    printf("\033[0m\n");
     va_end(args);
 }
 

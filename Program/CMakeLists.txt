@@ -34,8 +34,8 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME})
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME})
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME})
 
-if(NOT EXISTS "${CMAKE_SOURCE_DIR}/Dependencies/xdg-shell.h" OR NOT EXISTS 
-    "${CMAKE_SOURCE_DIR}/Dependencies/xdg-shell.c")
+if(NOT EXISTS "${CMAKE_SOURCE_DIR}/Dependencies/XDGS/xdg-shell.h" OR NOT EXISTS 
+    "${CMAKE_SOURCE_DIR}/Dependencies/XDGS/xdg-shell.c")
     execute_process(COMMAND bash "-c" 
     "wayland-scanner client-header /usr/share/wayland-protocols/stable/xdg-shell/xdg-shell.xml Dependencies/XDGS/xdg-shell.h")
     execute_process(COMMAND bash "-c" 
