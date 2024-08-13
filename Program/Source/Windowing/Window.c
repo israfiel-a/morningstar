@@ -123,7 +123,7 @@ raw_window_t* GetWindowRaw(requested_window_t requested)
         case gameplay: return gameplay_window._win;
         case backdrop: return application_window._win;
     }
-    return NULL; // unreachable, but the gcc compiler is stupid
+    return NULL; // Unreachable, but the gcc compiler hates me
 }
 
 subwindow_t* GetSubwindow(requested_window_t requested)
@@ -135,7 +135,7 @@ subwindow_t* GetSubwindow(requested_window_t requested)
         case gameplay: return &gameplay_window;
         case backdrop: return NULL;
     }
-    return NULL; // unreachable, but the gcc compiler is stupid
+    return NULL; // Unreachable, but the gcc compiler hates me
 }
 
 raw_subwindow_t* GetSubwindowRaw(requested_window_t requested)
@@ -147,7 +147,7 @@ raw_subwindow_t* GetSubwindowRaw(requested_window_t requested)
         case gameplay: return gameplay_window.inner;
         case backdrop: return NULL;
     }
-    return NULL; // unreachable, but the gcc compiler is stupid
+    return NULL; // Unreachable, but the gcc compiler hates me
 }
 
 uint32_t GetSubwindowWidth(requested_window_t requested)
@@ -159,7 +159,7 @@ uint32_t GetSubwindowWidth(requested_window_t requested)
         case stat:     return dimensions.gap_size;
         case backdrop: return dimensions.width;
     }
-    return 0;
+    return 0; // Unreachable, but the gcc compiler hates me
 }
 
 uint32_t GetSubwindowHeight(requested_window_t requested)
@@ -171,5 +171,5 @@ uint32_t GetSubwindowHeight(requested_window_t requested)
         case stat:     return dimensions.height;
         case backdrop: return dimensions.height;
     }
-    return 0;
+    return 0; // Unreachable, but the gcc compiler hates me
 }

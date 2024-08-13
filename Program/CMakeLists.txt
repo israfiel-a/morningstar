@@ -95,12 +95,11 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
         add_executable(MorningstarDemo ${CMAKE_SOURCE_DIR}/Source/Main.c)
         target_link_libraries(MorningstarDemo PRIVATE morningstar_shared)
     endif()
-else()  
+    file(COPY ${CMAKE_SOURCE_DIR}/Assets DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+else()
     add_compile_options(-Ofast)
     file(COPY ${PROJECT_HEADERS} DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
 endif()
-file(COPY ${CMAKE_SOURCE_DIR}/Assets DESTINATION 
-    ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Assets)
 
 string(TOLOWER ${CMAKE_BUILD_TYPE} OUTPUT_VARIABLE CMAKE_BUILD_LOWERCASE)
 set(PROJECT_TITLE "${PROJECT_NAME_FULL} | \

@@ -36,6 +36,7 @@ typedef enum
     egl_context_bind_failure,
     egl_window_made_current_failure,
     egl_window_create_failure,
+    egl_surface_create_failure,
     egl_swap_buffer_failure,
     opengl_api_bind_failure,
     opengl_shader_creation_failure

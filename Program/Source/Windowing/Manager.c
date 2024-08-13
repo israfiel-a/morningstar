@@ -3,8 +3,9 @@
 #include "Window.h"           // Windowing
 #include <Output/Error.h>     // Error reporting
 #include <Rendering/Colors.h> // Blank buffer creation
-#include <Rendering/System.h>
-#include <Session.h> // Global session data
+#include <Rendering/Loop.h>   // Rendering functions
+#include <Rendering/System.h> // EGL functions
+#include <Session.h>          // Global session data
 
 /**
  * @brief The base of the XDG-shell window manager. This is bound by the
@@ -73,9 +74,9 @@ static void HWSS(void* d, toplevel_t* t, int32_t width, int32_t height)
     dimensions.gap_size = ((float)width - dimensions.shortest_side) / 2;
 
     SetWindowPositions();
-    ResizeEGLWindow(GetSubwindow(gameplay), gameplay),
-        ResizeEGLWindow(GetSubwindow(bust), bust),
-        ResizeEGLWindow(GetSubwindow(stat), stat);
+    ResizeEGLRenderingArea(GetSubwindow(gameplay), gameplay),
+        ResizeEGLRenderingArea(GetSubwindow(bust), bust),
+        ResizeEGLRenderingArea(GetSubwindow(stat), stat);
 }
 
 /**

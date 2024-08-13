@@ -1,47 +1,83 @@
 #include "System.h"
-#include <GLAD/opengl.h>
-#include <Output/Error.h>
-#include <Session.h>
-#include <Windowing/System.h>
+#include <GLAD/opengl.h>      // OpenGL function prototypes
+#include <Output/Error.h>     // Error reporting
+#include <Windowing/System.h> // Wayland display
 
-static const EGLint ca[] = {EGL_CONTEXT_CLIENT_VERSION, 2, EGL_NONE};
-
+/**
+ * @brief The EGL display object of the application. This is initialized by
+ * @ref SetupEGL and set back to NULL by @ref DestroyEGL.
+ */
 static EGLDisplay display = NULL;
+
+/**
+ * @brief The EGL configuration we're using. This is set by @ref SetupEGL
+ * and read by said function and @ref BindEGLContext.
+ */
 static EGLConfig config = NULL;
-static EGLContext* contexts[backdrop];
+
+/**
+ * @brief A list of contexts @enum backdrop values long that we use to
+ * store the rendering contexts for all subwindows.
+ */
+static EGLContext* contexts[backdrop] = {NULL, NULL, NULL};
+
+/**
+ * @brief Check to see if any of the EGL contexts have been edited yet.
+ * @return true None of the contexts have been edited.
+ * @return false One or more of the contexts have been edited.
+ */
+static bool CheckEGLContexts(void)
+{
+    return contexts[0] == NULL && contexts[1] == NULL &&
+           contexts[2] == NULL;
+}
 
 void SetupEGL(void)
 {
-    EGLint major, minor;
+    if (display != NULL || config != NULL || !CheckEGLContexts()) return;
+
     display = eglGetDisplay((EGLNativeDisplayType)GetDisplay());
     if (display == NULL) ReportError(egl_display_connect_failure);
-    if (!eglInitialize(display, &major, &minor))
+    if (!eglInitialize(display, NULL, NULL))
         ReportError(egl_initialization_failure);
 
     EGLint n, config_attribs[] = EGL_CONFIG_ATTRIBUTES;
     if (!eglChooseConfig(display, config_attribs, &config, 1, &n))
         ReportError(egl_config_failure);
 
+    // Fill out each context with the information we need, including the
+    // fact that we're using OpenGL ES v2.0.
+    EGLint context_attribs[] = {EGL_CONTEXT_CLIENT_VERSION, 2, EGL_NONE};
     for (int i = 0; i < backdrop; i++)
     {
-        contexts[i] = eglCreateContext(display, config, NULL, ca);
+        contexts[i] =
+            eglCreateContext(display, config, NULL, context_attribs);
         if (contexts[i] == NULL) ReportError(egl_context_create_failure);
     }
 }
 
 void DestroyEGL(void)
 {
-    if (!eglTerminate(display)) ReportError(egl_bad_display);
+    if (display == NULL) return;
+
+    eglTerminate(display);
+    display = NULL;
+    config = NULL;
+
     eglReleaseThread();
 }
 
 void BindEGLContext(subwindow_t* subwindow, requested_window_t type)
 {
+    if (subwindow == NULL || type == backdrop) return;
+
     subwindow->_eglwin = wl_egl_window_create(subwindow->_win, 1, 1);
     if (subwindow->_eglwin == NULL) ReportError(egl_window_create_failure);
 
     subwindow->render_target = eglCreateWindowSurface(
         display, config, (EGLNativeWindowType)subwindow->_eglwin, NULL);
+    if (subwindow->render_target == NULL)
+        ReportError(egl_surface_create_failure);
 
     if (!eglMakeCurrent(display, subwindow->render_target,
                         subwindow->render_target, contexts[type]))
@@ -50,32 +86,34 @@ void BindEGLContext(subwindow_t* subwindow, requested_window_t type)
 
 void UnbindEGLContext(subwindow_t* subwindow, requested_window_t type)
 {
+    if (subwindow == NULL || subwindow->_eglwin == NULL ||
+        subwindow->render_target == NULL || type == backdrop)
+        return;
+
     wl_egl_window_destroy(subwindow->_eglwin);
     eglDestroySurface(display, subwindow->render_target);
+    subwindow->_eglwin = NULL;
+    subwindow->render_target = NULL;
+
     eglDestroyContext(display, contexts[type]);
+    contexts[type] = NULL;
 }
 
-void ResizeEGLWindow(subwindow_t* subwindow, requested_window_t type)
+void ResizeEGLRenderingArea(subwindow_t* subwindow,
+                            requested_window_t type)
 {
+    if (subwindow == NULL || subwindow->_eglwin == NULL ||
+        type == backdrop)
+        return;
+
     wl_egl_window_resize(subwindow->_eglwin, GetSubwindowWidth(type),
                          GetSubwindowHeight(type), 0, 0);
 }
 
-void draw(subwindow_t* subwindow, requested_window_t type)
+EGLDisplay GetEGLDisplay(void) { return display; }
+
+EGLContext GetEGLContext(requested_window_t type)
 {
-    if (eglGetCurrentSurface(EGL_DRAW) != subwindow->render_target ||
-        eglGetCurrentSurface(EGL_READ) != subwindow->render_target)
-    {
-        EGLBoolean made_current =
-            eglMakeCurrent(display, subwindow->render_target,
-                           subwindow->render_target, contexts[type]);
-        if (!made_current) ReportError(egl_window_made_current_failure);
-    }
-
-    if (type == gameplay) glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-    else glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT), glFlush();
-
-    if (!eglSwapBuffers(display, subwindow->render_target))
-        ReportError(egl_swap_buffer_failure);
+    if (type == backdrop) return NULL;
+    return contexts[type];
 }

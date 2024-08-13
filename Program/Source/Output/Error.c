@@ -55,6 +55,8 @@ static const error_t errors[] = {
         {program_error, "failed to make egl window current"},
     [egl_window_create_failure] = {program_error,
                                    "failed to create EGL window"},
+    [egl_surface_create_failure] = {program_error,
+                                    "failed to create EGL surface"},
     [egl_swap_buffer_failure] =
         {program_error,
          "failed to swap buffers -- failed to prevent hanging"},
