@@ -44,8 +44,6 @@ void LogNotification(const char* title, const char* body, ...)
     (void)SystemCall(error_system_call);
 }
 
-#ifdef DEBUG
-
 void ReportMessage_(const char* body, ...)
 {
     if (!global_flags.stdout_available) return;
@@ -62,5 +60,3 @@ void ReportMessage_(const char* body, ...)
     printf("\033[0m\n");
     va_end(args);
 }
-
-#endif
