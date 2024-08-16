@@ -1,7 +1,11 @@
-#include <Session.h>
+#include <Windowing/Windowing.h>
 
 int main(int argc, char** argv)
 {
-    BeginSession(argc, argv);
-    CleanupSession();
+    SetupWindow(false);
+    CreateWindow(TITLE);
+
+    run();
+
+    DestroyWindow();
 }

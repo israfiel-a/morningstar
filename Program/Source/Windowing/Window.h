@@ -86,20 +86,11 @@ typedef struct
     subwindow_t* subwindows;
 } window_t;
 
-/**
- * @brief Create the UI windows our application will render to in a couple
- * of milliseconds. These regions start out with neither a size nor a
- * position, those values are to be set with the functions @ref
- * SendBlankColor and @ref SetUIWindowPositions respectively.
- */
-void CreateUIWindows(void);
+void CreateBackdrop(const char* window_title);
+void CreatePanels(void);
 
-/**
- * @brief Destroy the UI windows of the application. UI WINDOWS, not UI
- * PANELS. Panels and decorations draw by the game are to be disposed of
- * far before this function is called.
- */
-void DestroyUIWindows(void);
+void DestroyBackdrop(void);
+void DestroyPanels(void);
 
 /**
  * @brief Set the positions of the windows. This function should be called

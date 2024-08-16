@@ -12,8 +12,8 @@
 #ifndef _MSENG_APPLICATION_SYSTEM_
 #define _MSENG_APPLICATION_SYSTEM_
 
-// The master include file for the project.
-#include <Master.h>
+#include <inttypes.h>
+#include <stdbool.h>
 
 /**
  * @brief A structure built to contain the various global values the
@@ -84,7 +84,7 @@ typedef struct
         paneled_half,
         /**
          * @brief Same as @enum paneled_half, except this mode is locked.
-         * However, despite the lock, the user can still set their UI mode
+         * However, despite the lock, the user can still set their mode
          * to unified.
          */
         paneled_half_locked,
@@ -94,7 +94,7 @@ typedef struct
          * monitors.
          */
         paneled_full
-    } ui_mode;
+    } panel_mode;
     /**
      * @brief An enumerator to describe the input mode of the application.
      * This can be affected by a lot of things, like user settings, device
@@ -125,12 +125,26 @@ typedef struct
          */
         nothing
     } input_mode;
+    struct
+    {
+        bool compositor;
+        bool subcompositor;
+        bool window_manager;
+        bool shm;
+        bool input_group;
+    } connected_devices;
 } globals_t;
 
 /**
  * @brief The global flag structure for the application.
  */
 extern globals_t global_flags;
+
+#define devices global_flags.connected_devices
+
+#define full_device_suite                                                 \
+    (devices.compositor && devices.subcompositor &&                       \
+     devices.window_manager && devices.shm && devices.input_group)
 
 /**
  * @brief A short macro to make accessing the application's dimensions
@@ -142,30 +156,5 @@ extern globals_t global_flags;
  * easier.
  */
 #define running global_flags.application_running
-
-/**
- * @brief Begin a new session of the game, and then run the processing loop
- * until the game closes. This should be one of two functions contained
- * within your Main.c file.
- * @param argument_count The count of arguments passed from the command
- * line, typically know as @ref argc.
- * @param arguments The actual string arguments passed from the command
- * line, typically known as @ref argv.
- */
-void BeginSession(int argument_count, char** arguments);
-
-/**
- * @brief Clean up all memory associated with Morningstar.
- */
-void CleanupSession(void);
-
-/**
- * @brief Check the validity of the current session; make sure we haven't
- * been requested to die, check to make sure the display server is still
- * sending display, etcetera.
- * @return true The session is still valid, continue.
- * @return false The session is no longer valid, kill the process.
- */
-bool CheckSessionValidity(void);
 
 #endif // _MSENG_APPLICATION_SYSTEM_

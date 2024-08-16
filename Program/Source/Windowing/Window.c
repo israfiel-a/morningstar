@@ -1,8 +1,9 @@
 #include "Window.h"
 #include "Manager.h" // Window wrapping
 #include "System.h"  // Registry & compositor getter
+#include <Output/Error.h>
+#include <Output/Warning.h>
 #include <Rendering/System.h>
-#include <Session.h> // Global values
 
 /**
  * @brief The application's window, and all its children.
@@ -24,24 +25,68 @@ static window_t application_window = {NULL, NULL, NULL};
  */
 #define stat_window application_window.subwindows[2]
 
-void CreateUIWindows(void)
+bool CheckSubwindow(subwindow_t* subwindow)
 {
-    // Make sure the function hasn't been called already.
-    if (application_window._win != NULL ||
-        application_window.inner != NULL ||
-        application_window.subwindows != NULL)
-        return;
+    return subwindow != NULL && subwindow->_win != NULL &&
+           subwindow->inner != NULL;
+}
 
-    // Create the background and push our new toplevel to Wayland for
-    // processing.
+void CreateBackdrop(const char* window_title)
+{
+    if (GetDisplay() == NULL || GetRegistry() == NULL)
+    {
+        ReportWarning(preemptive_window_creation);
+        return;
+    }
+
+    if (GetCompositor() == NULL || GetWindowManager() == NULL)
+    {
+        ReportWarning(preemptive_backdrop_creation);
+        return;
+    }
+
+    if (application_window._win != NULL ||
+        application_window.inner != NULL)
+    {
+        ReportWarning(double_backdrop_creation);
+        return;
+    }
+
     application_window._win =
         wl_compositor_create_surface(GetCompositor());
-    application_window.inner = WrapRawWindow(application_window._win);
+    application_window.inner =
+        WrapRawWindow(application_window._win, window_title);
     wl_surface_commit(application_window._win);
+}
+
+void CreatePanels(void)
+{
+    if (GetDisplay() == NULL || GetRegistry() == NULL)
+    {
+        ReportWarning(preemptive_window_creation);
+        return;
+    }
+
+    if (GetCompositor() == NULL || GetSubcompositor() == NULL ||
+        GetEGLDisplay() == NULL || application_window._win == NULL ||
+        application_window.inner == NULL)
+    {
+        ReportWarning(preemptive_panel_creation);
+        return;
+    }
+
+    if (application_window.subwindows != NULL)
+    {
+        ReportWarning(double_panel_creation);
+        return;
+    }
 
     application_window.subwindows = calloc(3, sizeof(subwindow_t));
-    // Loop through the three now-created spaces fit for windows and fill
-    // 'em with beautiful Wayland pointer objects.
+    if (application_window.subwindows == NULL)
+        ReportError(allocation_failure);
+
+    // Loop through the three now-created spaces fit for windows
+    // and fill 'em with beautiful Wayland pointer objects.
     for (uint8_t i = 0; i < 3; i++)
     {
         application_window.subwindows[i]._win =
@@ -54,13 +99,41 @@ void CreateUIWindows(void)
     }
 }
 
-void DestroyUIWindows(void)
+void DestroyBackdrop(void)
 {
-    // Make sure we haven't freed the windows yet.
-    if (bust_window._win == NULL || gameplay_window._win == NULL ||
-        stat_window._win == NULL || bust_window.inner == NULL ||
-        gameplay_window.inner == NULL || stat_window.inner == NULL)
+    if (application_window.subwindows != NULL)
+    {
+        ReportWarning(preemptive_backdrop_free);
         return;
+    }
+
+    if (application_window._win == NULL)
+    {
+        ReportWarning(double_backdrop_free);
+        return;
+    }
+
+    UnwrapWindow(&application_window);
+    wl_surface_destroy(application_window._win);
+
+    application_window._win = NULL;
+    application_window.inner = NULL;
+}
+
+void DestroyPanels(void)
+{
+    if (application_window.subwindows == NULL)
+    {
+        ReportWarning(preemptive_panel_free);
+        return;
+    }
+
+    if (!CheckSubwindow(&bust_window) ||
+        !CheckSubwindow(&gameplay_window) || !CheckSubwindow(&stat_window))
+    {
+        ReportWarning(double_panel_free);
+        return;
+    }
 
     wl_surface_destroy(bust_window._win),
         wl_surface_destroy(gameplay_window._win),
@@ -68,15 +141,14 @@ void DestroyUIWindows(void)
     wl_subsurface_destroy(bust_window.inner),
         wl_subsurface_destroy(gameplay_window.inner),
         wl_subsurface_destroy(stat_window.inner);
+    // We don't check for EGL-related warnings here cause this function
+    // does it for us.
     UnbindEGLContext(&bust_window, bust),
         UnbindEGLContext(&gameplay_window, gameplay),
         UnbindEGLContext(&stat_window, stat);
-    free(application_window.subwindows);
 
-    // Make sure to free the XDG surface of the toplevel rather than just
-    // the Wayland one.
-    xdg_surface_destroy(application_window.inner);
-    wl_surface_destroy(application_window._win);
+    free(application_window.subwindows);
+    application_window.subwindows = NULL;
 }
 
 void SetWindowPositions(void)

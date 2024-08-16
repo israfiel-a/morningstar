@@ -3,6 +3,7 @@
 #include <Input/File.h>     // Shared memory file functionality
 #include <Input/Hardware.h> // Mouse/keyboard functionality
 #include <Output/Error.h>   // Error reporting
+#include <Output/Warning.h>
 #include <Rendering/System.h>
 
 /**
@@ -44,11 +45,17 @@ static void HIA(void* d, registry_t* r, uint32_t name,
     else if (!strcmp(interface, wl_seat_interface.name))
         BindInputGroup(name, version);
     else if (!strcmp(interface, wl_compositor_interface.name))
+    {
         compositor = wl_registry_bind(GetRegistry(), name,
                                       &wl_compositor_interface, version);
+        devices.compositor = true;
+    }
     else if (!strcmp(interface, wl_subcompositor_interface.name))
+    {
         subcompositor = wl_registry_bind(
             GetRegistry(), name, &wl_subcompositor_interface, version);
+        devices.subcompositor = true;
+    }
     else if (!strcmp(interface, xdg_wm_base_interface.name))
         BindWindowManager(name, version);
 }
@@ -65,50 +72,40 @@ static void HID(void* d, struct wl_registry* r, uint32_t n) {}
  */
 static const registry_monitor_t registry_listener = {HIA, HID};
 
-/**
- * @brief A function to setup the Wayland server, the display environment
- * one used for the Linux distribution of Morningstar. This takes no
- * arguments and returns none, but creates, binds, and does the first poll
- * for the display interface and registry.
- */
-static void SetupWayland(void)
+void SetupWayland(void)
 {
+    if (display != NULL || registry != NULL)
+    {
+        ReportWarning(double_display_setup);
+        return;
+    }
+
     // Connect to the default Wayland compositor (Wayland-0).
     display = wl_display_connect(0);
     if (display == NULL) ReportError(display_connect_failure);
     registry = wl_display_get_registry(display);
     wl_registry_add_listener(registry, &registry_listener, NULL);
-    SetupEGL();
 
     // Wait for the server to catch up, and if it can't, fail the
     // program.
     if (wl_display_roundtrip(display) == -1)
         ReportError(server_processing_failure);
-    // By now we should have these items, and if we don't then trigger a
-    // warning that something's wrong.
-    if (GetCompositor() == NULL || GetSubcompositor() == NULL ||
-        GetWindowManager() == NULL || GetSHM() == NULL ||
-        GetInputGroup() == NULL)
-        ReportError(compositor_missing_features);
+
+    if (!full_device_suite) ReportError(compositor_missing_features);
 }
 
-/**
- * @brief Destroy the Wayland display server data stored in our
- * application. This function is irreversible without effort.
- */
-static void DestroyWayland(void)
+void DestroyWayland(void)
 {
     UnbindSHM(), UnbindInputGroup();
     UnbindWindowManager();
-    DestroyEGL();
     wl_subcompositor_destroy(subcompositor);
     wl_compositor_destroy(compositor);
     wl_registry_destroy(registry);
     wl_display_disconnect(display);
-}
 
-void SetupDisplayServer(void) { SetupWayland(); }
-void EndDisplayServer(void) { DestroyWayland(); }
+    devices.compositor = false;
+    devices.subcompositor = false;
+}
 
 void CheckDisplayServer(void)
 {

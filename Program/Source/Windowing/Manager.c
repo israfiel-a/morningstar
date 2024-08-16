@@ -1,11 +1,11 @@
 #include "Manager.h"
-#include "System.h"           // Registry functionality
-#include "Window.h"           // Windowing
-#include <Output/Error.h>     // Error reporting
+#include "System.h"       // Registry functionality
+#include "Window.h"       // Windowing
+#include <Output/Error.h> // Error reporting
+#include <Output/Warning.h>
 #include <Rendering/Colors.h> // Blank buffer creation
 #include <Rendering/Loop.h>   // Rendering functions
 #include <Rendering/System.h> // EGL functions
-#include <Session.h>          // Global session data
 
 /**
  * @brief The base of the XDG-shell window manager. This is bound by the
@@ -94,44 +94,6 @@ const static toplevel_monitor_t toplevel_listener = {HTLC, HAC, HWSS,
                                                      HCAL};
 
 /**
- * @brief Setup the top level of the application, including its ID and
- * title. This is only to be done once. If it is done more than once, the
- * application will fail itself.
- * @param window_raw The raw version of the background window.
- * @param window The XDG ("wrapped") version of the background window.
- */
-static void SetToplevel(raw_window_t* restrict window_raw,
-                        wrapped_window_t* restrict window)
-{
-    assert(window != NULL && toplevel == NULL);
-
-    toplevel = xdg_surface_get_toplevel(window);
-    xdg_toplevel_add_listener(toplevel, &toplevel_listener, NULL);
-    wl_surface_commit(window_raw); // Update the window's state.
-
-    // Set the app ID and title of the application, which show in a bunch
-    // of places like the system monitor, titlebar, etc.
-    xdg_toplevel_set_app_id(toplevel, ID);
-    xdg_toplevel_set_title(toplevel, TITLE);
-}
-
-void BindWindowManager(uint32_t name, uint32_t version)
-{
-    base = wl_registry_bind(GetRegistry(), name, &xdg_wm_base_interface,
-                            version);
-    xdg_wm_base_add_listener(base, &ponger, NULL);
-    CreateUIWindows();
-    SetToplevel(GetWindowRaw(backdrop), GetBackdrop());
-}
-
-void UnbindWindowManager(void)
-{
-    DestroyUIWindows();
-    xdg_toplevel_destroy(toplevel);
-    xdg_wm_base_destroy(base);
-}
-
-/**
  * @brief Handle the configure event for an XDG surface. We only ever
  * create one of these, the background window, so we don't bother with the
  * passed in window object, instead just using our own background window
@@ -157,12 +119,70 @@ static void HWC(void* d, wrapped_window_t* s, uint32_t serial)
  */
 const static window_listener_t surface_listener = {HWC};
 
-wrapped_window_t* WrapRawWindow(raw_window_t* raw_window)
+void BindWindowManager(uint32_t name, uint32_t version)
+{
+    if (GetRegistry() == NULL)
+    {
+        ReportWarning(preemptive_wm_creation);
+        return;
+    }
+
+    if (devices.window_manager)
+    {
+        ReportWarning(double_wm_creation);
+        return;
+    }
+
+    base = wl_registry_bind(GetRegistry(), name, &xdg_wm_base_interface,
+                            version);
+    xdg_wm_base_add_listener(base, &ponger, NULL);
+    devices.window_manager = true;
+}
+
+void UnbindWindowManager(void)
+{
+    xdg_wm_base_destroy(base);
+    devices.window_manager = false;
+}
+
+wrapped_window_t* WrapRawWindow(raw_window_t* raw_window,
+                                const char* title)
 {
     wrapped_window_t* window =
         xdg_wm_base_get_xdg_surface(base, raw_window);
     xdg_surface_add_listener(window, &surface_listener, NULL);
+
+    toplevel = xdg_surface_get_toplevel(window);
+    xdg_toplevel_add_listener(toplevel, &toplevel_listener, NULL);
+    wl_surface_commit(raw_window); // Update the window's state.
+
+    // Set the app ID and title of the application, which show in a bunch
+    // of places like the system monitor, titlebar, etc.
+    xdg_toplevel_set_app_id(toplevel, ID);
+    xdg_toplevel_set_title(toplevel, title);
+
     return window;
+}
+
+void UnwrapWindow(window_t* window)
+{
+    if (toplevel == NULL)
+    {
+        ReportWarning(preemptive_window_unwrapping);
+        return;
+    }
+
+    if (window == NULL || window->inner == NULL)
+    {
+        ReportWarning(double_window_unwrapping);
+        return;
+    }
+
+    xdg_surface_destroy(window->inner);
+    xdg_toplevel_destroy(toplevel);
+
+    window->inner = NULL;
+    toplevel = NULL;
 }
 
 window_manager_t* GetWindowManager(void) { return base; }

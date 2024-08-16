@@ -1,6 +1,5 @@
 #include "Mouse.h"
 #include "Hardware.h"                // Input callback group
-#include <Session.h>                 // Global variables
 #include <linux/input-event-codes.h> // Linux input codes
 
 /**

@@ -65,7 +65,7 @@ file(GLOB PROJECT_HEADERS ${CMAKE_SOURCE_DIR}/Source/*.h
 foreach(file ${PROJECT_FILES} ${PROJECT_HEADERS} ${CMAKE_SOURCE_DIR}/Source/Main.c)
     cmake_path(GET file FILENAME CURRENT_FILENAME)
     set_source_files_properties(${file} PROPERTIES COMPILE_DEFINITIONS 
-        FILENAME="${CURRENT_FILENAME}") 
+        FILENAME="${CURRENT_FILENAME}")
 endforeach()
 
 include_directories(${CMAKE_SOURCE_DIR}/Dependencies ${CMAKE_SOURCE_DIR}/Source)

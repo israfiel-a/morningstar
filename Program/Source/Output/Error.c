@@ -1,6 +1,5 @@
 #include "Error.h"
 #include "Messages.h"
-#include <Session.h>
 
 // outline of new system (to be implemented):
 // report function: (file, function, line, code)
@@ -53,8 +52,6 @@ static const error_t errors[] = {
                                   "failed to bind EGL context"},
     [egl_window_made_current_failure] =
         {program_error, "failed to make egl window current"},
-    [egl_window_create_failure] = {program_error,
-                                   "failed to create EGL window"},
     [egl_surface_create_failure] = {program_error,
                                     "failed to create EGL surface"},
     [egl_swap_buffer_failure] =

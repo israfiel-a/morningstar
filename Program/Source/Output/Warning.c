@@ -1,6 +1,5 @@
 #include "Warning.h"
 #include "Messages.h"
-#include <pthread.h>
 
 warning_t warningno = {NULL, no_warning};
 

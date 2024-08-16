@@ -1,6 +1,7 @@
 #include "System.h"
-#include <GLAD/opengl.h>      // OpenGL function prototypes
-#include <Output/Error.h>     // Error reporting
+#include <GLAD/opengl.h>  // OpenGL function prototypes
+#include <Output/Error.h> // Error reporting
+#include <Output/Warning.h>
 #include <Windowing/System.h> // Wayland display
 
 /**
@@ -21,20 +22,25 @@ static EGLConfig config = NULL;
  */
 static EGLContext* contexts[backdrop] = {NULL, NULL, NULL};
 
-/**
- * @brief Check to see if any of the EGL contexts have been edited yet.
- * @return true None of the contexts have been edited.
- * @return false One or more of the contexts have been edited.
- */
-static bool CheckEGLContexts(void)
+static bool CheckEGLContextsEdited(void)
 {
-    return contexts[0] == NULL && contexts[1] == NULL &&
-           contexts[2] == NULL;
+    return contexts[0] != NULL && contexts[1] != NULL &&
+           contexts[2] != NULL;
 }
 
 void SetupEGL(void)
 {
-    if (display != NULL || config != NULL || !CheckEGLContexts()) return;
+    if (GetDisplay() == NULL)
+    {
+        ReportWarning(preemptive_egl_setup);
+        return;
+    }
+
+    if (display != NULL || config != NULL || CheckEGLContextsEdited())
+    {
+        ReportWarning(double_egl_setup);
+        return;
+    }
 
     display = eglGetDisplay((EGLNativeDisplayType)GetDisplay());
     if (display == NULL) ReportError(egl_display_connect_failure);
@@ -58,7 +64,11 @@ void SetupEGL(void)
 
 void DestroyEGL(void)
 {
-    if (display == NULL) return;
+    if (display == NULL || config == NULL)
+    {
+        ReportWarning(preemptive_egl_free);
+        return;
+    }
 
     eglTerminate(display);
     display = NULL;
@@ -72,23 +82,28 @@ void BindEGLContext(subwindow_t* subwindow, requested_window_t type)
     if (subwindow == NULL || type == backdrop) return;
 
     subwindow->_eglwin = wl_egl_window_create(subwindow->_win, 1, 1);
-    if (subwindow->_eglwin == NULL) ReportError(egl_window_create_failure);
+    if (subwindow->_eglwin == NULL) ReportError(allocation_failure);
 
     subwindow->render_target = eglCreateWindowSurface(
         display, config, (EGLNativeWindowType)subwindow->_eglwin, NULL);
     if (subwindow->render_target == NULL)
         ReportError(egl_surface_create_failure);
-
-    if (!eglMakeCurrent(display, subwindow->render_target,
-                        subwindow->render_target, contexts[type]))
-        ReportError(egl_window_made_current_failure);
 }
 
 void UnbindEGLContext(subwindow_t* subwindow, requested_window_t type)
 {
     if (subwindow == NULL || subwindow->_eglwin == NULL ||
-        subwindow->render_target == NULL || type == backdrop)
+        subwindow->render_target == NULL)
+    {
+        ReportWarning(preemptive_egl_context_free);
         return;
+    }
+
+    if (type == backdrop)
+    {
+        ReportWarning(unknown_egl_context);
+        return;
+    }
 
     wl_egl_window_destroy(subwindow->_eglwin);
     eglDestroySurface(display, subwindow->render_target);

@@ -1,8 +1,8 @@
 #include "File.h"
 #include <Memory/Fill.h>
 #include <Output/Error.h>
+#include <Output/Warning.h>
 #include <STBI/STBI.h>
-#include <Session.h>
 #include <Windowing/System.h>
 #include <fcntl.h>
 #include <time.h>
@@ -21,11 +21,34 @@ static shared_memory_buffer_t* shm_buffer = NULL;
 
 void BindSHM(uint32_t name, uint32_t version)
 {
+    if (GetRegistry() == NULL)
+    {
+        ReportWarning(preemptive_shm_creation);
+        return;
+    }
+
+    if (devices.shm)
+    {
+        ReportWarning(double_shm_creation);
+        return;
+    }
+
     shm_buffer =
         wl_registry_bind(GetRegistry(), name, &wl_shm_interface, version);
+    devices.shm = true;
 }
 
-void UnbindSHM(void) { wl_shm_destroy(shm_buffer); }
+void UnbindSHM(void)
+{
+    if (!devices.shm)
+    {
+        ReportWarning(preemptive_shm_free);
+        return;
+    }
+
+    wl_shm_destroy(shm_buffer);
+    devices.shm = false;
+}
 
 static void CreateRandomFileName(char* filename_buffer)
 {

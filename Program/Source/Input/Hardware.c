@@ -1,5 +1,5 @@
 #include "Hardware.h"
-#include <Session.h>                 // Globals
+#include <Output/Warning.h>
 #include <Windowing/System.h>        // Registry functions
 #include <linux/input-event-codes.h> // Linux input codes
 
@@ -93,16 +93,36 @@ static const input_group_monitor_t input_group_listener = {HIDC, HSN};
 
 void BindInputGroup(const uint32_t name, const uint32_t version)
 {
+    if (GetRegistry() == NULL)
+    {
+        ReportWarning(preemptive_seat_creation);
+        return;
+    }
+
+    if (devices.input_group)
+    {
+        ReportWarning(double_seat_creation);
+        return;
+    }
+
     seat =
         wl_registry_bind(GetRegistry(), name, &wl_seat_interface, version);
     wl_seat_add_listener(seat, &input_group_listener, NULL);
+    devices.input_group = true;
 }
 
 void UnbindInputGroup(void)
 {
-    wl_pointer_release(mouse);
-    wl_keyboard_release(keyboard);
+    if (!devices.input_group)
+    {
+        ReportWarning(preemptive_seat_free);
+        return;
+    }
+
+    if (mouse != NULL) wl_pointer_release(mouse);
+    if (keyboard != NULL) wl_keyboard_release(keyboard);
     wl_seat_release(seat);
+    devices.input_group = false;
 }
 
 input_group_t* GetInputGroup(void) { return seat; }

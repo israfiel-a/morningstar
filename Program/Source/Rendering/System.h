@@ -12,8 +12,6 @@
 #ifndef _MSENG_SYSTEM_RENDERING_SYSTEM_
 #define _MSENG_SYSTEM_RENDERING_SYSTEM_
 
-// The master include file of the project.
-#include <Master.h>
 // The subwindow interface.
 #include <Windowing/Window.h>
 

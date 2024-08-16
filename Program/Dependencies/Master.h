@@ -16,6 +16,7 @@
 #define NDEBUG
 #endif
 
+#include <Globals.h>  // IWYU pragma: keep
 #include <assert.h>   // IWYU pragma: keep
 #include <errno.h>    // IWYU pragma: keep
 #include <stdarg.h>   // IWYU pragma: keep

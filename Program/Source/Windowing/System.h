@@ -18,25 +18,24 @@
 #include <Types.h>
 
 /**
- * @brief Setup the interface to the display server for the application.
- * This function doesn't do a lot on Windows, as the display server is damn
- * near untouchable as a userspace application--not that we'd need to touch
- * it, of course.
+ * @brief A function to setup the Wayland server, the display environment
+ * one used for the Linux distribution of Morningstar. This takes no
+ * arguments and returns none, but creates, binds, and does the first poll
+ * for the display interface and registry.
  */
-void SetupDisplayServer(void);
+void SetupWayland(void);
 
 /**
- * @brief Clean up all things having to do with the display server of the
- * application. Like @ref SetupDisplayServer, this function doesn't do much
- * on Windows.
+ * @brief Destroy the Wayland display server data stored in our
+ * application. This function is irreversible without effort.
  */
-void EndDisplayServer(void);
+void DestroyWayland(void);
 
 /**
  * @brief Check to make sure the Wayland display server is still
- * sending/processing events. If the server is no longer processing events,
- * this function kills the process immediately with a code of 8, figuring
- * something must be wrong with the user's computer.
+ * sending/processing events. If the server is no longer processing
+ * events, this function kills the process immediately with a code of
+ * 8, figuring something must be wrong with the user's computer.
  */
 void CheckDisplayServer(void);
 

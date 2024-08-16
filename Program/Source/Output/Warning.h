@@ -17,7 +17,42 @@
 typedef enum
 {
     no_warning,
-    test_warning
+
+    double_display_setup,
+
+    preemptive_egl_setup,
+    double_egl_setup,
+    preemptive_egl_free,
+
+    preemptive_egl_context_free,
+    unknown_egl_context,
+
+    preemptive_wm_creation,
+    double_wm_creation,
+
+    preemptive_backdrop_creation,
+    double_backdrop_creation,
+    preemptive_backdrop_free,
+    double_backdrop_free,
+
+    preemptive_panel_creation,
+    double_panel_creation,
+    preemptive_panel_free,
+    double_panel_free,
+
+    preemptive_window_creation,
+    double_window_creation,
+
+    preemptive_window_unwrapping,
+    double_window_unwrapping,
+
+    preemptive_seat_creation,
+    double_seat_creation,
+    preemptive_seat_free,
+
+    preemptive_shm_creation,
+    double_shm_creation,
+    preemptive_shm_free
 } warning_code_t;
 
 typedef struct

@@ -13,6 +13,7 @@
 
 // The master include file for the project.
 #include <Master.h>
+#include <Windowing/Window.h>
 // Wayland and XDG type definitions.
 #include <Types.h>
 
@@ -35,7 +36,10 @@ void UnbindWindowManager(void);
  * @param raw_window The window to wrap.
  * @return The created XDG window.
  */
-wrapped_window_t* WrapRawWindow(raw_window_t* raw_window);
+wrapped_window_t* WrapRawWindow(raw_window_t* raw_window,
+                                const char* title);
+
+void UnwrapWindow(window_t* window);
 
 /**
  * @brief Grab the XDG base object.
