@@ -1,6 +1,7 @@
 #include "Mouse.h"
 #include "Hardware.h"                // Input callback group
 #include <linux/input-event-codes.h> // Linux input codes
+#include <memory.h>
 
 /**
  * @brief The internal input callback group.
@@ -23,8 +24,8 @@ static mouse_event_t last_mouse_event;
  * @param x_pos The X coordinate the mouse entered on.
  * @param y_pos The Y coordinate the mouse entered on.
  */
-static void HME(void* d, mouse_object_t* m, uint32_t serial,
-                raw_window_t* s, wl_fixed_t x_pos, wl_fixed_t y_pos)
+static void HME(void* d, struct wl_pointer* m, uint32_t serial,
+                struct wl_surface* s, wl_fixed_t x_pos, wl_fixed_t y_pos)
 {
     last_mouse_event.events |= enter;
     last_mouse_event.x = x_pos;
@@ -38,8 +39,8 @@ static void HME(void* d, mouse_object_t* m, uint32_t serial,
  * @param serial The serial number of the event.
  * @param s Nothing of use.
  */
-static void HML(void* d, mouse_object_t* m, uint32_t serial,
-                raw_window_t* s)
+static void HML(void* d, struct wl_pointer* m, uint32_t serial,
+                struct wl_surface* s)
 {
     last_mouse_event.events |= leave;
 }
@@ -52,7 +53,7 @@ static void HML(void* d, mouse_object_t* m, uint32_t serial,
  * @param x_pos The X coordinate the mouse moved onto.
  * @param y_pos The Y coordinate the mouse moved onto.
  */
-static void HMM(void* d, mouse_object_t* m, uint32_t time,
+static void HMM(void* d, struct wl_pointer* m, uint32_t time,
                 wl_fixed_t x_pos, wl_fixed_t y_pos)
 {
     last_mouse_event.events |= motion;
@@ -71,8 +72,9 @@ static void HMM(void* d, mouse_object_t* m, uint32_t time,
  * @param button The button pressed.
  * @param state The state of the button--pressed or released.
  */
-static void HMP(void* d, mouse_object_t* m, uint32_t serial, uint32_t time,
-                uint32_t button, mouse_button_state_t state)
+static void HMP(void* d, struct wl_pointer* m, uint32_t serial,
+                uint32_t time, uint32_t button,
+                enum wl_pointer_button_state state)
 {
     last_mouse_event.events |= press;
     last_mouse_event.time = time;
@@ -88,8 +90,8 @@ static void HMP(void* d, mouse_object_t* m, uint32_t serial, uint32_t time,
  * @param axis The axis affected, horizontal or vertical.
  * @param value The length of the axis change.
  */
-static void HMA(void* d, mouse_object_t* m, uint32_t time,
-                mouse_axis_t axis, wl_fixed_t value)
+static void HMA(void* d, struct wl_pointer* m, uint32_t time,
+                enum wl_pointer_axis_source axis, wl_fixed_t value)
 {
     last_mouse_event.events |= axis;
     last_mouse_event.time = time;
@@ -104,7 +106,8 @@ static void HMA(void* d, mouse_object_t* m, uint32_t time,
  * @param m Nothing of use.
  * @param axis_source The type of axis movement.
  */
-static void HMAI(void* d, mouse_object_t* m, mouse_axis_type_t axis_source)
+static void HMAI(void* d, struct wl_pointer* m,
+                 enum wl_pointer_axis_source axis_source)
 {
     last_mouse_event.events |= axis_source;
     last_mouse_event.axis_information = axis_source;
@@ -117,8 +120,8 @@ static void HMAI(void* d, mouse_object_t* m, mouse_axis_type_t axis_source)
  * @param time The timestamp of the axis event down to the millisecond.
  * @param axis The axis whose event stopped.
  */
-static void HMAS(void* d, mouse_object_t* m, uint32_t time,
-                 mouse_axis_t axis)
+static void HMAS(void* d, struct wl_pointer* m, uint32_t time,
+                 enum wl_pointer_axis_source axis)
 {
     last_mouse_event.time = time;
     last_mouse_event.events |= axis_stop;
@@ -133,8 +136,8 @@ static void HMAS(void* d, mouse_object_t* m, uint32_t time,
  * @param axis The axis whose event is currently being triggered.
  * @param discrete The step of the axis.
  */
-static void HMAD(void* d, mouse_object_t* m, mouse_axis_t axis,
-                 int32_t discrete)
+static void HMAD(void* d, struct wl_pointer* m,
+                 enum wl_pointer_axis_source axis, int32_t discrete)
 {
     last_mouse_event.events |= axis_discrete;
     last_mouse_event.axes[axis].valid = true;
@@ -145,7 +148,7 @@ static void HMAD(void* d, mouse_object_t* m, mouse_axis_t axis,
  * @brief An unused function to handle high-resolution axis discrete
  * information. We don't need this, and as such do not use it.
  */
-static void HMAHR(void* d, mouse_object_t* m, uint32_t a, int32_t v) {}
+static void HMAHR(void* d, struct wl_pointer* m, uint32_t a, int32_t v) {}
 
 /**
  * @brief Handle the relative direction of the axis operation. Think of
@@ -155,8 +158,9 @@ static void HMAHR(void* d, mouse_object_t* m, uint32_t a, int32_t v) {}
  * @param axis The axis being directed.
  * @param direction The direction of the axis.
  */
-static void HMARD(void* d, mouse_object_t* m, mouse_axis_t axis,
-                  mouse_axis_direction_t direction)
+static void HMARD(void* d, struct wl_pointer* m,
+                  enum wl_pointer_axis_source axis,
+                  enum wl_pointer_axis_relative_direction direction)
 {
     last_mouse_event.events |= axis_direction;
     last_mouse_event.axes[axis].valid = true;
@@ -169,7 +173,7 @@ static void HMARD(void* d, mouse_object_t* m, mouse_axis_t axis,
  * @param d Nothing of use.
  * @param m Nothing of use.
  */
-static void HMF(void* d, mouse_object_t* m)
+static void HMF(void* d, struct wl_pointer* m)
 {
     // Big ol' if statement blob, this checks for each event, sees if a
     // corresponding callback has been set, and triggers it if it has.
@@ -227,7 +231,7 @@ static void HMF(void* d, mouse_object_t* m)
  * triggered in various situations, like the mouse entering the screen or a
  * mouse button being pressed.
  */
-const mouse_monitor_t mouse_listener = {HME,  HML,  HMM,  HMP,   HMA,  HMF,
-                                        HMAI, HMAS, HMAD, HMAHR, HMARD};
+const struct wl_pointer_listener mouse_listener = {
+    HME, HML, HMM, HMP, HMA, HMF, HMAI, HMAS, HMAD, HMAHR, HMARD};
 
-void SetCursorImage(pixel_buffer_t* buffer) {}
+void SetCursorImage(struct wl_buffer* buffer) {}

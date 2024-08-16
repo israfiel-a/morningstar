@@ -12,8 +12,6 @@
 #ifndef _MSENG_WARNING_OUTPUT_SYSTEM_
 #define _MSENG_WARNING_OUTPUT_SYSTEM_
 
-#include <Master.h>
-
 typedef enum
 {
     no_warning,
@@ -45,6 +43,9 @@ typedef enum
 
     preemptive_window_unwrapping,
     double_window_unwrapping,
+
+    preemptive_window_title_set,
+    invalid_title_value,
 
     preemptive_seat_creation,
     double_seat_creation,

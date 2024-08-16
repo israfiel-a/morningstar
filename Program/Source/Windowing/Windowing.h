@@ -4,17 +4,24 @@
  * @brief This file provides the public windowing interface of the
  * Morningstar toolkit. Functions within this file will deal with the
  * window manager, window creation and destruction. All warnings and errors
- * are documented.
+ * possible are documented.
  * @date 2024-08-14
+ * @version 1.0.1
  *
  * @copyright (c) 2024 - Israfiel
+ * This document is under the Creative Commons Zero 1.0 License.
+ * It, and all of its contents, are licensed to be used in a creative,
+ * commercial, or educational environment. You may modify or distribute
+ * this file as you wish, however you may @b not use it in a trademark or
+ * patent context. For more information, see the @file LICENSE.md file
+ * attached to your distribution of the program.
  */
 
 #ifndef _MSENG_WINDOWING_
 #define _MSENG_WINDOWING_
 
-// C standard library boolean type.
-#include <stdbool.h>
+// Basic types that come along with the windowing interface.
+#include "Windowing-Types.h"
 
 /**
  * @brief Set up the data having to do with the application's window. This,
@@ -54,12 +61,9 @@
  *
  * PARAMETERS / RETURN VALUE
  *
- * @param lock_unified A boolean flag to lock the application in unified
- * mode, with a single gameplay window as the only rendered object. This is
- * the only lock your software can directly place on the panel layout of
- * the application.
+ * None to note.
  */
-void SetupWindow(bool lock_unified);
+void SetupWindow(void);
 
 /**
  * @brief Create the application window. This will initialize the
@@ -146,6 +150,33 @@ void CreateWindow(const char* window_title);
  * None to note.
  */
 void DestroyWindow(void);
+
+/**
+ * @brief Set the title of the application window. This value must be a
+ * UTF-8 encoded string. This values is shown very few places, since the
+ * window is perpetually fullscreened, but it does appear in certain places
+ * like the window list on Wayland and the SUPER + TAB menu on Windows.
+ *
+ * ERRORS
+ *
+ * Nothing to note.
+ *
+ * WARNINGS
+ *
+ * This function's only call is to a function named @ref
+ * SetWrappedWindowTitle, which can trigger two warnings. Numero uno is
+ * @enum preemptive_window_title_set, which is triggered if the XDG
+ * toplevel has not been initialized (the window has not been created). The
+ * next one is triggered when NULL is passed as a value to this function,
+ * an @enum invalid_title_value warning is raised.
+ *
+ * PARAMETERS / RETURN VALUE
+ *
+ * @param title The new title of the window.
+ */
+void SetWindowTitle(const char* title);
+
+panel_t* CreatePanel(panel_type_t type);
 
 //! temp until better location found
 void run(void);

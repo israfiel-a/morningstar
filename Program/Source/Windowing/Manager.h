@@ -11,11 +11,7 @@
 #ifndef _MSENG_MANAGER_WINDOWING_SYSTEM_
 #define _MSENG_MANAGER_WINDOWING_SYSTEM_
 
-// The master include file for the project.
-#include <Master.h>
-#include <Windowing/Window.h>
-// Wayland and XDG type definitions.
-#include <Types.h>
+#include "Windowing-Types.h"
 
 /**
  * @brief Bind the XDG-shell interface to the application's registry.
@@ -36,15 +32,17 @@ void UnbindWindowManager(void);
  * @param raw_window The window to wrap.
  * @return The created XDG window.
  */
-wrapped_window_t* WrapRawWindow(raw_window_t* raw_window,
-                                const char* title);
+struct xdg_surface* WrapRawWindow(struct wl_surface* raw_window,
+                                  const char* title);
 
 void UnwrapWindow(window_t* window);
+
+void SetWrappedWindowTitle(const char* title);
 
 /**
  * @brief Grab the XDG base object.
  * @return The XDG base object.
  */
-window_manager_t* GetWindowManager(void);
+struct xdg_wm_base* GetWindowManager(void);
 
 #endif // _MSENG_MANAGER_WINDOWING_SYSTEM_

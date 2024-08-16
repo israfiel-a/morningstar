@@ -1,5 +1,8 @@
 #include "Error.h"
 #include "Messages.h"
+#include <Globals.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 // outline of new system (to be implemented):
 // report function: (file, function, line, code)

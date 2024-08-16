@@ -1,5 +1,6 @@
 #include "Warning.h"
 #include "Messages.h"
+#include <stddef.h>
 
 warning_t warningno = {NULL, no_warning};
 

@@ -12,9 +12,9 @@
 #define _MSENG_LOOP_RENDERING_SYSTEM_
 
 // The subwindow interface.
-#include <Windowing/Window.h>
+#include <Windowing/Windowing-Types.h>
 
 //! temp
-void draw(subwindow_t* subwindow, requested_window_t type);
+void draw(panel_t* panel);
 
 #endif // _MSENG_LOOP_RENDERING_SYSTEM_

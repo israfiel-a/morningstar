@@ -12,11 +12,6 @@
 #ifndef _MSENG_SYSTEM_WINDOWING_SYSTEM_
 #define _MSENG_SYSTEM_WINDOWING_SYSTEM_
 
-// The master include file for the project.
-#include <Master.h>
-// Wayland/XDG type definitions.
-#include <Types.h>
-
 /**
  * @brief A function to setup the Wayland server, the display environment
  * one used for the Linux distribution of Morningstar. This takes no
@@ -39,25 +34,25 @@ void DestroyWayland(void);
  */
 void CheckDisplayServer(void);
 
-display_t* GetDisplay(void);
+struct wl_display* GetDisplay(void);
 
 /**
  * @brief Get the Wayland registry object for the application. This
  * function returns NULL if the Wayland display server used is not Wayland.
  * @return A pointer to the registry.
  */
-registry_t* GetRegistry(void);
+struct wl_registry* GetRegistry(void);
 
 /**
  * @brief Get the Wayland compositor's compositor.
  * @return The Wayland compositor's compositor.
  */
-compositor_t* GetCompositor(void);
+struct wl_compositor* GetCompositor(void);
 
 /**
  * @brief Get the Wayland compositor's compositor's compositor. Dear god.
  * @return The Wayland compositor's compositor's compositor.
  */
-subcompositor_t* GetSubcompositor(void);
+struct wl_subcompositor* GetSubcompositor(void);
 
 #endif // _MSENG_SYSTEM_WINDOWING_SYSTEM_

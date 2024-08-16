@@ -6,6 +6,7 @@ This project is more-or-less a minimal game framework for 2D pixelart RPG-style 
 ### Dependencies
 Morningstar is a fairly minimal project, and that's by design. I want it to be performant and small. Now, that being said, it does require more than one dependency. I'm not a wizard.
 
+**!! REALLY OUTDATED !!**
 - **Windowing**
     - Wayland (libwayland) - If you're on Linux, this app does not interface with X11. Only Wayland. Your Wayland compositor must also be fairly up to date (as in, updated in the last two years or so).
         - XDG-shell (libwayland-protocols) - I use the XDG window manager protocol alongside Wayland for actual window creation and management.

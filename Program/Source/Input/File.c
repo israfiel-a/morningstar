@@ -1,23 +1,27 @@
 #include "File.h"
-#include <Memory/Fill.h>
+#include <Globals.h>
 #include <Output/Error.h>
 #include <Output/Warning.h>
-#include <STBI/STBI.h>
 #include <Windowing/System.h>
+#include <errno.h>
 #include <fcntl.h>
+#include <memory.h>
+#include <stdio.h>
+#include <sys/mman.h>
 #include <time.h>
+#include <unistd.h>
 
 void HandleCommandLineArgs(int argc, char** argv) {}
 
-static void HandleBufferDeletion(void* data, pixel_buffer_t* buffer)
+static void HandleBufferDeletion(void* data, struct wl_buffer* buffer)
 {
     wl_buffer_destroy(buffer);
 }
 
-static const pixel_buffer_monitor_t buffer_listener = {
+static const struct wl_buffer_listener buffer_listener = {
     HandleBufferDeletion};
 
-static shared_memory_buffer_t* shm_buffer = NULL;
+static struct wl_shm* shm_buffer = NULL;
 
 void BindSHM(uint32_t name, uint32_t version)
 {
@@ -87,8 +91,9 @@ int OpenSHM(size_t size)
     ReportError(shm_open_failure);
 }
 
-pixel_buffer_t* CreateSolidPixelBuffer(uint32_t width, uint32_t height,
-                                       color_type_t format, uint32_t color)
+struct wl_buffer* CreateSolidPixelBuffer(uint32_t width, uint32_t height,
+                                         enum wl_shm_format format,
+                                         uint32_t color)
 {
     // In the Wayland coloring interface, every pixel takes 4 bytes, ARGB
     // or XRGB. Multiply the width by 4 to get the amount of bytes per row
@@ -100,8 +105,8 @@ pixel_buffer_t* CreateSolidPixelBuffer(uint32_t width, uint32_t height,
         mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
     if (frame_data == MAP_FAILED) ReportError(mmap_failure);
 
-    shared_memory_pool_t* pool = wl_shm_create_pool(shm_buffer, fd, size);
-    pixel_buffer_t* buffer =
+    struct wl_shm_pool* pool = wl_shm_create_pool(shm_buffer, fd, size);
+    struct wl_buffer* buffer =
         wl_shm_pool_create_buffer(pool, 0, width, height, stride, format);
     wl_shm_pool_destroy(pool);
     close(fd);
@@ -119,7 +124,7 @@ pixel_buffer_t* CreateSolidPixelBuffer(uint32_t width, uint32_t height,
     return buffer;
 }
 
-shared_memory_buffer_t* GetSHM(void) { return shm_buffer; }
+struct wl_shm* GetSHM(void) { return shm_buffer; }
 
 bool ReadFileContents(const char* file_path, char* buffer,
                       size_t buffer_length)

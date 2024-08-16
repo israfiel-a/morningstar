@@ -11,7 +11,7 @@
 #define _MSENG_SHADER_RENDERING_SYSTEM_
 
 #include <GLAD/opengl.h>
-#include <Master.h>
+#include <stdbool.h>
 
 #define SHADER_PATH "./Assets/Shaders/"
 #define SHADER_MAX_LENGTH 1024

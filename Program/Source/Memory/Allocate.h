@@ -10,8 +10,8 @@
 #ifndef _MSENG_ALLOCATE_MEMORY_SYSTEM_
 #define _MSENG_ALLOCATE_MEMORY_SYSTEM_
 
-// The master include file for the project.
-#include <Master.h>
+#include <inttypes.h>
+#include <memory.h>
 
 /**
  * @brief A wrapped pointer. Includes the size of the pointer, alongside

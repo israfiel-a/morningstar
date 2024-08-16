@@ -6,8 +6,7 @@
 #include <Windowing/Windowing.h>
 
 globals_t global_flags = {
-    true,         false, {0, 0, 0, 0},
-    paneled_full, full,  {false, false, false, false, false}};
+    true, false, {0, 0, 0, 0}, full, {false, false, false, false, false}};
 
 // void BeginSession(int argument_count, char** arguments)
 // {

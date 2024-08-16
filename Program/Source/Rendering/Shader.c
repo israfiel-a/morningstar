@@ -1,6 +1,9 @@
 #include "Shader.h"
 #include <Input/File.h>
 #include <Output/Error.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 shader_component_t CreateShaderComponent(const char* file_path,
                                          shader_type_t type)

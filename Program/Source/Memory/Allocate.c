@@ -1,5 +1,7 @@
 #include "Allocate.h"
 #include <Output/Error.h> // Error reporting
+#include <errno.h>
+#include <stdlib.h>
 
 ptr_t AllocateBlock(size_t size)
 {

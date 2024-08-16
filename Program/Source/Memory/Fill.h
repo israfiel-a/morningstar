@@ -11,7 +11,6 @@
 #define _MSENG_FILL_MEMORY_SYSTEM_
 
 #include "Allocate.h"
-#include <Master.h>
 
 void ZeroBlock(ptr_t* ptr);
 void FillBlock(ptr_t* ptr, uint32_t value, size_t size);

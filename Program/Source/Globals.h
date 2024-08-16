@@ -58,44 +58,6 @@ typedef struct
         int32_t gap_size;
     } application_dimensions;
     /**
-     * @brief An enumerator describing the current UI mode of the
-     * application. This describes how many panels are on screen and where
-     * those panels exist.
-     */
-    enum
-    {
-        /**
-         * @brief Only the gameplay window (and perhaps some of the
-         * backdrop) is visible to the user.
-         */
-        unified,
-        /**
-         * @brief The same as @enum unified mode, except this is locked.
-         * The user cannot change it. This is only toggled when the user's
-         * monitor dimensions prevent the sensible distribution of multiple
-         * screens on the monitor.
-         */
-        unified_locked,
-        /**
-         * @brief The monitor only has space for the stat window and
-         * gameplay, so that's what we show. This is typically recommended
-         * for 4:3 monitors.
-         */
-        paneled_half,
-        /**
-         * @brief Same as @enum paneled_half, except this mode is locked.
-         * However, despite the lock, the user can still set their mode
-         * to unified.
-         */
-        paneled_half_locked,
-        /**
-         * @brief All three panels; bust, gameplay, and stats are fully
-         * visible. This is typically reserved for those playing on 16:9
-         * monitors.
-         */
-        paneled_full
-    } panel_mode;
-    /**
      * @brief An enumerator to describe the input mode of the application.
      * This can be affected by a lot of things, like user settings, device
      * availability, and more.

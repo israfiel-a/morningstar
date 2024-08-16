@@ -2,7 +2,7 @@
 
 int main(int argc, char** argv)
 {
-    SetupWindow(false);
+    SetupWindow();
     CreateWindow(TITLE);
 
     run();

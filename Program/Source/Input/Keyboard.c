@@ -1,6 +1,9 @@
 #include "Keyboard.h"
-#include "Hardware.h"                // The input callback group
+#include "Hardware.h" // The input callback group
+#include <assert.h>
 #include <linux/input-event-codes.h> // Linux input codes
+#include <sys/mman.h>
+#include <unistd.h>
 
 /**
  * @brief The internal input callback group.
@@ -25,8 +28,9 @@ static uint32_t last_key_pressed = 0;
  * @param fd The file descriptor of the keymap.
  * @param size The size of the keymap in bytes.
  */
-static void HKM(void* d, keyboard_object_t* k,
-                keyboard_keymap_format_t format, int32_t fd, uint32_t size)
+static void HKM(void* d, struct wl_keyboard* k,
+                enum wl_keyboard_keymap_format format, int32_t fd,
+                uint32_t size)
 {
     if (input_callbacks.keyboard_keymap != NULL)
     {
@@ -48,8 +52,8 @@ static void HKM(void* d, keyboard_object_t* k,
  * @param s Nothing of use.
  * @param keys The keys currently down.
  */
-static void HKE(void* d, keyboard_object_t* k, uint32_t serial,
-                raw_window_t* s, struct wl_array* keys)
+static void HKE(void* d, struct wl_keyboard* k, uint32_t serial,
+                struct wl_surface* s, struct wl_array* keys)
 {
     if (input_callbacks.keyboard_enter != NULL)
         input_callbacks.keyboard_enter();
@@ -62,7 +66,8 @@ static void HKE(void* d, keyboard_object_t* k, uint32_t serial,
  * @param s The serial number of the operation.
  * @param w Nothing of use.
  */
-static void HKL(void* d, keyboard_object_t* k, uint32_t s, raw_window_t* w)
+static void HKL(void* d, struct wl_keyboard* k, uint32_t s,
+                struct wl_surface* w)
 {
     if (input_callbacks.keyboard_leave != NULL)
         input_callbacks.keyboard_leave();
@@ -79,8 +84,9 @@ static void HKL(void* d, keyboard_object_t* k, uint32_t s, raw_window_t* w)
  * linux/input-event-codes.h.
  * @param state The new state of the key.
  */
-static void HKK(void* d, keyboard_object_t* k, uint32_t serial,
-                uint32_t time, uint32_t key, keyboard_key_state_t state)
+static void HKK(void* d, struct wl_keyboard* k, uint32_t serial,
+                uint32_t time, uint32_t key,
+                enum wl_keyboard_key_state state)
 {
     if (state == WL_KEYBOARD_KEY_STATE_PRESSED &&
         input_callbacks.keyboard_keydown != NULL)
@@ -104,7 +110,7 @@ static void HKK(void* d, keyboard_object_t* k, uint32_t serial,
  * @param locked Modifier keys locked.
  * @param group The keyboard layout of the user.
  */
-static void HKMO(void* d, keyboard_object_t* k, uint32_t serial,
+static void HKMO(void* d, struct wl_keyboard* k, uint32_t serial,
                  uint32_t pressed, uint32_t toggled, uint32_t locked,
                  uint32_t group)
 {
@@ -121,7 +127,8 @@ static void HKMO(void* d, keyboard_object_t* k, uint32_t serial,
  * @param delay The delay in milliseconds before the repeat state is
  * triggered.
  */
-static void HKR(void* d, keyboard_object_t* k, int32_t rate, int32_t delay)
+static void HKR(void* d, struct wl_keyboard* k, int32_t rate,
+                int32_t delay)
 {
     // No operation.
 }
@@ -130,8 +137,8 @@ static void HKR(void* d, keyboard_object_t* k, int32_t rate, int32_t delay)
  * @brief The listener for the keyboard. This triggers events during
  * important keyboard events like a keypress or modifier toggle.
  */
-const keyboard_monitor_t keyboard_listener = {HKM, HKE,  HKL,
-                                              HKK, HKMO, HKR};
+const struct wl_keyboard_listener keyboard_listener = {HKM, HKE,  HKL,
+                                                       HKK, HKMO, HKR};
 
 const uint32_t GetLastKeyPressed(void) { return last_key_pressed; }
 

@@ -10,10 +10,9 @@
 #ifndef _MSENG_HARDWARE_INPUT_SYSTEM_
 #define _MSENG_HARDWARE_INPUT_SYSTEM_
 
-// The master include file of the project.
-#include <Master.h>
-// Wayland/XDG type definitions.
-#include <Types.h>
+#include <inttypes.h>
+#include <wayland-client-protocol.h>
+#include <wayland-util.h>
 
 /**
  * @brief A group of callback functions that are triggered upon any of the
@@ -63,8 +62,8 @@ typedef struct
      * event. This is useful for smoothing.
      * @param time The time signature of the event down to the millisecond.
      */
-    void (*mouse_scroll)(mouse_axis_type_t type,
-                         mouse_axis_direction_t direction,
+    void (*mouse_scroll)(enum wl_pointer_axis_source type,
+                         enum wl_pointer_axis_relative_direction direction,
                          wl_fixed_t length, int32_t step, uint32_t time);
     /**
      * @brief A callback to handle a rock / swipe event (horizontal axis
@@ -78,9 +77,9 @@ typedef struct
      * events are typically smooth.
      * @param time The time signature of the event down to the millisecond.
      */
-    void (*mouse_rock)(mouse_axis_type_t type,
-                       mouse_axis_direction_t direction, wl_fixed_t length,
-                       int32_t step, uint32_t time);
+    void (*mouse_rock)(enum wl_pointer_axis_source type,
+                       enum wl_pointer_axis_relative_direction direction,
+                       wl_fixed_t length, int32_t step, uint32_t time);
     /**
      * @brief A callback for when the keyboard focus enters the window.
      */
@@ -144,7 +143,7 @@ void UnbindInputGroup(void);
  * @brief Grab a pointer to the application's input group from Wayland.
  * @return The pointer to the input group.
  */
-input_group_t* GetInputGroup(void);
+struct wl_seat* GetInputGroup(void);
 
 /**
  * @brief Add a callback to the mouse enter callback. See @ref
@@ -180,16 +179,16 @@ void SetMouseButtonUpCallback(void (*)(uint32_t, uint32_t));
  * @brief Add a callback to the mouse scroll callback. See @ref
  * input_callback_group_t::mouse_scroll for function information.
  */
-void SetMouseScrollCallback(void (*)(mouse_axis_type_t,
-                                     mouse_axis_direction_t, wl_fixed_t,
-                                     int32_t, uint32_t));
+void SetMouseScrollCallback(void (*)(
+    enum wl_pointer_axis_source, enum wl_pointer_axis_relative_direction,
+    wl_fixed_t, int32_t, uint32_t));
 /**
  * @brief Add a callback to the mouse rock callback. See @ref
  * input_callback_group_t::mouse_rock for function information.
  */
-void SetMouseRockCallback(void (*)(mouse_axis_type_t,
-                                   mouse_axis_direction_t, wl_fixed_t,
-                                   int32_t, uint32_t));
+void SetMouseRockCallback(void (*)(enum wl_pointer_axis_source,
+                                   enum wl_pointer_axis_relative_direction,
+                                   wl_fixed_t, int32_t, uint32_t));
 /**
  * @brief Add a callback to the keyboard enter callback. See @ref
  * input_callback_group_t::keyboard_enter for function information.

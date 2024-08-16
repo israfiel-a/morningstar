@@ -10,8 +10,7 @@
 #ifndef _MSENG_KEYBOARD_INPUT_SYSTEM_
 #define _MSENG_KEYBOARD_INPUT_SYSTEM_
 
-// The master include file of the project.
-#include <Master.h>
+#include <inttypes.h>
 
 /**
  * @brief Get the 32-bit unsigned integer representation of the key just

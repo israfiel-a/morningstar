@@ -10,8 +10,7 @@
 #ifndef _MSENG_ERROR_OUTPUT_SYSTEM_
 #define _MSENG_ERROR_OUTPUT_SYSTEM_
 
-// The master include file for the project.
-#include <Master.h>
+#include <inttypes.h>
 
 typedef enum
 {

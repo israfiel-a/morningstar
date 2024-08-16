@@ -13,7 +13,7 @@
 #define _MSENG_SYSTEM_RENDERING_SYSTEM_
 
 // The subwindow interface.
-#include <Windowing/Window.h>
+#include <Windowing/Windowing-Types.h>
 
 /**
  * @brief Setup our OpenGL ES bridge, EGL. This will fail if the Wayland
@@ -37,7 +37,7 @@ void DestroyEGL(void);
  * @param type The type of window being passed in. If this value is @enum
  * backdrop, we do nothing.
  */
-void BindEGLContext(subwindow_t* subwindow, requested_window_t type);
+void BindEGLContext(panel_t* subwindow);
 
 /**
  * @brief Unbind and destroy an EGL rendering context. This also sets both
@@ -48,7 +48,7 @@ void BindEGLContext(subwindow_t* subwindow, requested_window_t type);
  * @param type The type of subwindow passed in. If this is @enum backdrop,
  * we do nothing.
  */
-void UnbindEGLContext(subwindow_t* subwindow, requested_window_t type);
+void UnbindEGLContext(panel_t* subwindow);
 
 /**
  * @brief Resize the size of the rendering area bound to the given
@@ -59,11 +59,10 @@ void UnbindEGLContext(subwindow_t* subwindow, requested_window_t type);
  * @param type The type of subwindow we're being passed. If this is @enum
  * backdrop, we do nothing.
  */
-void ResizeEGLRenderingArea(subwindow_t* subwindow,
-                            requested_window_t type);
+void ResizeEGLRenderingArea(panel_t* subwindow);
 
-EGLDisplay GetEGLDisplay(void);
+void* GetEGLDisplay(void);
 
-EGLContext GetEGLContext(requested_window_t type);
+void* GetEGLContext(panel_type_t type);
 
 #endif // _MSENG_SYSTEM_RENDERING_SYSTEM_

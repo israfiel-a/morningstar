@@ -11,10 +11,9 @@
 #ifndef _MSENG_MOUSE_INPUT_SYSTEM_
 #define _MSENG_MOUSE_INPUT_SYSTEM_
 
-// The master include file of the project.
-#include <Master.h>
-// Wayland/XDG type definitions.
-#include <Types.h>
+#include <inttypes.h>
+#include <stdbool.h>
+#include <wayland-client-protocol.h>
 
 /**
  * @brief An enumerator describing the various events that can pass in a
@@ -85,7 +84,7 @@ typedef struct
      * @brief The new state of the given button, either @ref pressed or
      * @ref released.
      */
-    mouse_button_state_t state;
+    enum wl_pointer_button_state state;
     /**
      * @brief The X position of the cursor after its last move.
      */
@@ -108,7 +107,7 @@ typedef struct
         /**
          * @brief The relative direction the axis event happened in.
          */
-        mouse_axis_direction_t direction;
+        enum wl_pointer_axis_relative_direction direction;
         /**
          * @brief The length of the axis event.
          */
@@ -121,7 +120,7 @@ typedef struct
     /**
      * @brief The source of the axis event--scroll button, touch pad, etc.
      */
-    mouse_axis_type_t axis_information;
+    enum wl_pointer_axis_source axis_information;
 } mouse_event_t;
 
 /**
@@ -130,6 +129,6 @@ typedef struct
  * @param buffer The image to attach to it.
  * @note !! UNIMPLEMENTED
  */
-void SetCursorImage(pixel_buffer_t* buffer);
+void SetCursorImage(struct wl_buffer* buffer);
 
 #endif // _MSENG_MOUSE_INPUT_SYSTEM_

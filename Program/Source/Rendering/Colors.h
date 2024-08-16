@@ -10,9 +10,7 @@
 #ifndef _MSENG_COLORS_UTILITIES_
 #define _MSENG_COLORS_UTILITIES_
 
-#include <Master.h>
-#include <Types.h>
-#include <Windowing/Window.h>
+#include <Windowing/Windowing-Types.h>
 
 // Extremes
 #define WHITE 0xFFFFFFFF
@@ -44,7 +42,6 @@
 #define AMETHYST 0xFF9966CC
 #define LILAC 0xFFA689E1
 
-void SendBlankColor(raw_window_t* window, requested_window_t type,
-                    uint32_t color);
+void SendBlankColor(const panel_t* panel, uint32_t color);
 
 #endif // _MSENG_COLORS_UTILITIES_

@@ -11,8 +11,7 @@
 #ifndef _MSENG_MESSAGE_OUTPUT_SYSTEM_
 #define _MSENG_MESSAGE_OUTPUT_SYSTEM_
 
-// The master include for the project.
-#include <Master.h>
+#include <stdbool.h>
 
 /**
  * @brief Check for the @ref libnotify package on the user's system. This

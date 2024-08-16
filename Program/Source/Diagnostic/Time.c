@@ -1,6 +1,6 @@
 #include "Time.h"
 #include <Output/Error.h> // Error reporting functionality
-#include <time.h>         // GLIBC time functionality
+#include <stdio.h>
 
 static uint64_t start_time = 0;
 

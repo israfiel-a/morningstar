@@ -10,7 +10,8 @@
 #ifndef _MSENG_SYSTEM_OUTPUT_SYSTEM_
 #define _MSENG_SYSTEM_OUTPUT_SYSTEM_
 
-#include <Master.h>
+#include <inttypes.h>
+#include <stdlib.h>
 
 inline static int32_t GetSyscallReturnValue(int32_t value)
 {

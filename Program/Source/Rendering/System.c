@@ -3,6 +3,9 @@
 #include <Output/Error.h> // Error reporting
 #include <Output/Warning.h>
 #include <Windowing/System.h> // Wayland display
+#include <stdbool.h>
+#include <stddef.h>
+#include <wayland-egl-core.h>
 
 /**
  * @brief The EGL display object of the application. This is initialized by
@@ -20,7 +23,8 @@ static EGLConfig config = NULL;
  * @brief A list of contexts @enum backdrop values long that we use to
  * store the rendering contexts for all subwindows.
  */
-static EGLContext* contexts[backdrop] = {NULL, NULL, NULL};
+//! better way!!!
+static EGLContext* contexts[center_filler] = {NULL, NULL, NULL};
 
 static bool CheckEGLContextsEdited(void)
 {
@@ -47,14 +51,26 @@ void SetupEGL(void)
     if (!eglInitialize(display, NULL, NULL))
         ReportError(egl_initialization_failure);
 
-    EGLint n, config_attribs[] = EGL_CONFIG_ATTRIBUTES;
+    EGLint n, config_attribs[] = {EGL_SURFACE_TYPE,
+                                  EGL_WINDOW_BIT,
+                                  EGL_RED_SIZE,
+                                  8,
+                                  EGL_GREEN_SIZE,
+                                  8,
+                                  EGL_BLUE_SIZE,
+                                  8,
+                                  EGL_ALPHA_SIZE,
+                                  8,
+                                  EGL_RENDERABLE_TYPE,
+                                  EGL_OPENGL_ES2_BIT,
+                                  EGL_NONE};
     if (!eglChooseConfig(display, config_attribs, &config, 1, &n))
         ReportError(egl_config_failure);
 
     // Fill out each context with the information we need, including the
     // fact that we're using OpenGL ES v2.0.
     EGLint context_attribs[] = {EGL_CONTEXT_CLIENT_VERSION, 2, EGL_NONE};
-    for (int i = 0; i < backdrop; i++)
+    for (int i = 0; i < center_filler; i++)
     {
         contexts[i] =
             eglCreateContext(display, config, NULL, context_attribs);
@@ -77,58 +93,42 @@ void DestroyEGL(void)
     eglReleaseThread();
 }
 
-void BindEGLContext(subwindow_t* subwindow, requested_window_t type)
+void BindEGLContext(panel_t* panel)
 {
-    if (subwindow == NULL || type == backdrop) return;
+    if (panel == NULL) return;
 
-    subwindow->_eglwin = wl_egl_window_create(subwindow->_win, 1, 1);
-    if (subwindow->_eglwin == NULL) ReportError(allocation_failure);
+    panel->_es = wl_egl_window_create(panel->_s, 1, 1);
+    if (panel->_es == NULL) ReportError(allocation_failure);
 
-    subwindow->render_target = eglCreateWindowSurface(
-        display, config, (EGLNativeWindowType)subwindow->_eglwin, NULL);
-    if (subwindow->render_target == NULL)
-        ReportError(egl_surface_create_failure);
+    panel->_rt = eglCreateWindowSurface(
+        display, config, (EGLNativeWindowType)panel->_es, NULL);
+    if (panel->_rt == NULL) ReportError(egl_surface_create_failure);
 }
 
-void UnbindEGLContext(subwindow_t* subwindow, requested_window_t type)
+void UnbindEGLContext(panel_t* panel)
 {
-    if (subwindow == NULL || subwindow->_eglwin == NULL ||
-        subwindow->render_target == NULL)
+    if (panel == NULL || panel->_es == NULL || panel->_rt == NULL)
     {
         ReportWarning(preemptive_egl_context_free);
         return;
     }
 
-    if (type == backdrop)
-    {
-        ReportWarning(unknown_egl_context);
-        return;
-    }
+    wl_egl_window_destroy(panel->_es);
+    eglDestroySurface(display, panel->_rt);
+    panel->_es = NULL;
+    panel->_rt = NULL;
 
-    wl_egl_window_destroy(subwindow->_eglwin);
-    eglDestroySurface(display, subwindow->render_target);
-    subwindow->_eglwin = NULL;
-    subwindow->render_target = NULL;
-
-    eglDestroyContext(display, contexts[type]);
-    contexts[type] = NULL;
+    eglDestroyContext(display, contexts[panel->type]);
+    contexts[panel->type] = NULL;
 }
 
-void ResizeEGLRenderingArea(subwindow_t* subwindow,
-                            requested_window_t type)
+void ResizeEGLRenderingArea(panel_t* panel)
 {
-    if (subwindow == NULL || subwindow->_eglwin == NULL ||
-        type == backdrop)
-        return;
+    if (panel == NULL || panel->_es == NULL) return;
 
-    wl_egl_window_resize(subwindow->_eglwin, GetSubwindowWidth(type),
-                         GetSubwindowHeight(type), 0, 0);
+    wl_egl_window_resize(panel->_es, panel->width, panel->height, 0, 0);
 }
 
 EGLDisplay GetEGLDisplay(void) { return display; }
 
-EGLContext GetEGLContext(requested_window_t type)
-{
-    if (type == backdrop) return NULL;
-    return contexts[type];
-}
+EGLContext GetEGLContext(panel_type_t type) { return contexts[type]; }

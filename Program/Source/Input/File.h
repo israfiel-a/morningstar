@@ -12,9 +12,8 @@
 #ifndef _MSENG_TERMINAL_INPUT_SYSTEM_
 #define _MSENG_TERMINAL_INPUT_SYSTEM_
 
-// The master include file of the toolkit.
-#include <Master.h>
-#include <Types.h>
+#include <inttypes.h>
+#include <wayland-client-protocol.h>
 
 /**
  * @brief A function to handle any arguments passed to the main executable.
@@ -25,17 +24,17 @@
  */
 void HandleCommandLineArgs(int argc, char** argv);
 
-pixel_buffer_t* CreateSolidPixelBuffer(uint32_t width, uint32_t height,
-                                       color_type_t format,
-                                       uint32_t color);
+struct wl_buffer* CreateSolidPixelBuffer(uint32_t width, uint32_t height,
+                                         enum wl_shm_format format,
+                                         uint32_t color);
 
 int OpenSHM(size_t size);
 
 void BindSHM(uint32_t name, uint32_t version);
 void UnbindSHM(void);
-shared_memory_buffer_t* GetSHM(void);
+struct wl_shm* GetSHM(void);
 
-bool ReadFileContents(const char* file_path, char* buffer,
-                      size_t buffer_length);
+_Bool ReadFileContents(const char* file_path, char* buffer,
+                       size_t buffer_length);
 
 #endif // _MSENG_TERMINAL_INPUT_SYSTEM_

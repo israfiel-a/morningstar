@@ -1,37 +1,39 @@
 #include "Hardware.h"
+#include <Globals.h>
 #include <Output/Warning.h>
 #include <Windowing/System.h>        // Registry functions
 #include <linux/input-event-codes.h> // Linux input codes
+#include <stdbool.h>
 
 /**
  * @brief The application's keyboard listener as created by @file
  * Keyboard.c.
  */
-extern const keyboard_monitor_t keyboard_listener;
+extern const struct wl_keyboard_listener keyboard_listener;
 
 /**
  * @brief The application's mouse listener as created by @file Mouse.c.
  */
-extern const mouse_monitor_t mouse_listener;
+extern const struct wl_pointer_listener mouse_listener;
 
 /**
  * @brief The input group given to us by the compositor for use in the
  * application.
  */
-static input_group_t* seat = NULL;
+static struct wl_seat* seat = NULL;
 
 /**
  * @brief The mouse currently registered to the application. If none
  * are, then this value is set to NULL.
  */
-static mouse_object_t* mouse = NULL;
+static struct wl_pointer* mouse = NULL;
 
 /**
  * @brief One of the keyboards currently connected to the application.
  * Which keyboard this is (if the user has multiple connected) is mostly
  * arbitrary. If there is not a keyboard available, this object is NULL.
  */
-static keyboard_object_t* keyboard = NULL;
+static struct wl_keyboard* keyboard = NULL;
 
 /**
  * @brief The internal group of callbacks to be triggered by all the
@@ -50,7 +52,7 @@ input_callback_group_t input_callbacks = {NULL, NULL, NULL, NULL, NULL,
  * @param capabilities The new capabilities of the input group with the
  * added objects.
  */
-static void HIDC(void* d, input_group_t* seat, uint32_t capabilities)
+static void HIDC(void* d, struct wl_seat* seat, uint32_t capabilities)
 {
     bool supports_mouse = capabilities & WL_SEAT_CAPABILITY_POINTER;
     if (supports_mouse && mouse == NULL)
@@ -83,13 +85,13 @@ static void HIDC(void* d, input_group_t* seat, uint32_t capabilities)
  * @brief An unused function for handling the change of name for an input
  * group.
  */
-static void HSN(void* d, input_group_t* s, const char* n) {}
+static void HSN(void* d, struct wl_seat* s, const char* n) {}
 
 /**
  * @brief A listener for input groups that handles the connection /
  * disconnection of devices from the host machine.
  */
-static const input_group_monitor_t input_group_listener = {HIDC, HSN};
+static const struct wl_seat_listener input_group_listener = {HIDC, HSN};
 
 void BindInputGroup(const uint32_t name, const uint32_t version)
 {
@@ -125,7 +127,7 @@ void UnbindInputGroup(void)
     devices.input_group = false;
 }
 
-input_group_t* GetInputGroup(void) { return seat; }
+struct wl_seat* GetInputGroup(void) { return seat; }
 
 void SetMouseEnterCallback(void (*func)(wl_fixed_t, wl_fixed_t))
 {
@@ -147,15 +149,15 @@ void SetMouseButtonUpCallback(void (*func)(uint32_t, uint32_t))
 {
     input_callbacks.mouse_button_release = func;
 }
-void SetMouseScrollCallback(void (*func)(mouse_axis_type_t,
-                                         mouse_axis_direction_t,
-                                         wl_fixed_t, int32_t, uint32_t))
+void SetMouseScrollCallback(void (*func)(
+    enum wl_pointer_axis_source, enum wl_pointer_axis_relative_direction,
+    wl_fixed_t, int32_t, uint32_t))
 {
     input_callbacks.mouse_scroll = func;
 }
-void SetMouseRockCallback(void (*func)(mouse_axis_type_t,
-                                       mouse_axis_direction_t, wl_fixed_t,
-                                       int32_t, uint32_t))
+void SetMouseRockCallback(void (*func)(
+    enum wl_pointer_axis_source, enum wl_pointer_axis_relative_direction,
+    wl_fixed_t, int32_t, uint32_t))
 {
     input_callbacks.mouse_rock = func;
 }

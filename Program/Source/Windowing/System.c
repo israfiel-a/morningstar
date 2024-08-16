@@ -1,33 +1,36 @@
 #include "System.h"
-#include "Manager.h"        // Window managing
+#include "Manager.h" // Window managing
+#include <Globals.h>
 #include <Input/File.h>     // Shared memory file functionality
 #include <Input/Hardware.h> // Mouse/keyboard functionality
 #include <Output/Error.h>   // Error reporting
 #include <Output/Warning.h>
 #include <Rendering/System.h>
+#include <XDGS/xdg-shell.h>
+#include <string.h>
 
 /**
  * @brief The application's display object.
  */
-static display_t* display = NULL;
+static struct wl_display* display = NULL;
 
 /**
  * @brief The application's registry object, contained in this file for
  * cleanliness reasons.
  */
-static registry_t* registry = NULL;
+static struct wl_registry* registry = NULL;
 
 /**
  * @brief The Wayland compositor's compositor. It is responsible for
  * creating surfaces and regions.
  */
-static compositor_t* compositor = NULL;
+static struct wl_compositor* compositor = NULL;
 
 /**
  * @brief The Wayland's compositor's compositor's compositor. The nesting
  * is crazy here. This is responsible for creating subsurfaces.
  */
-static subcompositor_t* subcompositor = NULL;
+static struct wl_subcompositor* subcompositor = NULL;
 
 /**
  * @brief Basically a big switch statement that binds whatever interface
@@ -38,7 +41,7 @@ static subcompositor_t* subcompositor = NULL;
  * @param interface The interface to be bound.
  * @param version The version of the interface we're being given.
  */
-static void HIA(void* d, registry_t* r, uint32_t name,
+static void HIA(void* d, struct wl_registry* r, uint32_t name,
                 const char* interface, uint32_t version)
 {
     if (!strcmp(interface, wl_shm_interface.name)) BindSHM(name, version);
@@ -70,7 +73,7 @@ static void HID(void* d, struct wl_registry* r, uint32_t n) {}
  * the Wayland registry. We only have functionality for the case of
  * addition, not deletion.
  */
-static const registry_monitor_t registry_listener = {HIA, HID};
+static const struct wl_registry_listener registry_listener = {HIA, HID};
 
 void SetupWayland(void)
 {
@@ -113,7 +116,7 @@ void CheckDisplayServer(void)
         ReportError(server_processing_failure);
 }
 
-display_t* GetDisplay(void) { return display; }
-registry_t* GetRegistry(void) { return registry; }
-compositor_t* GetCompositor(void) { return compositor; }
-subcompositor_t* GetSubcompositor(void) { return subcompositor; }
+struct wl_display* GetDisplay(void) { return display; }
+struct wl_registry* GetRegistry(void) { return registry; }
+struct wl_compositor* GetCompositor(void) { return compositor; }
+struct wl_subcompositor* GetSubcompositor(void) { return subcompositor; }

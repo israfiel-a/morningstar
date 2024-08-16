@@ -98,7 +98,9 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     file(COPY ${CMAKE_SOURCE_DIR}/Assets DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
 else()
     add_compile_options(-Ofast)
-    file(COPY ${CMAKE_SOURCE_DIR}/Source/Windowing/Windowing.h 
+    file(COPY 
+        ${CMAKE_SOURCE_DIR}/Source/Windowing/Windowing.h 
+        ${CMAKE_SOURCE_DIR}/Source/Windowing/Windowing-Types.h
         DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
 endif()
 
