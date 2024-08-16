@@ -19,21 +19,16 @@ void SetupWindow(void)
 
 void CreateWindow(const char* window_title)
 {
-    if (GetDisplay() == NULL || GetRegistry() == NULL)
+    if (GetDisplay() == NULL || GetRegistry() == NULL ||
+        GetCompositor() == NULL || GetWindowManager() == NULL)
     {
         ReportWarning(preemptive_window_creation);
         return;
     }
 
-    if (GetCompositor() == NULL || GetWindowManager() == NULL)
-    {
-        ReportWarning(preemptive_backdrop_creation);
-        return;
-    }
-
     if (window._s != NULL || window._ws != NULL)
     {
-        ReportWarning(double_backdrop_creation);
+        ReportWarning(double_window_creation);
         return;
     }
 
@@ -46,7 +41,7 @@ void DestroyWindow(void)
 {
     if (window._s == NULL || window._ws == NULL)
     {
-        ReportWarning(double_backdrop_free);
+        ReportWarning(double_window_free);
         return;
     }
 

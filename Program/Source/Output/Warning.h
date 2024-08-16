@@ -28,18 +28,15 @@ typedef enum
     preemptive_wm_creation,
     double_wm_creation,
 
-    preemptive_backdrop_creation,
-    double_backdrop_creation,
-    preemptive_backdrop_free,
-    double_backdrop_free,
+    preemptive_window_creation,
+    double_window_creation,
+    preemptive_window_free,
+    double_window_free,
 
     preemptive_panel_creation,
     double_panel_creation,
     preemptive_panel_free,
     double_panel_free,
-
-    preemptive_window_creation,
-    double_window_creation,
 
     preemptive_window_unwrapping,
     double_window_unwrapping,

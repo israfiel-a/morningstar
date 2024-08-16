@@ -66,40 +66,22 @@
 void SetupWindow(void);
 
 /**
- * @brief Create the application window. This will initialize the
- * sub-panels as well, though nothing is drawn to them. If on Wayland,
- * nothing will be done if the display or registry has not yet been
- * initialized, and the warning code @enum preemptive_window_creation will
- * be reported.
+ * @brief Create the application window. If on Wayland, nothing will be
+ * done if the display or registry has not yet been initialized, and the
+ * warning code @enum preemptive_window_creation will be reported.
  *
  * ERRORS
  *
- * Only four errors can occur within the time-frame of this function. All
- * three are caught within @ref CreatePanels. An @enum allocation_failure
- * may be triggered if the application is not given the memory we need to
- * create the panel list.
- *
- * The rest of the errors will be caught within the function @ref
- * BindEGLContext, during the creation of the sub-panels' rendering
- * contexts. Number one would be another @enum allocation_failure that's
- * reported if Wayland fails to get the proper amount of space for the
- * required @struct wl_egl_window. The second error would be an @enum
- * egl_surface_create_failure that's triggered if EGL fails to create a
- * render target for the window.
+ * None to note.
  *
  * WARNINGS
  *
- * Down the line, within both @ref CreateBackdrop and @ref CreatePanels,
- * the application will check the Wayland compositor and subcompositor, the
- * EGL display, and the XDG-shell window manager to make certain all three
- * are initialized. If they are not, this function will do nothing and
- * various warnings will be thrown, depending on where the issue is caught.
- * These possible warnings are @enum preemptive_backdrop_creation and
- * @enum preemptive_panel_creation.
- *
- * The opposite is also true; if this function is called multiple times,
- * the warnings @enum double_backdrop_creation and @enum
- * double_panel_creations can/will be generated.
+ * There are only two possible errors to be triggered within this function;
+ * first, @enum preemptive_window_creation should this function be
+ * triggered before the Wayland display, registry, and compositor are
+ * initialized, or before the XDG-shell interface is bound. Second, if this
+ * function has been called multiple times, @enum double_window_creation is
+ * triggered.
  *
  * PARAMETERS / RETURN VALUE
  *
