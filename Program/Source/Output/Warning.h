@@ -16,6 +16,10 @@ typedef enum
 {
     no_warning,
 
+    invalid_block_copy,
+    same_block_size,
+    null_block_set,
+
     double_display_setup,
 
     preemptive_egl_setup,

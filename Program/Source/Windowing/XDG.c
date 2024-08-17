@@ -1,5 +1,5 @@
-#include "Manager.h"
-#include "System.h" // Registry functionality
+#include "XDG.h"
+#include "Wayland.h" // Registry functionality
 #include <Globals.h>
 #include <Output/Error.h> // Error reporting
 #include <Output/Warning.h>

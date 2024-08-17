@@ -10,8 +10,9 @@
 #ifndef _MSENG_ALLOCATE_MEMORY_SYSTEM_
 #define _MSENG_ALLOCATE_MEMORY_SYSTEM_
 
-#include <inttypes.h>
-#include <memory.h>
+#include <inttypes.h> // Fixed-width integers
+#include <memory.h>   // Memory functions like memcpy
+#include <stdbool.h>  // Boolean values
 
 /**
  * @brief A wrapped pointer. Includes the size of the pointer, alongside
@@ -86,6 +87,15 @@ void ReallocateBlock(ptr_t* ptr, size_t new_size);
  * @param ptr The pointer to set.
  * @param contents The new contents of the pointer.
  */
-void SetBlockContents(ptr_t* ptr, void* content, size_t content_size);
+void SetBlockContents(ptr_t* ptr, const void* content,
+                      size_t content_size);
+
+/**
+ * @brief Check if the given block is NULL.
+ * @param ptr The block to check.
+ * @return true The block is NULL.
+ * @return false The block is not NULL.
+ */
+bool CheckBlockNull(const ptr_t ptr);
 
 #endif // _MSENG_ALLOCATE_MEMORY_SYSTEM_

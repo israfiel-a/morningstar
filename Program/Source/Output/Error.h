@@ -10,6 +10,7 @@
 #ifndef _MSENG_ERROR_OUTPUT_SYSTEM_
 #define _MSENG_ERROR_OUTPUT_SYSTEM_
 
+#include <errno.h> // IWYU pragma: keep
 #include <inttypes.h>
 
 typedef enum

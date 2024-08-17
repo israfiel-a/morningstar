@@ -10,14 +10,9 @@
 #ifndef _MSENG_SYSTEM_OUTPUT_SYSTEM_
 #define _MSENG_SYSTEM_OUTPUT_SYSTEM_
 
-#include <inttypes.h>
-#include <stdlib.h>
-
-inline static int32_t GetSyscallReturnValue(int32_t value)
-{
-    if (!WIFEXITED(value)) exit(EXIT_FAILURE);
-    return WEXITSTATUS(value);
-}
+#include "Error.h"    // IWYU pragma: keep
+#include "Messages.h" // IWYU pragma: keep
+#include "Warning.h"  // IWYU pragma: keep
 
 int32_t SystemCall(const char* command);
 

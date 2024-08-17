@@ -1,21 +1,13 @@
 #include "Windowing.h"
-#include <Globals.h>                 // Global flags
-#include <Output/Error.h>            // Error functionality
-#include <Output/Warning.h>          // Warning functionality
-#include <Rendering/System.h>        // EGL wrappers
-#include <Windowing/Manager.h>       // XDG wrappers
-#include <Windowing/System.h>        // Wayland wrappers
-#include <stddef.h>                  // NULL
-#include <stdlib.h>                  // malloc, free, etc.
-#include <wayland-client-protocol.h> // Wayland functions
+#include "Wayland.h"          // Wayland wrappers
+#include "XDG.h"              // XDG wrappers
+#include <Globals.h>          // Global flags
+#include <Output/System.h>    // Output functions
+#include <Rendering/System.h> // EGL wrappers
 
-static window_t window;
+static window_t window = {NULL, NULL, NULL, NULL, NULL};
 
-void SetupWindow(void)
-{
-    SetupWayland();
-    SetupEGL();
-}
+void SetupWindow(void) { SetupWayland(), SetupEGL(); }
 
 void CreateWindow(const char* window_title)
 {
@@ -32,9 +24,9 @@ void CreateWindow(const char* window_title)
         return;
     }
 
-    window._s = wl_compositor_create_surface(GetCompositor());
+    window._s = CreateSurface();
     window._ws = WrapRawWindow(window._s, window_title);
-    wl_surface_commit(window._s);
+    CommitSurface(window._s);
 }
 
 void DestroyWindow(void)
@@ -45,7 +37,7 @@ void DestroyWindow(void)
         return;
     }
 
-    if (window.panels == NULL)
+    if (CheckBlockNull(window.panels))
     {
         ReportWarning(preemptive_panel_free);
         return;
@@ -54,19 +46,17 @@ void DestroyWindow(void)
     // this will increase with the size of the panel array later
     for (size_t i = 0; i < 1; i++)
     {
-        panel_t panel = window.panels[i];
+        panel_t panel = ((panel_t*)window.panels.inner)[i];
         if (panel._s != NULL && panel._ss != NULL) continue;
 
-        wl_surface_destroy(panel._s);
-        wl_subsurface_destroy(panel._ss);
+        DestroySurface(&panel._s);
+        DestroySubsurface(&panel._ss);
         UnbindEGLContext(&panel);
     }
 
-    free(window.panels);
-    window.panels = NULL;
-
+    FreeBlock(&window.panels);
     UnwrapWindow(&window);
-    wl_surface_destroy(window._s);
+    DestroySurface(&window._s);
     window._s = NULL;
     window._ws = NULL;
 
@@ -92,11 +82,7 @@ panel_t* CreatePanel(panel_type_t type)
     }
 
     // replace this shit with a dynamic_array type next update
-    if (window.panels == NULL)
-    {
-        window.panels = malloc(sizeof(panel_t));
-        if (window.panels == NULL) ReportError(allocation_failure);
-    }
+    if (GetNull) AllocateBlock(sizeof(panel_t*));
 
     // zero cause we only allow one panel for testing
     window.panels[0] =
@@ -105,9 +91,8 @@ panel_t* CreatePanel(panel_type_t type)
                   0,
                   0,
                   0,
-                  wl_compositor_create_surface(GetCompositor()),
-                  wl_subcompositor_get_subsurface(
-                      GetSubcompositor(), window.panels[0]._s, window._s)};
+                  CreateSurface(),
+                  CreateSubsurface(&window.panels[0]._s, window._s)};
 
     // type switch statement goes here later
 
@@ -118,10 +103,9 @@ panel_t* CreatePanel(panel_type_t type)
         window.panels[0].x = dimensions.gap_size;
     else window.panels[0].y = dimensions.gap_size;
 
-    wl_subsurface_set_position(window.panels[0]._ss, window.panels[0].x,
-                               window.panels[0].y);
-    // Update Wayland on our changes.
-    wl_surface_commit(window.panels[0]._s);
+    SetSubsurfacePosition(window.panels[0]._ss, window.panels[0].x,
+                          window.panels[0].y);
+    CommitSurface(window.panels[0]._s);
 
     BindEGLContext(&window.panels[0]);
 
@@ -132,7 +116,7 @@ void run(void)
 {
     while (running)
     {
-        CheckDisplayServer();
+        CheckWayland();
         // do all the funny stuff
     }
 }

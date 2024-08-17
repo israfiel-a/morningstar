@@ -21,6 +21,8 @@
 
 // Portable, set-width types.
 #include <inttypes.h>
+// Safer, easier-to-allocate memory chunks.
+#include <Memory/Allocate.h>
 
 /**
  * @brief An enumerator to describe a specific sub-panel of the background
@@ -81,25 +83,27 @@ typedef struct
      */
     panel_type_t type;
     /**
-     * @brief The width of the panel in pixels. @note This value is marked
-     * @b const for a reason, do not edit it.
+     * @brief The width of the panel in pixels. @note Changing this value
+     * will do nothing but potentially messing up rendering proportions
+     * later on.
      */
     uint32_t width;
     /**
-     * @brief The height of the panel in pixels. @note This value is marked
-     * @b const for a reason, do not edit it.
+     * @brief The height of the panel in pixels. @note Changing this value
+     * will do nothing but potentially messing up rendering proportions
+     * later on.
      */
     uint32_t height;
     /**
      * @brief The X-coordinate of the panel in screen coordinates. @note
-     * This value is marked @b const for a reason, do not edit it.
+     * Changing this value will do nothing. It is simply here for reading.
      */
-    uint32_t x;
+    int32_t x;
     /**
      * @brief The Y-coordinate of the panel in screen coordinates. @note
-     * This value is marked @b const for a reason, do not edit it.
+     * Changing this value will do nothing. It is simply here for reading.
      */
-    uint32_t y;
+    int32_t y;
     /**
      * @brief The Wayland surface of the window. @note There is no
      * reason to edit this. Let functions help you.
@@ -128,7 +132,7 @@ typedef struct
 {
     const char* title;
     const char* id;
-    panel_t* panels;
+    ptr_t panels;
 
     struct wl_surface* _s;
     struct xdg_surface* _ws;

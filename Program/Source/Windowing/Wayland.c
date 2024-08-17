@@ -1,5 +1,5 @@
-#include "System.h"
-#include "Manager.h" // Window managing
+#include "Wayland.h"
+#include "XDG.h" // Window managing
 #include <Globals.h>
 #include <Input/File.h>     // Shared memory file functionality
 #include <Input/Hardware.h> // Mouse/keyboard functionality
@@ -110,10 +110,45 @@ void DestroyWayland(void)
     devices.subcompositor = false;
 }
 
-void CheckDisplayServer(void)
+void CheckWayland(void)
 {
     if (wl_display_dispatch(display) == -1)
         ReportError(server_processing_failure);
+}
+
+struct wl_surface* CreateSurface(void)
+{
+    return wl_compositor_create_surface(compositor);
+}
+
+void DestroySurface(struct wl_surface** surface)
+{
+    wl_surface_destroy(*surface);
+    surface = NULL;
+}
+
+struct wl_subsurface* CreateSubsurface(struct wl_surface** surface,
+                                       struct wl_surface* parent)
+{
+    return wl_subcompositor_get_subsurface(subcompositor, *surface,
+                                           parent);
+}
+
+void DestroySubsurface(struct wl_subsurface** subsurface)
+{
+    wl_subsurface_destroy(*subsurface);
+    subsurface = NULL;
+}
+
+void CommitSurface(struct wl_surface* surface)
+{
+    wl_surface_commit(surface);
+}
+
+void SetSubsurfacePosition(struct wl_subsurface* subsurface, int32_t x,
+                           int32_t y)
+{
+    wl_subsurface_set_position(subsurface, x, y);
 }
 
 struct wl_display* GetDisplay(void) { return display; }

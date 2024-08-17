@@ -12,6 +12,8 @@
 #ifndef _MSENG_SYSTEM_WINDOWING_SYSTEM_
 #define _MSENG_SYSTEM_WINDOWING_SYSTEM_
 
+#include <inttypes.h>
+
 /**
  * @brief A function to setup the Wayland server, the display environment
  * one used for the Linux distribution of Morningstar. This takes no
@@ -32,7 +34,16 @@ void DestroyWayland(void);
  * events, this function kills the process immediately with a code of
  * 8, figuring something must be wrong with the user's computer.
  */
-void CheckDisplayServer(void);
+void CheckWayland(void);
+
+struct wl_surface* CreateSurface(void);
+void DestroySurface(struct wl_surface** surface);
+struct wl_subsurface* CreateSubsurface(struct wl_surface** surface,
+                                       struct wl_surface* parent);
+void DestroySubsurface(struct wl_subsurface** subsurface);
+void CommitSurface(struct wl_surface* surface);
+void SetSubsurfacePosition(struct wl_subsurface* subsurface, int32_t x,
+                           int32_t y);
 
 struct wl_display* GetDisplay(void);
 

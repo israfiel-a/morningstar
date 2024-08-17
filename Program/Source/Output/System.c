@@ -1,5 +1,12 @@
 #include "System.h"
 #include "Error.h"
+#include <stdlib.h>
+
+inline static int32_t GetSyscallReturnValue(int32_t value)
+{
+    if (!WIFEXITED(value)) exit(EXIT_FAILURE);
+    return WEXITSTATUS(value);
+}
 
 int32_t SystemCall(const char* command)
 {
