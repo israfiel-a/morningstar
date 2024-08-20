@@ -5,6 +5,7 @@
 #include <Windowing/Wayland.h> // Wayland display
 #include <stdbool.h>
 #include <stddef.h>
+#include <stdio.h>
 #include <wayland-egl-core.h>
 
 /**
@@ -20,17 +21,10 @@ static EGLDisplay display = NULL;
 static EGLConfig config = NULL;
 
 /**
- * @brief A list of contexts @enum backdrop values long that we use to
- * store the rendering contexts for all subwindows.
+ * @brief A list of contexts that we use to store the rendering contexts
+ * for all surfaces.
  */
-//! better way!!!
-static EGLContext* contexts[center_filler] = {NULL, NULL, NULL};
-
-static bool CheckEGLContextsEdited(void)
-{
-    return contexts[0] != NULL && contexts[1] != NULL &&
-           contexts[2] != NULL;
-}
+static array_t contexts;
 
 void SetupEGL(void)
 {
@@ -40,7 +34,7 @@ void SetupEGL(void)
         return;
     }
 
-    if (display != NULL || config != NULL || CheckEGLContextsEdited())
+    if (display != NULL || config != NULL || CheckArrayValidity(contexts))
     {
         ReportWarning(double_egl_setup);
         return;
@@ -66,16 +60,7 @@ void SetupEGL(void)
                                   EGL_NONE};
     if (!eglChooseConfig(display, config_attribs, &config, 1, &n))
         ReportError(egl_config_failure);
-
-    // Fill out each context with the information we need, including the
-    // fact that we're using OpenGL ES v2.0.
-    EGLint context_attribs[] = {EGL_CONTEXT_CLIENT_VERSION, 2, EGL_NONE};
-    for (int i = 0; i < center_filler; i++)
-    {
-        contexts[i] =
-            eglCreateContext(display, config, NULL, context_attribs);
-        if (contexts[i] == NULL) ReportError(egl_context_create_failure);
-    }
+    contexts = CreateArray(1);
 }
 
 void DestroyEGL(void)
@@ -97,15 +82,25 @@ void BindEGLContext(panel_t* panel)
 {
     if (panel == NULL) return;
 
+    // Fill out each context with the information we need, including the
+    // fact that we're using OpenGL ES v2.0.
+    EGLint context_attribs[] = {EGL_CONTEXT_CLIENT_VERSION, 2, EGL_NONE};
+    ptr_t context_block = AllocateBlock(sizeof(void*));
+    context_block._p =
+        eglCreateContext(display, config, NULL, context_attribs);
+    AddArrayValue(&contexts, context_block);
+
     panel->_es = wl_egl_window_create(panel->_s, 1, 1);
     if (panel->_es == NULL) ReportError(allocation_failure);
 
     panel->_rt = eglCreateWindowSurface(
         display, config, (EGLNativeWindowType)panel->_es, NULL);
     if (panel->_rt == NULL) ReportError(egl_surface_create_failure);
+    eglMakeCurrent(display, panel->_rt, panel->_rt,
+                   contexts._a[contexts.occupied - 1]._p);
 }
 
-void UnbindEGLContext(panel_t* panel)
+void UnbindEGLContext(panel_t* panel, size_t panel_index)
 {
     if (panel == NULL || panel->_es == NULL || panel->_rt == NULL)
     {
@@ -118,8 +113,8 @@ void UnbindEGLContext(panel_t* panel)
     panel->_es = NULL;
     panel->_rt = NULL;
 
-    eglDestroyContext(display, contexts[panel->type]);
-    contexts[panel->type] = NULL;
+    eglDestroyContext(display, contexts._a[panel_index]._p);
+    FreeBlock(&contexts._a[panel_index]);
 }
 
 void ResizeEGLRenderingArea(panel_t* panel)
@@ -131,4 +126,14 @@ void ResizeEGLRenderingArea(panel_t* panel)
 
 EGLDisplay GetEGLDisplay(void) { return display; }
 
-EGLContext GetEGLContext(panel_type_t type) { return contexts[type]; }
+EGLContext GetEGLContext(size_t panel_index)
+{
+    return contexts._a[panel_index]._p;
+}
+
+void* CreateEGLContext(EGLContext share_context)
+{
+    EGLint context_attribs[] = {EGL_CONTEXT_CLIENT_VERSION, 2, EGL_NONE};
+    return eglCreateContext(display, config, share_context,
+                            context_attribs);
+}

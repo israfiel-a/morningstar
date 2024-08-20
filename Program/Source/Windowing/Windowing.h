@@ -22,6 +22,7 @@
 
 // Basic types that come along with the windowing interface.
 #include "Windowing-Types.h"
+#include <pthread.h> //! temp
 
 /**
  * @brief Set up the data having to do with the application's window. This,
@@ -162,9 +163,10 @@ panel_t* CreatePanel(panel_type_t type);
 
 panel_t* GetPanel(size_t index);
 
-void IteratePanels(void (*func)(panel_t* panel));
+void IteratePanels(void (*func)(panel_t* panel, size_t panel_index));
 
 void SignalDimensionsSet_(void);
+void WaitForDimensionSignal_(pthread_mutex_t* mutex);
 
 //! temp until better location found
 void run(void);

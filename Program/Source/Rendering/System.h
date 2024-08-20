@@ -48,7 +48,7 @@ void BindEGLContext(panel_t* subwindow);
  * @param type The type of subwindow passed in. If this is @enum backdrop,
  * we do nothing.
  */
-void UnbindEGLContext(panel_t* subwindow);
+void UnbindEGLContext(panel_t* subwindow, size_t panel_index);
 
 /**
  * @brief Resize the size of the rendering area bound to the given
@@ -63,6 +63,8 @@ void ResizeEGLRenderingArea(panel_t* subwindow);
 
 void* GetEGLDisplay(void);
 
-void* GetEGLContext(panel_type_t type);
+void* GetEGLContext(size_t panel_index);
+
+void* CreateEGLContext(void* share_context);
 
 #endif // _MSENG_SYSTEM_RENDERING_SYSTEM_

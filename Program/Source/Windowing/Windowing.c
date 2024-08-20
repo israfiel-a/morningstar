@@ -40,9 +40,10 @@ panel_t* GetPanel(size_t index)
     return (panel_t*)(window.panels._a[index]._p);
 }
 
-void IteratePanels(void (*func)(panel_t* panel))
+void IteratePanels(void (*func)(panel_t* panel, size_t panel_index))
 {
-    for (size_t i = 0; i < window.panels.occupied; i++) func(GetPanel(i));
+    for (size_t i = 0; i < window.panels.occupied; i++)
+        func(GetPanel(i), i);
 }
 
 void DestroyWindow(void)
@@ -66,7 +67,7 @@ void DestroyWindow(void)
 
         DestroySurface(&panel->_s);
         DestroySubsurface(&panel->_ss);
-        UnbindEGLContext(panel);
+        UnbindEGLContext(panel, i);
     }
     DestroyArray(&window.panels);
 
@@ -83,13 +84,16 @@ void SetWindowTitle(const char* title) { SetWrappedWindowTitle(title); }
 
 static pthread_mutex_t panel_mutex = PTHREAD_MUTEX_INITIALIZER;
 static pthread_cond_t panel_dim_cond = PTHREAD_COND_INITIALIZER;
+static pthread_cond_t dims_recorded_cond = PTHREAD_COND_INITIALIZER;
+static bool dims_recorded = false;
 static void* PanelDimensionListener(void* index)
 {
+    size_t index_value = *(size_t*)index;
+
     pthread_mutex_lock(&panel_mutex);
     while (!dimensions.set)
         pthread_cond_wait(&panel_dim_cond, &panel_mutex);
 
-    size_t index_value = *(size_t*)index;
     panel_t* affected = GetPanel(index_value);
 
     switch (affected->type)
@@ -112,13 +116,15 @@ static void* PanelDimensionListener(void* index)
 
     printf("\n%d :: %d :: %d :: %d", affected->x, affected->y,
            affected->width, affected->height);
+    dims_recorded = true;
+    pthread_cond_signal(&dims_recorded_cond);
 
-    struct wl_buffer* pixels =
-        CreateSolidPixelBuffer(dimensions.width, dimensions.height,
-                               WL_SHM_FORMAT_XRGB8888, BLACK);
-    wl_surface_attach(window._s, pixels, 0, 0);
-    wl_surface_commit(window._s);
-    wl_buffer_destroy(pixels);
+    // struct wl_buffer* pixels =
+    //     CreateSolidPixelBuffer(dimensions.width, dimensions.height,
+    //                            WL_SHM_FORMAT_XRGB8888, BLACK);
+    // wl_surface_attach(window._s, pixels, 0, 0);
+    // wl_surface_commit(window._s);
+    // wl_buffer_destroy(pixels);
 
     return NULL;
 }
@@ -151,13 +157,10 @@ panel_t* CreatePanel(panel_type_t type)
     ptr_t panel_block = AllocateBlock(sizeof(panel_t));
     SetBlockContents(&panel_block, &created_panel, sizeof(panel_t));
     AddArrayValue(&window.panels, panel_block);
+    FreeBlock(&panel_block);
 
-    // type switch statement goes here later
-
-    // Center the window either vertically or horizontally,
-    // depending on which dimension is shorter.
-
-    CreateThread(PanelDimensionListener, &window.panels.occupied);
+    size_t panel_index = window.panels.occupied - 1;
+    CreateThread(PanelDimensionListener, &panel_index);
 
     CommitSurface(GetPanel(0)->_s);
     BindEGLContext(GetPanel(0));
@@ -165,6 +168,11 @@ panel_t* CreatePanel(panel_type_t type)
 }
 
 void SignalDimensionsSet_(void) { pthread_cond_signal(&panel_dim_cond); }
+
+void WaitForDimensionSignal_(pthread_mutex_t* mutex)
+{
+    while (!dims_recorded) pthread_cond_wait(&dims_recorded_cond, mutex);
+}
 
 void run(void)
 {

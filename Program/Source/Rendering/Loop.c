@@ -8,16 +8,12 @@
 #include <pthread.h>
 #include <stdio.h>
 
-static void draw(panel_t* panel)
+static void draw(panel_t* panel, size_t panel_index)
 {
-    // If the current surface is not this window, bind it.
-    if (eglGetCurrentSurface(EGL_READ) != panel->_rt)
-    {
-        EGLBoolean made_current =
-            eglMakeCurrent(GetEGLDisplay(), panel->_rt, panel->_rt,
-                           GetEGLContext(panel->type));
-        if (!made_current) ReportError(egl_window_made_current_failure);
-    }
+    EGLContext context = CreateEGLContext(GetEGLContext(panel_index));
+    EGLBoolean made_current =
+        eglMakeCurrent(GetEGLDisplay(), panel->_rt, panel->_rt, context);
+    if (!made_current) ReportError(egl_window_made_current_failure);
 
     // Fill the windows with a background color.
     if (panel->type == center_filler) glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
@@ -36,11 +32,12 @@ static void* DrawFunction(void* data)
     pthread_mutex_lock(&render_mutex);
     while (running)
     {
+        WaitForDimensionSignal_(&render_mutex);
         pthread_cond_wait(&render_cond, &render_mutex);
         pthread_cond_destroy(&render_cond);
         render_cond = (pthread_cond_t)PTHREAD_COND_INITIALIZER;
 
-        printf("\ne\n");
+        printf("\nrenderingloop\n");
         IteratePanels(draw);
     }
     pthread_mutex_unlock(&render_mutex);

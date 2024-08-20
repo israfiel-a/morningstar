@@ -58,7 +58,7 @@ static const error_t errors[] = {
     [egl_surface_create_failure] = {program_error,
                                     "failed to create EGL surface"},
     [egl_swap_buffer_failure] =
-        {program_error,
+        {external_error,
          "failed to swap buffers -- failed to prevent hanging"},
     [opengl_api_bind_failure] = {program_error,
                                  "failed to bind the OpenGL api"},
@@ -72,23 +72,24 @@ _Noreturn void ReportError_(const char* file, const char* function,
                             uint64_t line, error_code_t code)
 {
     error_t err = errors[code];
-    if (global_flags.stdout_available || err.severity != program_error)
-    {
-        fprintf(stderr,
-                "\n\033[1m\033[31m-- Morningstar Error Reporter "
-                "--\n-- Fatal Error Reported.\n-- "
-                "Location:\033[0m\033[31m %s() at %s, ln. %lu\n\033[1m-- "
-                "Severity:\033[0m\033[31m %u\n\033[1m-- "
-                "Description:\033[0m\033[31m cd. %d, %s\033[0m\n\n",
-                function, file, line, err.severity, code, err.message);
-    }
-    else
-    {
-        LogNotification("Morningstar Error Reporter",
-                        ID " has run into a fatal error. Location: %s() @ "
-                           "%s, ln. %lu. Code: %d :: %s.",
-                        function, file, line, code);
-    }
+    // if (global_flags.stdout_available || err.severity != program_error)
+    // {
+    fprintf(stderr,
+            "\n\033[1m\033[31m-- Morningstar Error Reporter "
+            "--\n-- Fatal Error Reported.\n-- "
+            "Location:\033[0m\033[31m %s() at %s, ln. %lu\n\033[1m-- "
+            "Severity:\033[0m\033[31m %u\n\033[1m-- "
+            "Description:\033[0m\033[31m cd. %d, %s\033[0m\n\n",
+            function, file, line, err.severity, code, err.message);
+    // }
+    // else
+    // {
+    //     LogNotification("Morningstar Error Reporter",
+    //                     ID " has run into a fatal error. Location: %s()
+    //                     @ "
+    //                        "%s, ln. %lu. Code: %d :: %s.",
+    //                     function, file, line, code);
+    // }
 
     exit(EXIT_FAILURE);
 }

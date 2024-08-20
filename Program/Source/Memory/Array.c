@@ -8,7 +8,7 @@ array_t CreateArray(size_t size)
     array_t created_array = {NULL, size, 0};
     created_array._a = calloc(size, sizeof(ptr_t));
     if (created_array._a == NULL) ReportError(allocation_failure);
-    created_array.occupied = -1;
+    created_array.occupied = 0;
     return created_array;
 }
 
@@ -18,7 +18,7 @@ void DestroyArray(array_t* array)
     free(array->_a);
 
     array->_a = NULL;
-    array->occupied = -1;
+    array->occupied = 0;
     array->size = 0;
 }
 
@@ -55,13 +55,13 @@ void AddArrayValue(array_t* array, ptr_t value)
         return;
     }
 
-    array->occupied++;
-    if (array->occupied > array->size)
+    if (array->occupied + 1 > array->size)
     {
         ReportWarning(array_implicit_resize);
-        ResizeArray(array, array->occupied);
+        ResizeArray(array, array->occupied + 1);
     }
 
     array->_a[array->occupied] = AllocateBlock(value.size);
     CopyBlock(&array->_a[array->occupied], value);
+    array->occupied++;
 }
