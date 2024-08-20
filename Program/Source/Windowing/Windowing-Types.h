@@ -21,8 +21,8 @@
 
 // Portable, set-width types.
 #include <inttypes.h>
-// Safer, easier-to-allocate memory chunks.
-#include <Memory/Allocate.h>
+// The project's array abstraction.
+#include <Memory/Array.h>
 
 /**
  * @brief An enumerator to describe a specific sub-panel of the background
@@ -132,7 +132,7 @@ typedef struct
 {
     const char* title;
     const char* id;
-    ptr_t panels;
+    array_t panels;
 
     struct wl_surface* _s;
     struct xdg_surface* _ws;

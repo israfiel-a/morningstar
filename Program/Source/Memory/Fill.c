@@ -1,6 +1,6 @@
 #include "Fill.h"
 
-void ZeroBlock(ptr_t* ptr) { memset(ptr->inner, 0, ptr->size); }
+void ZeroBlock(ptr_t* ptr) { memset(ptr->_p, 0, ptr->size); }
 void FillBlock(ptr_t* ptr, uint32_t value, size_t size)
 {
     size_t i = 0;

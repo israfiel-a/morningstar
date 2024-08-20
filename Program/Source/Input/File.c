@@ -2,7 +2,7 @@
 #include <Globals.h>
 #include <Output/Error.h>
 #include <Output/Warning.h>
-#include <Windowing/System.h>
+#include <Windowing/Wayland.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <memory.h>

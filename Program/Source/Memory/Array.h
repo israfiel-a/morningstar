@@ -31,25 +31,29 @@ typedef struct
     /**
      * @brief The inner array of the, well, array. @warning Editing this
      * manually in any way will likely have unforseen consequences, some of
-     * which may generate a fatal error.
+     * which may generate fatal errors.
      */
     ptr_t* _a;
     /**
      * @brief The total allocated size of the array. This does not
      * necessarily correlate with the @ref occupied value.
      */
-    uint32_t size;
+    size_t size;
     /**
      * @brief The amount of slots occupied within the array. This is a
      * count of @b slots, not @b bytes.
      */
-    uint32_t occupied;
+    size_t occupied;
 } array_t;
 
-/**
- * @brief A default empty array initializer.
- */
-#define ARRAY_EMPTY_INIT                                                  \
-    (array_t) { NULL, 0, 0 }
+array_t CreateArray(size_t size);
+
+void DestroyArray(array_t* array);
+
+bool CheckArrayValidity(array_t array);
+
+void ResizeArray(array_t* array, size_t new_size);
+
+void AddArrayValue(array_t* array, ptr_t value);
 
 #endif // _MSENG_ARRAY_

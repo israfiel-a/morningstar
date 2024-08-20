@@ -160,6 +160,12 @@ void SetWindowTitle(const char* title);
 
 panel_t* CreatePanel(panel_type_t type);
 
+panel_t* GetPanel(size_t index);
+
+void IteratePanels(void (*func)(panel_t* panel));
+
+void SignalDimensionsSet_(void);
+
 //! temp until better location found
 void run(void);
 

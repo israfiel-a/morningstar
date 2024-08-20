@@ -1,7 +1,7 @@
 #include "Hardware.h"
 #include <Globals.h>
 #include <Output/Warning.h>
-#include <Windowing/System.h>        // Registry functions
+#include <Windowing/Wayland.h>       // Registry functions
 #include <linux/input-event-codes.h> // Linux input codes
 #include <stdbool.h>
 

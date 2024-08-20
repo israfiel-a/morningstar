@@ -56,6 +56,8 @@ typedef struct
          * the gameplay window and end of the backdrop window.
          */
         int32_t gap_size;
+
+        bool set;
     } application_dimensions;
     /**
      * @brief An enumerator to describe the input mode of the application.

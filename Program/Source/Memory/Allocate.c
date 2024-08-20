@@ -5,8 +5,8 @@
 ptr_t AllocateBlock(size_t size)
 {
     ptr_t created_ptr = {NULL, size};
-    created_ptr.inner = malloc(size);
-    if (created_ptr.inner == NULL) ReportError(allocation_failure);
+    created_ptr._p = malloc(size);
+    if (created_ptr._p == NULL) ReportError(allocation_failure);
 
     return created_ptr;
 }
@@ -14,32 +14,32 @@ ptr_t AllocateBlock(size_t size)
 ptr_t AllocateZeroedBlock(size_t size)
 {
     ptr_t created_ptr = {NULL, size};
-    created_ptr.inner = calloc(1, size);
-    if (created_ptr.inner == NULL) ReportError(allocation_failure);
+    created_ptr._p = calloc(1, size);
+    if (created_ptr._p == NULL) ReportError(allocation_failure);
 
     return created_ptr;
 }
 
 void FreeBlock(ptr_t* ptr)
 {
-    if (ptr == NULL || ptr->inner == NULL) ReportError(free_failure);
-    free(ptr->inner);
+    if (ptr == NULL || ptr->_p == NULL) ReportError(free_failure);
+    free(ptr->_p);
 
-    ptr->inner = NULL;
+    ptr->_p = NULL;
     ptr->size = 0;
 }
 
-void CopyBlock(ptr_t* dest, const ptr_t src)
+void CopyBlock(ptr_t* dest, ptr_t src)
 {
-    if (dest == NULL || dest->inner == src.inner || src.inner == NULL)
+    if (dest == NULL || dest->_p == src._p || src._p == NULL)
     {
         ReportWarning(invalid_block_copy);
         return;
     }
 
-    if (dest->inner != NULL) FreeBlock(dest);
+    if (dest->_p != NULL) FreeBlock(dest);
     *dest = AllocateBlock(src.size);
-    SetBlockContents(dest, src.inner, src.size);
+    SetBlockContents(dest, src._p, src.size);
 }
 
 void ReallocateBlock(ptr_t* ptr, size_t new_size)
@@ -50,7 +50,7 @@ void ReallocateBlock(ptr_t* ptr, size_t new_size)
         return;
     }
 
-    ptr->inner = realloc(ptr->inner, new_size);
+    ptr->_p = realloc(ptr->_p, new_size);
     if (errno == ENOMEM) ReportError(allocation_failure);
     ptr->size = new_size;
 }
@@ -64,7 +64,7 @@ void SetBlockContents(ptr_t* ptr, const void* content, size_t content_size)
     }
 
     if (ptr->size < content_size) ReportError(memory_bound_mismatch);
-    memcpy(ptr->inner, content, content_size);
+    memcpy(ptr->_p, content, content_size);
 }
 
-bool CheckBlockNull(const ptr_t ptr) { return ptr.inner == NULL; }
+bool CheckBlockNull(const ptr_t ptr) { return ptr._p == NULL; }

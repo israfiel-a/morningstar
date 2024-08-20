@@ -2,7 +2,7 @@
 #include <GLAD/opengl.h>  // OpenGL function prototypes
 #include <Output/Error.h> // Error reporting
 #include <Output/Warning.h>
-#include <Windowing/System.h> // Wayland display
+#include <Windowing/Wayland.h> // Wayland display
 #include <stdbool.h>
 #include <stddef.h>
 #include <wayland-egl-core.h>

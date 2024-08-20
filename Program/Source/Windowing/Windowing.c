@@ -1,11 +1,17 @@
 #include "Windowing.h"
-#include "Wayland.h"          // Wayland wrappers
-#include "XDG.h"              // XDG wrappers
-#include <Globals.h>          // Global flags
-#include <Output/System.h>    // Output functions
+#include "Input/File.h"
+#include "Rendering/Colors.h"
+#include "Wayland.h" // Wayland wrappers
+#include "XDG.h"     // XDG wrappers
+#include <Globals.h> // Global flags
+#include <Memory/Thread.h>
+#include <Output/System.h> // Output functions
+#include <Rendering/Loop.h>
 #include <Rendering/System.h> // EGL wrappers
+#include <pthread.h>
+#include <stdio.h>
 
-static window_t window = {NULL, NULL, NULL, NULL, NULL};
+static window_t window = {NULL, NULL, {NULL, 0, 0}, NULL, NULL};
 
 void SetupWindow(void) { SetupWayland(), SetupEGL(); }
 
@@ -29,6 +35,16 @@ void CreateWindow(const char* window_title)
     CommitSurface(window._s);
 }
 
+panel_t* GetPanel(size_t index)
+{
+    return (panel_t*)(window.panels._a[index]._p);
+}
+
+void IteratePanels(void (*func)(panel_t* panel))
+{
+    for (size_t i = 0; i < window.panels.occupied; i++) func(GetPanel(i));
+}
+
 void DestroyWindow(void)
 {
     if (window._s == NULL || window._ws == NULL)
@@ -37,24 +53,23 @@ void DestroyWindow(void)
         return;
     }
 
-    if (CheckBlockNull(window.panels))
+    if (CheckArrayValidity(window.panels))
     {
         ReportWarning(preemptive_panel_free);
         return;
     }
 
-    // this will increase with the size of the panel array later
-    for (size_t i = 0; i < 1; i++)
+    for (size_t i = 0; i < window.panels.occupied; i++)
     {
-        panel_t panel = ((panel_t*)window.panels.inner)[i];
-        if (panel._s != NULL && panel._ss != NULL) continue;
+        panel_t* panel = GetPanel(i);
+        if (panel->_s != NULL && panel->_ss != NULL) continue;
 
-        DestroySurface(&panel._s);
-        DestroySubsurface(&panel._ss);
-        UnbindEGLContext(&panel);
+        DestroySurface(&panel->_s);
+        DestroySubsurface(&panel->_ss);
+        UnbindEGLContext(panel);
     }
+    DestroyArray(&window.panels);
 
-    FreeBlock(&window.panels);
     UnwrapWindow(&window);
     DestroySurface(&window._s);
     window._s = NULL;
@@ -65,6 +80,48 @@ void DestroyWindow(void)
 }
 
 void SetWindowTitle(const char* title) { SetWrappedWindowTitle(title); }
+
+static pthread_mutex_t panel_mutex = PTHREAD_MUTEX_INITIALIZER;
+static pthread_cond_t panel_dim_cond = PTHREAD_COND_INITIALIZER;
+static void* PanelDimensionListener(void* index)
+{
+    pthread_mutex_lock(&panel_mutex);
+    while (!dimensions.set)
+        pthread_cond_wait(&panel_dim_cond, &panel_mutex);
+
+    size_t index_value = *(size_t*)index;
+    panel_t* affected = GetPanel(index_value);
+
+    switch (affected->type)
+    {
+        case left_gap_filler:   break;
+        case right_gap_filler:  break;
+        case left_gap_floater:  break;
+        case right_gap_floater: break;
+        case center_filler:
+            affected->width = dimensions.shortest_side,
+            affected->height = dimensions.shortest_side;
+            if (dimensions.shortest_side == dimensions.height)
+                affected->x = dimensions.gap_size;
+            else affected->y = dimensions.gap_size;
+    }
+    SetSubsurfacePosition(affected->_ss, affected->x, affected->y);
+    ResizeEGLRenderingArea(affected);
+
+    pthread_mutex_unlock(&panel_mutex);
+
+    printf("\n%d :: %d :: %d :: %d", affected->x, affected->y,
+           affected->width, affected->height);
+
+    struct wl_buffer* pixels =
+        CreateSolidPixelBuffer(dimensions.width, dimensions.height,
+                               WL_SHM_FORMAT_XRGB8888, BLACK);
+    wl_surface_attach(window._s, pixels, 0, 0);
+    wl_surface_commit(window._s);
+    wl_buffer_destroy(pixels);
+
+    return NULL;
+}
 
 panel_t* CreatePanel(panel_type_t type)
 {
@@ -81,42 +138,40 @@ panel_t* CreatePanel(panel_type_t type)
         return NULL;
     }
 
-    // replace this shit with a dynamic_array type next update
-    if (GetNull) AllocateBlock(sizeof(panel_t*));
+    if (!CheckArrayValidity(window.panels))
+    {
+        ReportWarning(implicit_panel_array_creation);
+        window.panels = CreateArray(1);
+    }
 
-    // zero cause we only allow one panel for testing
-    window.panels[0] =
-        (panel_t){type,
-                  0,
-                  0,
-                  0,
-                  0,
-                  CreateSurface(),
-                  CreateSubsurface(&window.panels[0]._s, window._s)};
+    panel_t created_panel = {
+        .type = type,
+        ._s = CreateSurface(),
+        ._ss = CreateSubsurface(&created_panel._s, window._s)};
+    ptr_t panel_block = AllocateBlock(sizeof(panel_t));
+    SetBlockContents(&panel_block, &created_panel, sizeof(panel_t));
+    AddArrayValue(&window.panels, panel_block);
 
     // type switch statement goes here later
 
     // Center the window either vertically or horizontally,
     // depending on which dimension is shorter.
 
-    if (dimensions.shortest_side == dimensions.height)
-        window.panels[0].x = dimensions.gap_size;
-    else window.panels[0].y = dimensions.gap_size;
+    CreateThread(PanelDimensionListener, &window.panels.occupied);
 
-    SetSubsurfacePosition(window.panels[0]._ss, window.panels[0].x,
-                          window.panels[0].y);
-    CommitSurface(window.panels[0]._s);
-
-    BindEGLContext(&window.panels[0]);
-
-    return &window.panels[0];
+    CommitSurface(GetPanel(0)->_s);
+    BindEGLContext(GetPanel(0));
+    return GetPanel(0);
 }
+
+void SignalDimensionsSet_(void) { pthread_cond_signal(&panel_dim_cond); }
 
 void run(void)
 {
     while (running)
     {
         CheckWayland();
+        TriggerRender();
         // do all the funny stuff
     }
 }

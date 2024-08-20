@@ -1,9 +1,14 @@
 #include "Loop.h"
 #include "System.h"
-#include <GLAD/opengl.h>  // OpenGL function prototypes
+#include <GLAD/opengl.h> // OpenGL function prototypes
+#include <Globals.h>
+#include <Memory/Thread.h>
 #include <Output/Error.h> // Error reporting
+#include <Windowing/Windowing.h>
+#include <pthread.h>
+#include <stdio.h>
 
-void draw(panel_t* panel)
+static void draw(panel_t* panel)
 {
     // If the current surface is not this window, bind it.
     if (eglGetCurrentSurface(EGL_READ) != panel->_rt)
@@ -23,3 +28,24 @@ void draw(panel_t* panel)
     if (!eglSwapBuffers(GetEGLDisplay(), panel->_rt))
         ReportError(egl_swap_buffer_failure);
 }
+
+static pthread_mutex_t render_mutex = PTHREAD_MUTEX_INITIALIZER;
+static pthread_cond_t render_cond = PTHREAD_COND_INITIALIZER;
+static void* DrawFunction(void* data)
+{
+    pthread_mutex_lock(&render_mutex);
+    while (running)
+    {
+        pthread_cond_wait(&render_cond, &render_mutex);
+        pthread_cond_destroy(&render_cond);
+        render_cond = (pthread_cond_t)PTHREAD_COND_INITIALIZER;
+
+        printf("\ne\n");
+        IteratePanels(draw);
+    }
+    pthread_mutex_unlock(&render_mutex);
+    return NULL;
+}
+
+void CreateRenderingThread(void) { CreateThread(DrawFunction, NULL); }
+void TriggerRender(void) { pthread_cond_signal(&render_cond); }

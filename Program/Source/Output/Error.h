@@ -38,7 +38,9 @@ typedef enum
     egl_surface_create_failure,
     egl_swap_buffer_failure,
     opengl_api_bind_failure,
-    opengl_shader_creation_failure
+    opengl_shader_creation_failure,
+    thread_no_resources,
+    thread_open_denied
 } error_code_t;
 
 _Noreturn void ReportError_(const char* file, const char* function,

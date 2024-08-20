@@ -19,6 +19,9 @@ typedef enum
     invalid_block_copy,
     same_block_size,
     null_block_set,
+    null_array_push,
+    array_implicit_resize,
+    array_implicit_data_free,
 
     double_display_setup,
 
@@ -37,6 +40,7 @@ typedef enum
     preemptive_window_free,
     double_window_free,
 
+    implicit_panel_array_creation,
     preemptive_panel_creation,
     double_panel_creation,
     preemptive_panel_free,

@@ -23,7 +23,7 @@ typedef struct
     /**
      * @brief An ambiguous pointer to an ambiguous location at memory.
      */
-    void* inner;
+    void* _p;
     /**
      * @brief The size of the associated pointer. Editing this will likely
      * cause problems as the interface either reads data that doesn't
@@ -31,12 +31,6 @@ typedef struct
      */
     size_t size;
 } ptr_t;
-
-/**
- * @brief An empty wrapped pointer initializer.
- */
-#define WRAPPED_POINTER_EMPTY                                             \
-    (ptr_t) { NULL, 0 }
 
 /**
  * @brief Allocate a block of @param size. The block is initialized to
@@ -72,7 +66,7 @@ void FreeBlock(ptr_t* ptr);
  * @param dest The destination pointer, where things should be copied to.
  * @param src The source pointer, where things are to be copied from.
  */
-void CopyBlock(ptr_t* dest, const ptr_t src);
+void CopyBlock(ptr_t* dest, ptr_t src);
 
 /**
  * @brief Re-allocate the size of the given pointer. The contents of the

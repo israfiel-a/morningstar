@@ -6,6 +6,7 @@
 #include <Rendering/Colors.h> // Blank buffer creation
 #include <Rendering/Loop.h>   // Rendering functions
 #include <Rendering/System.h> // EGL functions
+#include <Windowing/Windowing.h>
 #include <XDGS/xdg-shell.h>
 
 /**
@@ -74,11 +75,8 @@ static void HWSS(void* d, struct xdg_toplevel* t, int32_t width,
     dimensions.width = width, dimensions.height = height;
     dimensions.shortest_side = (width > height ? height : width);
     dimensions.gap_size = ((float)width - dimensions.shortest_side) / 2;
-
-    // SetWindowPositions();
-    // ResizeEGLRenderingArea(GetSubwindow(gameplay)),
-    //     ResizeEGLRenderingArea(GetSubwindow(bust)),
-    //     ResizeEGLRenderingArea(GetSubwindow(stat));
+    dimensions.set = true;
+    SignalDimensionsSet_();
 }
 
 /**

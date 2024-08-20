@@ -14,7 +14,7 @@
 // The subwindow interface.
 #include <Windowing/Windowing-Types.h>
 
-//! temp
-void draw(panel_t* panel);
+void CreateRenderingThread(void);
+void TriggerRender(void);
 
 #endif // _MSENG_LOOP_RENDERING_SYSTEM_

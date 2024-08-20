@@ -62,8 +62,11 @@ static const error_t errors[] = {
          "failed to swap buffers -- failed to prevent hanging"},
     [opengl_api_bind_failure] = {program_error,
                                  "failed to bind the OpenGL api"},
-    [opengl_shader_creation_failure] = {
-        program_error, "failed to create an opengl shader object"}};
+    [opengl_shader_creation_failure] =
+        {program_error, "failed to create an opengl shader object"},
+    [thread_no_resources] = {program_error,
+                             "no resources to create a new thread"},
+    [thread_open_denied] = {external_error, "new thread creation denied"}};
 
 _Noreturn void ReportError_(const char* file, const char* function,
                             uint64_t line, error_code_t code)
