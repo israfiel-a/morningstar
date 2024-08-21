@@ -162,9 +162,9 @@ panel_t* CreatePanel(panel_type_t type)
     size_t panel_index = window.panels.occupied - 1;
     CreateThread(PanelDimensionListener, &panel_index);
 
-    CommitSurface(GetPanel(0)->_s);
-    BindEGLContext(GetPanel(0));
-    return GetPanel(0);
+    CommitSurface(GetPanel(panel_index)->_s);
+    BindEGLContext(GetPanel(panel_index));
+    return GetPanel(panel_index);
 }
 
 void SignalDimensionsSet_(void) { pthread_cond_signal(&panel_dim_cond); }

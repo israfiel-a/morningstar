@@ -1,14 +1,7 @@
 #include "Error.h"
-#include "Messages.h"
 #include <Globals.h>
 #include <stdio.h>
 #include <stdlib.h>
-
-// outline of new system (to be implemented):
-// report function: (file, function, line, code)
-// severity array: program_error, external_error, os_error
-// override functionality based on severity
-// descriptive error strings reported alongside code
 
 typedef enum __attribute__((__packed__))
 {
@@ -22,6 +15,10 @@ typedef struct
     error_severity_t severity;
     const char* message;
 } error_t;
+
+static const char* severities[] = {[program_error] = "program error",
+                                   [external_error] = "external error",
+                                   [os_error] = "os error (?)"};
 
 static const error_t errors[] = {
     [allocation_failure] = {os_error, "failed to allocate memory"},
@@ -78,9 +75,10 @@ _Noreturn void ReportError_(const char* file, const char* function,
             "\n\033[1m\033[31m-- Morningstar Error Reporter "
             "--\n-- Fatal Error Reported.\n-- "
             "Location:\033[0m\033[31m %s() at %s, ln. %lu\n\033[1m-- "
-            "Severity:\033[0m\033[31m %u\n\033[1m-- "
+            "Severity:\033[0m\033[31m %s\n\033[1m-- "
             "Description:\033[0m\033[31m cd. %d, %s\033[0m\n\n",
-            function, file, line, err.severity, code, err.message);
+            function, file, line, severities[err.severity], code,
+            err.message);
     // }
     // else
     // {

@@ -55,5 +55,10 @@ bool CheckArrayValidity(array_t array);
 void ResizeArray(array_t* array, size_t new_size);
 
 void AddArrayValue(array_t* array, ptr_t value);
+void AddArrayValueRaw(array_t* array, void* value, size_t size);
+
+ptr_t* GetArrayValue(array_t array, size_t index);
+
+ptr_t* GetArrayTail(array_t array);
 
 #endif // _MSENG_ARRAY_

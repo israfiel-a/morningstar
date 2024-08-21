@@ -11,9 +11,14 @@
 static void draw(panel_t* panel, size_t panel_index)
 {
     EGLContext context = CreateEGLContext(GetEGLContext(panel_index));
+    if (context == NULL) ReportError(egl_context_create_failure);
     EGLBoolean made_current =
         eglMakeCurrent(GetEGLDisplay(), panel->_rt, panel->_rt, context);
-    if (!made_current) ReportError(egl_window_made_current_failure);
+    if (!made_current)
+    {
+        printf("\n%d\n", eglGetError());
+        ReportError(egl_window_made_current_failure);
+    }
 
     // Fill the windows with a background color.
     if (panel->type == center_filler) glClearColor(1.0f, 1.0f, 1.0f, 1.0f);

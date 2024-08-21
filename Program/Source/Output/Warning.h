@@ -30,6 +30,7 @@ typedef enum
     preemptive_egl_free,
 
     preemptive_egl_context_free,
+    preemptive_egl_context_create,
     unknown_egl_context,
 
     preemptive_wm_creation,

@@ -65,3 +65,33 @@ void AddArrayValue(array_t* array, ptr_t value)
     CopyBlock(&array->_a[array->occupied], value);
     array->occupied++;
 }
+
+void AddArrayValueRaw(array_t* array, void* value, size_t size)
+{
+    if (array->_a == NULL)
+    {
+        ReportWarning(null_array_push);
+        return;
+    }
+
+    if (array->occupied + 1 > array->size)
+    {
+        ReportWarning(array_implicit_resize);
+        ResizeArray(array, array->occupied + 1);
+    }
+
+    array->_a[array->occupied] = AllocateBlock(size);
+    memcpy(array->_a[array->occupied]._p, value, size);
+    array->_a[array->occupied].size = size;
+    array->occupied++;
+}
+
+ptr_t* GetArrayValue(array_t array, size_t index)
+{
+    return &array._a[index];
+}
+
+ptr_t* GetArrayTail(array_t array)
+{
+    return &array._a[array.occupied - 1];
+}
